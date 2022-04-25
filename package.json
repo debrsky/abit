@@ -1,0 +1,40 @@
+{
+  "name": "dvggtk-abit2022",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "gulp build && gulp serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "readable-stream": "npm:vite-compatible-readable-stream@^3.6.1",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.3",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/stream": "^2.0.0",
+    "browser-sync": "^2.27.9",
+    "glob": "^7.2.0",
+    "gulp": "^4.0.2",
+    "gulp-plumber": "^1.2.1",
+    "gulp-pug": "^5.0.0",
+    "gulp-pug-linter": "^1.5.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "rollup-plugin-svelte": "^7.1.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "dependencies": {
+    "@imask/svelte": "latest",
+    "@types/pouchdb": "^6.4.0",
+    "imask": "^6.4.2",
+    "pouchdb": "^7.3.0",
+    "pouchdb-browser": "^7.3.0",
+    "rollup-plugin-polyfill-node": "^0.9.0",
+    "vite-compatible-readable-stream": "^3.6.1"
+  }
+}

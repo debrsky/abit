@@ -1,0 +1,20 @@
+Техническое задание
+
+Person
+regDate date
+fio text,
+gender select(м, ж),
+certScore decimal(1,1),
+extraScore decimal(1,1),
+totalScore decimal(1,1),
+hasEduCertOriginal boolean,
+hasMedicalCert boolean,
+hasFluoro boolean,
+hasVaccine boolean,
+needDorm select(0 - не трубуется, 1 - требуется, 2 - приоритетное),
+school text,
+schoolYear decimal(4,0),
+address text,
+tel text,
+memo memo,
+applications array(application)

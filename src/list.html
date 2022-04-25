@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>List</title>
+  <style>
+    .dark {
+      background-color: grey;
+    }
+    #abit-list {
+      counter-reset: n;
+    }
+    .item {
+      position: relative;
+      margin: 0;
+      margin-bottom: 0.25em;
+      margin-left:5ch;
+      padding: 0 0 0.25em;
+    }
+    .item:not(:last-of-type) {
+      border-bottom: 1px solid grey;
+    }
+    .item::before {
+      counter-increment: n;
+      content: counter(n);
+      position: absolute;
+      display: block;
+      width: 4ch;
+      text-align: right;
+      left: -5ch;
+      top: 0;
+
+    }
+    details.item summary {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <button id="open-all" type="button">Toggle</button>
+    <script>
+      const btnOpenAll = document.getElementById('open-all');
+      btnOpenAll.addEventListener('click', ()=>{
+        const abitList = document.getElementById('abit-list');
+        const details = abitList.querySelectorAll('details');
+
+        for (const elem of details.values()) {
+          elem.open = !elem.open;
+        }
+      });
+    </script>
+  </div>
+  <div id="abit-list"></div>
+  <script src="js/list.js"></script>
+</body>
+</html>
