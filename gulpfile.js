@@ -5,6 +5,7 @@ import gulp from "gulp";
 
 import clean from "./gulp/clean.js";
 import html from "./gulp/html.js";
+import copy from "./gulp/copy.js";
 import pug2html from "./gulp/pug2html.js";
 import script from "./gulp/script.js";
 import svelte from "./gulp/svelte.js";
@@ -17,10 +18,10 @@ export default function defaultTask(cb) {
   cb();
 }
 
-const build = gulp.series(clean, html, pug2html, svelte, script);
+const build = gulp.series(clean, copy, html, pug2html, svelte, script);
 
 export const dev = gulp.series(build, serve);
 
 export {
-  clean, html, pug2html, svelte, script, build, serve
+  clean, copy, html, pug2html, svelte, script, build, serve
 }
