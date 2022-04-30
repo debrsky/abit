@@ -1,51 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Document</title>
-  <link rel="stylesheet" href="https://unpkg.com/@highlightjs/cdn-assets@11.5.1/styles/vs2015.min.css">
-  <script src="js/app.js"></script>
-</head>
-<body>
-  <p>
-    <ul>
-      <li><a href="abit-view.html">abit-view.html</a></li>
-      <li><a href="list.html">list.html</a></li>
-      <li><a href="abit.html">abit.html</a></li>
-      <li><a href="backup.html">backup.html</a></li>
-    </ul>
-  </p>
-  <hr>
-  <form name="form">
-    <input type="file" name="file" accept="application/json" id="file">
-  </form>
-  <hr>
-  <pre><code id="json"></code></pre>
-  <script type="module">
-    import hljs from 'https://unpkg.com/@highlightjs/cdn-assets@11.5.1/es/highlight.min.js';
-    //  and it's easy to individually load & register additional languages
-    import jsonLang from 'https://unpkg.com/@highlightjs/cdn-assets@11.5.1/es/languages/json.min.js';
-    hljs.registerLanguage('json', jsonLang);
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@highlightjs/cdn-assets@11.5.1/styles/vs2015.min.css"
+    />
+    <script src="js/app.js"></script>
+  </head>
+  <body>
+    <div>
+      <ul>
+        <li><a href="abit-view.html">abit-view.html</a></li>
+        <li><a href="list.html">list.html</a></li>
+        <li><a href="abit.html">abit.html</a></li>
+        <li><a href="backup.html">backup.html</a></li>
+      </ul>
+    </div>
+    <hr />
+    <form name="form">
+      <input type="file" name="file" accept="application/json" id="file" />
+    </form>
+    <hr />
+    <pre><code id="json"></code></pre>
+    <script type="module">
+      import hljs from 'https://unpkg.com/@highlightjs/cdn-assets@11.5.1/es/highlight.min.js';
+      //  and it's easy to individually load & register additional languages
+      import jsonLang from 'https://unpkg.com/@highlightjs/cdn-assets@11.5.1/es/languages/json.min.js';
+      hljs.registerLanguage('json', jsonLang);
 
-    const input = document.getElementById('file');
-    let data = null;
-    const selectFileHandler = (event) => {
-      const [file] = event.target.files;
-      if (!file) return;
+      const input = document.getElementById('file');
+      let data = null;
+      const selectFileHandler = (event) => {
+        const [file] = event.target.files;
+        if (!file) return;
 
-      const reader = new FileReader();
-      reader.addEventListener('load', ()=>{
-        const output = document.getElementById('json');
-        data = JSON.parse(reader.result);
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+          const output = document.getElementById('json');
+          data = JSON.parse(reader.result);
 
-        const html = hljs.highlight(JSON.stringify(data, null, 2), {language: 'json'}).value;
+          const html = hljs.highlight(JSON.stringify(data, null, 2), {
+            language: 'json'
+          }).value;
 
-        output.classList.add('hljs');
-        output.innerHTML = html;
-      });
-      reader.readAsText(file);
-    };
-    input.addEventListener('change', selectFileHandler);
-  </script>
-</body>
+          output.classList.add('hljs');
+          output.innerHTML = html;
+        });
+        reader.readAsText(file);
+      };
+      input.addEventListener('change', selectFileHandler);
+    </script>
+  </body>
 </html>
