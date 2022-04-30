@@ -1,85 +1,88 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>List</title>
-  <style>
-    html {
-      font-family:Arial, Helvetica, sans-serif;
-      background-color: silver;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>List</title>
+    <style>
+      html {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: silver;
+      }
 
-    @font-face {
-      font-family: "twemoji mozilla";
-      src: url(fonts/TwemojiMozilla.ttf) format("truetype");
-    }
-    .emoji {
-      font-family: apple color emoji,segoe ui emoji,noto color emoji,android emoji,emojisymbols,emojione mozilla,twemoji mozilla,segoe ui symbol;
-    }
+      @font-face {
+        font-family: 'twemoji mozilla';
+        src: url(fonts/TwemojiMozilla.ttf) format('truetype');
+      }
+      .emoji {
+        font-family: apple color emoji, segoe ui emoji, noto color emoji,
+          android emoji, emojisymbols, emojione mozilla, twemoji mozilla,
+          segoe ui symbol;
+      }
 
-    body {
-      max-width: 960px;
-      background-color: white;
-    }
+      body {
+        max-width: 960px;
+        background-color: white;
+      }
 
-    .abit-view {
-      display: flex;
-      padding: 0.25em 0;
-    }
-    .abit-view:not(:last-of-type) {
-      border-bottom: 1px solid grey;
-    }
-    .abit-view__fio {
-      font-weight: 700;
-    }
+      .abit-view {
+        display: flex;
+        padding: 0.25em 0;
+      }
+      .abit-view:not(:last-of-type) {
+        border-bottom: 1px solid grey;
+      }
+      .abit-view__fio {
+        font-weight: 700;
+      }
 
-    .field {
-      padding: 0.25em;
-    }
-    .field-container {
-      display: flex;
-    }
+      .field {
+        padding: 0.25em;
+      }
+      .field-container {
+        display: flex;
+      }
 
-    .dark {
-      background-color: grey;
-    }
-    #abit-list {
-      counter-reset: n;
-    }
-    .item {
-      position: relative;
-      margin: 0;
-      margin-bottom: 0.25em;
-      margin-left:5ch;
-      padding: 0 0 0.25em;
-    }
-    .item:not(:last-of-type) {
-      border-bottom: 1px solid grey;
-    }
-    .item::before {
-      counter-increment: n;
-      content: counter(n);
-      position: absolute;
-      display: block;
-      width: 4ch;
-      text-align: right;
-      left: -5ch;
-      top: 0;
-
-    }
-    details.item summary {
-      cursor: pointer;
-    }
-  </style>
-
-</head>
-<body>
-  <div>
-    <progress id="progress" max="100" value="0" style="width: 100%;"></progress>
-  </div>
-  <div id="abit-list"></div>
-  <script src="js/list.js"></script>
-</body>
+      .dark {
+        background-color: grey;
+      }
+      #abit-list {
+        counter-reset: n;
+      }
+      .item {
+        position: relative;
+        margin: 0;
+        margin-bottom: 0.25em;
+        margin-left: 5ch;
+        padding: 0 0 0.25em;
+      }
+      .item:not(:last-of-type) {
+        border-bottom: 1px solid grey;
+      }
+      .item::before {
+        counter-increment: n;
+        content: counter(n);
+        position: absolute;
+        display: block;
+        width: 4ch;
+        text-align: right;
+        left: -5ch;
+        top: 0;
+      }
+      details.item summary {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <progress
+        id="progress"
+        max="100"
+        value="0"
+        style="width: 100%"
+      ></progress>
+    </div>
+    <div id="abit-list"></div>
+    <script src="js/list.js"></script>
+  </body>
 </html>
-
-

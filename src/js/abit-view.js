@@ -1,6 +1,6 @@
 import {createElement} from './utils/index.js';
 
-export function createAbitViewElem ({
+export function createAbitViewElem({
   regDate,
   fio,
   gender,
@@ -19,15 +19,19 @@ export function createAbitViewElem ({
   memo,
   contractReady,
   applications
-}={}) {
-
-  const totalScoreNum = totalScore ?? (parseFloat(certScore.replace(',','.')) || 0) + (parseFloat(extraScore.replace(',','.')) || 0)
+} = {}) {
+  const totalScoreNum =
+    totalScore ??
+    (parseFloat(certScore.replace(',', '.')) || 0) +
+      (parseFloat(extraScore.replace(',', '.')) || 0);
   const totalScoreNumFixed = parseFloat(totalScoreNum.toFixed(2));
 
   const html = `
   <div class="abit-view">
     <div class="field abit-view__reg-date">${regDate}</div>
-    <div class="field abit-view__gender emoji">${{'м':'♂️', 'ж':'♀️'}[gender] ?? '-'}</div>
+    <div class="field abit-view__gender emoji">${
+      {м: '♂️', ж: '♀️'}[gender] ?? '-'
+    }</div>
     <div class="field abit-view__fio">${fio}</div>
     <div class="field-container">
       <div class="field abit-view__cert-score">${certScore}</div>
@@ -53,4 +57,3 @@ export function createAbitViewElem ({
 
   return createElement(html);
 }
-

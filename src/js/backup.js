@@ -6,7 +6,7 @@ const input = document.forms.form.file;
 const selectFileHandler = (event) => {
   const [file] = event.target.files;
   const reader = new FileReader();
-  reader.addEventListener('load', async ()=>{
+  reader.addEventListener('load', async () => {
     const data = JSON.parse(reader.result);
     await importDocs(data.abits);
     event.target.value = null;
@@ -16,7 +16,7 @@ const selectFileHandler = (event) => {
 
 input.addEventListener('change', selectFileHandler);
 
-async function importDocs (docs) {
+async function importDocs(docs) {
   let db = new PouchDB(DB_NAME);
   await db.destroy();
   db = new PouchDB(DB_NAME);
@@ -28,4 +28,4 @@ async function importDocs (docs) {
   });
 
   console.log(dbDocs);
-};
+}
