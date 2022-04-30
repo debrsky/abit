@@ -25,7 +25,8 @@ export default function script() {
         rollup({
           input: file,
           output: {
-            name: filename,
+            // https://stackoverflow.com/questions/57556471/convert-kebab-case-to-camelcase-with-javascript
+            name: filename.replace(/-./g, x=>x[1].toUpperCase()),
             sourcemap: true,
             format: "iife",
             plugins: [terser()]
