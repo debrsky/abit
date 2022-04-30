@@ -17,4 +17,5 @@ schoolYear decimal(4,0),
 address text,
 tel text,
 memo memo,
+contractReady,
 applications array(application)
