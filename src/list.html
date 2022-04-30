@@ -4,6 +4,42 @@
   <meta charset="UTF-8">
   <title>List</title>
   <style>
+    html {
+      font-family:Arial, Helvetica, sans-serif;
+      background-color: silver;
+    }
+
+    @font-face {
+      font-family: "twemoji mozilla";
+      src: url(fonts/TwemojiMozilla.ttf) format("truetype");
+    }
+    .emoji {
+      font-family: apple color emoji,segoe ui emoji,noto color emoji,android emoji,emojisymbols,emojione mozilla,twemoji mozilla,segoe ui symbol;
+    }
+
+    body {
+      max-width: 960px;
+      background-color: white;
+    }
+
+    .abit-view {
+      display: flex;
+      padding: 0.25em 0;
+    }
+    .abit-view:not(:last-of-type) {
+      border-bottom: 1px solid grey;
+    }
+    .abit-view__fio {
+      font-weight: 700;
+    }
+
+    .field {
+      padding: 0.25em;
+    }
+    .field-container {
+      display: flex;
+    }
+
     .dark {
       background-color: grey;
     }
@@ -35,23 +71,15 @@
       cursor: pointer;
     }
   </style>
+
 </head>
 <body>
   <div>
-    <button id="open-all" type="button">Toggle</button>
-    <script>
-      const btnOpenAll = document.getElementById('open-all');
-      btnOpenAll.addEventListener('click', ()=>{
-        const abitList = document.getElementById('abit-list');
-        const details = abitList.querySelectorAll('details');
-
-        for (const elem of details.values()) {
-          elem.open = !elem.open;
-        }
-      });
-    </script>
+    <progress id="progress" max="100" value="0" style="width: 100%;"></progress>
   </div>
   <div id="abit-list"></div>
   <script src="js/list.js"></script>
 </body>
 </html>
+
+

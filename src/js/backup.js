@@ -1,5 +1,7 @@
 import PouchDB from 'pouchdb';
 
+const DB_NAME = 'my_database';
+
 const input = document.forms.form.file;
 const selectFileHandler = (event) => {
   const [file] = event.target.files;
@@ -15,9 +17,9 @@ const selectFileHandler = (event) => {
 input.addEventListener('change', selectFileHandler);
 
 async function importDocs (docs) {
-  let db = new PouchDB('my_database');
+  let db = new PouchDB(DB_NAME);
   await db.destroy();
-  db = new PouchDB('my_database');
+  db = new PouchDB(DB_NAME);
   await db.bulkDocs(docs);
 
   const dbDocs = await db.allDocs({
