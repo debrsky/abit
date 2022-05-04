@@ -8,8 +8,9 @@ import html from './gulp/html.js';
 import copy from './gulp/copy.js';
 import pug2html from './gulp/pug2html.js';
 import script from './gulp/script.esbuild.js';
-import svelte from './gulp/svelte.js';
+import svelte from './gulp/svelte.esbuild.js';
 import serve from './gulp/serve.js';
+import less from './gulp/less.js';
 
 process.rootDir = dirname(fileURLToPath(import.meta.url));
 
@@ -18,8 +19,8 @@ export default function defaultTask(cb) {
   cb();
 }
 
-const build = gulp.series(clean, copy, html, pug2html, svelte, script);
+const build = gulp.series(clean, copy, less, html, pug2html, svelte, script);
 
 export const dev = gulp.series(build, serve);
 
-export {clean, copy, html, pug2html, svelte, script, build, serve};
+export {clean, copy, less, html, pug2html, svelte, script, build, serve};

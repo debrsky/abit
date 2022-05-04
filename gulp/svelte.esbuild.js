@@ -1,19 +1,20 @@
 import gulp from 'gulp';
 import gulpEsbuild from 'gulp-esbuild';
+import sveltePlugin from 'esbuild-svelte';
 import {commonjs} from '@hyrious/esbuild-plugin-commonjs';
 
-export default function script() {
+export default function svelte() {
   return gulp
-    .src('src/js/*.js')
+    .src('src/js/svelte/*.svelte')
     .pipe(
       gulpEsbuild({
-        metafile: false, // https://www.bundle-buddy.com/esbuild
         bundle: true,
         minify: false,
+        format: 'esm',
         define: {global: 'window'},
-        sourcemap: 'linked',
-        plugins: [commonjs()]
+        sourcemap: 'external',
+        plugins: [commonjs(), sveltePlugin()]
       })
     )
-    .pipe(gulp.dest('./public/js'));
+    .pipe(gulp.dest('./public/js/svelte'));
 }

@@ -6,7 +6,7 @@
 	import Checkbox from "./fields/checkbox.svelte";
 
 	let value = 1;
-	
+
 	let name = 'Svelte';
 
 	export let regDate;
@@ -16,8 +16,8 @@
   export let extraScore;
   export let totalScore;
 	export let hasEduCertOriginal;
-	export let hasMedicalCert;	
-	export let hasFluoro;	
+	export let hasMedicalCert;
+	export let hasFluoro;
 	export let hasVaccine;
   export let needDorm;
   export let school;

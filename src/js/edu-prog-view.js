@@ -1,28 +1,16 @@
-import {createElement} from './utils/index.js';
+import {createElementFromTemplate, kebabToCamel} from './utils/index.js';
 
-export function createEduProgViewElem({
-  code,
-  speciality,
-  qualification,
-  eduForm,
-  baseEduLevel,
-  duration,
-  finSource,
-  placesNumber,
-  _id
-} = {}) {
-  const html = `
-<div class="edu-prog-view" data-id="${_id}">
-  <div class="field edu-prog-view__code">${code}</div>
-  <div class="field edu-prog-view__speciality">${speciality}</div>
-  <div class="field edu-prog-view__qualification">${qualification}</div>
-  <div class="field edu-prog-view__edu-form">${eduForm}</div>
-  <div class="field edu-prog-view__base-edu-level">${baseEduLevel}</div>
-  <div class="field edu-prog-view__duration">${duration}</div>
-  <div class="field edu-prog-view__fin-source">${finSource}</div>
-  <div class="field edu-prog-view__places-number">${placesNumber}</div>
-</div>
-`;
+export function createEduProgViewElemFromTemplate(tmplElem, data) {
+  const eduProgViewElem = createElementFromTemplate(tmplElem);
 
-  return createElement(html);
+  for (const elem of eduProgViewElem.querySelectorAll(`[name]`)) {
+    const key = kebabToCamel(elem.getAttribute('name'));
+    if (data[key]) elem.textContent = data[key];
+  }
+
+  const idElem = eduProgViewElem;
+  const id = data.id ?? data._id;
+  if (idElem && id) idElem.dataset.id = id;
+
+  return eduProgViewElem;
 }

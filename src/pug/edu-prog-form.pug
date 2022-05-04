@@ -1,0 +1,42 @@
+div(style="display: flex;")
+  form.edu-prog-form(style="margin: auto;")
+    .edu-prog-form__code
+      label.field
+        span.field__title Код образовательной программы
+        input.field__input(name="code", type="text", value="БУ", size="15" autofocus required)
+    .edu-prog-form__speciality
+      label.field
+        span.field__title Специальность
+        input.field__input(name="speciality", type="text", size="50", value="38.02.01 Экономика и бухгалтерский учет")
+    .edu-prog-form__qualification
+      label.field
+        span.field__title Квалификация
+        input.field__input(name="qualification", type="text", value="бухгалтер")
+    .edu-prog-form__edu-form
+      label.field
+        span.field__title Форма обучения
+        input.field__input(name="edu-form", type="text", value="очная")
+    .edu-prog-form__base-edu-level
+      label.field
+        span.field_title Базовое образование
+        input.field__input(type="text", name="base-edu-level", value="11 классов")
+    .edu-prog-form__duration
+      label.field
+        span.field__title Продолжительность обучения
+        input.field__input(type="text", name="duration", value="1 год 10 месяцев")
+    .edu-prog-form__fin-source
+      label.field
+        span.field__title Источник финансирования
+        input.field__input(type="text", name="fin-source", value="бюджет")
+    .edu-prog-form__places-number
+      label.field
+        span.field__title Количество мест
+        input.field__input(type="text", name="places-number", value="25")
+
+    input(type="hidden", name="_rev", value="")
+    input(type="hidden", name="_id", value="")
+    input(type="hidden", name="type", value="")
+
+    .edu-prog-form__btn-panel
+      button.button.button--primary(type="submit") ✔️ Сохранить и закрыть
+      button.button.button-secondary(type="button", data-a11y-dialog-hide) ❌ Закрыть без сохранения

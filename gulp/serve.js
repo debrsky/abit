@@ -3,8 +3,9 @@ import browserSync from 'browser-sync';
 
 import html from './html.js';
 import pug2html from './pug2html.js';
-import svelte from './svelte.js';
+import svelte from './svelte.esbuild.js';
 import script from './script.esbuild.js';
+import less from './less.js';
 
 const server = browserSync.create();
 
@@ -15,8 +16,8 @@ function readyFullReload(cb) {
 }
 
 // eslint-disable-next-line
-function readyStyleReload(cb) {
-  return gulp.src('public/css').pipe(server.stream()).on('end', cb);
+function readyStyleReload() {
+  return less().pipe(server.stream());
 }
 
 export default function serve() {
@@ -40,11 +41,11 @@ export default function serve() {
     [`src/js/**/*.js`, '!src/js/svelte/**/*.{svelte,js}'],
     gulp.series(script, readyFullReload)
   );
-  gulp.watch(`src/pug/**/*.pug`, gulp.series(pug2html, readyFullReload));
+  gulp.watch(`src/**/*.pug`, gulp.series(pug2html, readyFullReload));
   // gulp.watch(`src/pages/**/*.pug`, gulp.series(pages, readyFullReload));
 
   // gulp.watch(`src/css/**/*.css`, gulp.series(style, readyStyleReload));
-  // gulp.watch(`src/less/**/*.less`, gulp.series(style, readyStyleReload));
+  gulp.watch(`src/less/**/*.less`, readyStyleReload);
 
   // gulp.watch(`src/js/**/*.js`, gulp.series(script, readyFullReload));
   // gulp.watch(`src/img/**/!(*.svg)`, gulp.series(copy, readyFullReload));
