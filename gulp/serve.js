@@ -4,7 +4,7 @@ import browserSync from 'browser-sync';
 import html from './html.js';
 import pug2html from './pug2html.js';
 import svelte from './svelte.js';
-import esbuild from './esbuild.js';
+import script from './script.esbuild.js';
 
 const server = browserSync.create();
 
@@ -38,7 +38,7 @@ export default function serve() {
   );
   gulp.watch(
     [`src/js/**/*.js`, '!src/js/svelte/**/*.{svelte,js}'],
-    gulp.series(esbuild, readyFullReload)
+    gulp.series(script, readyFullReload)
   );
   gulp.watch(`src/pug/**/*.pug`, gulp.series(pug2html, readyFullReload));
   // gulp.watch(`src/pages/**/*.pug`, gulp.series(pages, readyFullReload));

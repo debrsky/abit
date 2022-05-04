@@ -7,6 +7,7 @@ export default function esbuild() {
     .src('src/js/*.js')
     .pipe(
       gulpEsbuild({
+        metafile: false, // https://www.bundle-buddy.com/esbuild
         bundle: true,
         minify: false,
         define: {global: 'window'},

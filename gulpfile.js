@@ -7,8 +7,7 @@ import clean from './gulp/clean.js';
 import html from './gulp/html.js';
 import copy from './gulp/copy.js';
 import pug2html from './gulp/pug2html.js';
-import script from './gulp/script.js';
-import esbuild from './gulp/esbuild.js';
+import script from './gulp/script.esbuild.js';
 import svelte from './gulp/svelte.js';
 import serve from './gulp/serve.js';
 
@@ -19,8 +18,8 @@ export default function defaultTask(cb) {
   cb();
 }
 
-const build = gulp.series(clean, copy, html, pug2html, svelte, esbuild);
+const build = gulp.series(clean, copy, html, pug2html, svelte, script);
 
 export const dev = gulp.series(build, serve);
 
-export {clean, copy, html, pug2html, svelte, esbuild, script, build, serve};
+export {clean, copy, html, pug2html, svelte, script, build, serve};
