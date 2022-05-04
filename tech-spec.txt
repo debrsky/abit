@@ -1,6 +1,7 @@
 Техническое задание
 
 Person
+------
 regDate date
 fio text,
 gender select(м, ж),
@@ -19,3 +20,15 @@ tel text,
 memo memo,
 contractReady,
 applications array(application)
+
+Education program
+-----------------
+
+"code": "БУ",
+"speciality": "38.02.01 Экономика и бухгалтерский учет",
+"qualification": "бухгалтер",
+"eduForm": "очная",
+"baseEduLevel": "11 классов",
+"duration": "1 год 10 месяцев",
+"finSource": "бюджет",
+"placesNumber": "25",

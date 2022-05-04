@@ -1,14 +1,14 @@
-import gulp from "gulp";
-import rollup from "@rollup/stream";
-import {terser} from "rollup-plugin-terser";
+import gulp from 'gulp';
+import rollup from '@rollup/stream';
+import {terser} from 'rollup-plugin-terser';
 import polyfillNode from 'rollup-plugin-polyfill-node';
-import {nodeResolve} from "@rollup/plugin-node-resolve";
+import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import sourcemaps from "gulp-sourcemaps";
-import source from "vinyl-source-stream";
-import buffer from "vinyl-buffer";
-import glob from "glob";
-import path from "path";
+import sourcemaps from 'gulp-sourcemaps';
+import source from 'vinyl-source-stream';
+import buffer from 'vinyl-buffer';
+import glob from 'glob';
+import path from 'path';
 
 const OUTPUT_DIR = 'public/js';
 
@@ -16,7 +16,7 @@ const OUTPUT_DIR = 'public/js';
 // https://github.com/rollup/stream#caching
 
 export default function script() {
-  const files = glob.sync("src/js/*.js", {});
+  const files = glob.sync('src/js/*.js', {});
 
   return Promise.all(
     files.map((file) => {
@@ -26,9 +26,9 @@ export default function script() {
           input: file,
           output: {
             // https://stackoverflow.com/questions/57556471/convert-kebab-case-to-camelcase-with-javascript
-            name: filename.replace(/-./g, x=>x[1].toUpperCase()),
+            name: filename.replace(/-./g, (x) => x[1].toUpperCase()),
             sourcemap: true,
-            format: "iife",
+            format: 'iife',
             plugins: [terser()]
           },
           plugins: [
@@ -38,7 +38,7 @@ export default function script() {
             nodeResolve({
               preferBuiltins: true,
               browser: true,
-              dedupe: ['readable-stream']
+              dedupe: ['readable-stream', 'memdown']
             })
           ]
         })
@@ -57,12 +57,12 @@ export default function script() {
           // .pipe(rename('index.js'))
 
           // write the sourcemap alongside the output file.
-          .pipe(sourcemaps.write("."))
+          .pipe(sourcemaps.write('.'))
 
           // and output to ./dist/main.js as normal.
           .pipe(gulp.dest(OUTPUT_DIR))
-          .on("error", (err) => reject(err))
-          .on("finish", () => resolve());
+          .on('error', (err) => reject(err))
+          .on('finish', () => resolve());
       });
     })
   );

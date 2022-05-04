@@ -1,20 +1,36 @@
-export function createElement (html) {
+export function createElement(html) {
   const elem = document.createElement('div');
   elem.insertAdjacentHTML('afterbegin', html);
   return elem.firstElementChild;
 }
 
-export function throttle(callee, timeout) {
-  let timer = null
+export function fillForm(formElem, data) {
+  for (const [key, value] of Object.entries(data)) {
+    if (typeof value === 'string') {
+      const name = camelToKebab(key);
+      const elem = formElem.elements[name];
+      if (!elem) continue;
 
-  return function perform(...args) {
-    if (timer) return
+      elem.value = value;
+      continue;
+    }
 
-    timer = setTimeout(() => {
-      callee(...args)
+    if (typeof value === 'number') {
+      continue;
+    }
 
-      clearTimeout(timer)
-      timer = null
-    }, timeout)
+    // FIXME доделать для разных типов
   }
+}
+
+// https://stackoverflow.com/questions/63116039/camelcase-to-kebab-case
+function camelToKebab(str) {
+  return str
+    .split('')
+    .map((letter, idx) => {
+      return letter.toUpperCase() === letter
+        ? `${idx !== 0 ? '-' : ''}${letter.toLowerCase()}`
+        : letter;
+    })
+    .join('');
 }

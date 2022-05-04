@@ -19,11 +19,15 @@ outputElem.addEventListener('click', (event) => {
 let items = [];
 
 (async () => {
+  console.log('query');
   console.time('0');
-  const dbDocs = await db.allDocs({
+  const dbDocs = await db.query('abits', {
     include_docs: true,
     attachments: true
   });
+
+  console.log(dbDocs);
+
   console.timeEnd('0');
 
   const abits = dbDocs.rows.map((row) => row.doc);
@@ -31,8 +35,8 @@ let items = [];
   console.time('1');
   items = abits
     .sort((a, b) => {
-      const a0 = a.fio,
-        b0 = b.fio;
+      const a0 = a.fio;
+      const b0 = b.fio;
       if (a0 < b0) return -1;
       if (a0 > b0) return 1;
       return 0;

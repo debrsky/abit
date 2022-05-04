@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Образовательные программы</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: inherit;
+      }
+      html {
+        background-color: grey;
+        box-sizing: border-box;
+      }
+      body {
+        width: 968px;
+        background-color: white;
+      }
+      .field {
+        padding: 0.2em;
+        outline: 1px solid red;
+        flex-shrink: 0;
+        flex-grow: 0;
+      }
+      .edu-prog-view {
+        display: flex;
+        width: 100%;
+        max-width: 100%;
+        padding: 0.25em;
+      }
+      .edu-prog-view__code {
+        width: 10ch;
+      }
+      .edu-prog-view__speciality {
+        flex-grow: 1;
+        flex-shrink: 1;
+      }
+      .edu-prog-view__qualification {
+        width: 30ch;
+      }
+      .edu-prog-view__qualification {
+        width: 20ch;
+      }
+      .edu-prog-view__edu-form {
+        width: 10ch;
+      }
+      .edu-prog-view__base-edu-level {
+        width: 10ch;
+      }
+      .edu-prog-view__duration {
+        width: 16ch;
+      }
+      .edu-prog-view__fin-source {
+        width: 11ch;
+      }
+      .edu-prog-view__places-number {
+        width: 5ch;
+      }
+
+      /**
+      * 1. Make the dialog container, and its child overlay spread across
+      *    the entire window.
+      */
+      .dialog-container,
+      .dialog-overlay {
+        position: fixed; /* 1 */
+        top: 0; /* 1 */
+        right: 0; /* 1 */
+        bottom: 0; /* 1 */
+        left: 0; /* 1 */
+      }
+
+      /**
+      * 1. Make sure the dialog container and all its descendants sits on
+      *    top of the rest of the page.
+      * 2. Make the dialog container a flex container to easily center the
+      *    dialog.
+      */
+      .dialog-container {
+        z-index: 2; /* 1 */
+        display: flex; /* 2 */
+      }
+
+      /**
+      * 1. Make sure the dialog container and all its descendants are not
+      *    visible and not focusable when it is hidden.
+      */
+      .dialog-container[aria-hidden='true'] {
+        display: none; /* 1 */
+      }
+
+      /**
+      * 1. Make the overlay look like an overlay.
+      */
+      .dialog-overlay {
+        background-color: rgba(43, 46, 56, 0.9); /* 1 */
+      }
+
+      /**
+      * 1. Vertically and horizontally center the dialog in the page.
+      * 2. Make sure the dialog sits on top of the overlay.
+      * 3. Make sure the dialog has an opaque background.
+      */
+      .dialog-content {
+        margin: auto; /* 1 */
+        z-index: 2; /* 2 */
+        position: relative; /* 2 */
+        background-color: white; /* 3 */
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Образовательные программы</h2>
+    <div>
+      <button id="btn-dialog" type="button">Диалог</button>
+    </div>
+    <main>
+      <div id="edu-prog-list"></div>
+    </main>
+
+    <!-- 1. The dialog container -->
+    <div
+      class="dialog-container"
+      id="edu-prog-dialog"
+      aria-labelledby="your-dialog-title-id"
+      aria-hidden="true"
+    >
+      <!-- 2. The dialog overlay -->
+      <div class="dialog-overlay" data-a11y-dialog-no-hide></div>
+      <!-- 3. The actual dialog -->
+      <div class="dialog-content" role="document">
+        <!-- 4. The close button -->
+        <button type="button" data-a11y-dialog-hide aria-label="Close dialog">
+          &times;
+        </button>
+        <!-- 5. The dialog title -->
+        <h1 id="your-dialog-title-id">Your dialog title</h1>
+        <!-- 6. Dialog content -->
+        <form class="edu-prog-form">
+          <div class="edu-prog-form__code">
+            <label class="field">
+              <span class="field__title">Код образовательной программы</span>
+              <input
+                class="field__input"
+                name="code"
+                type="text"
+                value="БУ"
+                size="15"
+              />
+            </label>
+          </div>
+          <div class="edu-prog-form__speciality">
+            <label class="field">
+              <span class="field__title">Специальность</span>
+              <input
+                class="field__input"
+                name="speciality"
+                type="text"
+                size="50"
+                value="38.02.01 Экономика и бухгалтерский учет"
+              />
+            </label>
+          </div>
+          <div class="field edu-prog-form__qualification">
+            <label>
+              <span class="field__title">Квалификация</span>
+              <input
+                class="field__input"
+                name="qualification"
+                type="text"
+                value="бухгалтер"
+              />
+            </label>
+          </div>
+          <div class="edu-prog-form__edu-form">
+            <label class="field">
+              <span class="field__title">Форма обучения</span>
+              <input
+                class="field__input"
+                name="edu-form"
+                type="text"
+                value="очная"
+              />
+            </label>
+          </div>
+          <div class="edu-prog-form__base-edu-level">
+            <label class="field">
+              <span class="field_title">Базовое образование</span>
+              <input
+                class="field__input"
+                type="text"
+                name="base-edu-level"
+                value="11 классов"
+              />
+            </label>
+          </div>
+          <div class="edu-prog-form__duration">
+            <label class="field">
+              <span class="field__title">Продолжительность обучения</span>
+              <input
+                class="field__input"
+                type="text"
+                name="duration"
+                value="1 год 10 месяцев"
+              />
+            </label>
+          </div>
+          <div class="edu-prog-form__fin-source">
+            <label class="field">
+              <span class="field__title">Источник финансирования</span>
+              <input
+                class="field__input"
+                type="text"
+                name="fin-source"
+                value="бюджет"
+              />
+            </label>
+          </div>
+          <div class="edu-prog-form__places-number">
+            <label class="field">
+              <span class="field__title">Количество мест</span>
+              <input
+                class="field__input"
+                type="text"
+                name="places-number"
+                value="25"
+              />
+            </label>
+          </div>
+          <hr />
+          <div style="display: flex">
+            <button type="button">Сохранить и закрыть</button>
+            <button type="button">Закрыть без сохранения</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="js/edu-progs.js"></script>
+  </body>
+</html>

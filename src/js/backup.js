@@ -1,6 +1,8 @@
 import PouchDB from 'pouchdb';
 
 const DB_NAME = 'my_database';
+let db = new PouchDB(DB_NAME);
+let remoteDB = new PouchDB(`http://localhost:5984/${DB_NAME}`);
 
 const input = document.forms.form.file;
 const selectFileHandler = (event) => {
@@ -8,7 +10,23 @@ const selectFileHandler = (event) => {
   const reader = new FileReader();
   reader.addEventListener('load', async () => {
     const data = JSON.parse(reader.result);
-    await importDocs(data.abits);
+
+    await createDb();
+    db.replicate.to(remoteDB, {live: true, retry: true});
+
+    await db.bulkDocs(data.abits);
+    await db.bulkDocs(data.eduProgs);
+
+    const docs = await db.query(
+      function (doc, emit) {
+        if (doc.type === 'edu-prog') {
+          emit(doc.code, null);
+        }
+      },
+      {include_docs: false}
+    );
+    console.log(docs);
+
     event.target.value = null;
   });
   reader.readAsText(file);
@@ -16,16 +34,50 @@ const selectFileHandler = (event) => {
 
 input.addEventListener('change', selectFileHandler);
 
-async function importDocs(docs) {
-  let db = new PouchDB(DB_NAME);
+async function createDb() {
   await db.destroy();
   db = new PouchDB(DB_NAME);
-  await db.bulkDocs(docs);
 
-  const dbDocs = await db.allDocs({
-    include_docs: true,
-    attachments: true
-  });
+  await remoteDB.destroy();
+  remoteDB = new PouchDB(`http://localhost:5984/${DB_NAME}`);
 
-  console.log(dbDocs);
+  await createEduProgsView(db);
+  await createAbitsView(db);
+}
+
+async function createEduProgsView(db) {
+  // eslint-disable-next-line no-shadow
+  const eduProgs = {
+    _id: '_design/eduProgs',
+    views: {
+      eduProgs: {
+        map: function mapFun(doc) {
+          if (doc.type === `edu-prog`) {
+            // eslint-disable-next-line no-undef
+            emit(doc.code, null);
+          }
+        }.toString()
+      }
+    }
+  };
+
+  return await db.put(eduProgs);
+}
+
+async function createAbitsView(db) {
+  const abits = {
+    _id: '_design/abits',
+    views: {
+      abits: {
+        map: function mapFun(doc) {
+          if (doc.type === `abit`) {
+            // eslint-disable-next-line no-undef
+            emit(doc.fio, null);
+          }
+        }.toString()
+      }
+    }
+  };
+
+  return await db.put(abits);
 }
