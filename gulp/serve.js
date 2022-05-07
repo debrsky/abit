@@ -26,6 +26,7 @@ export default function serve() {
     notify: false,
     open: true,
     cors: true,
+    ghostMode: false,
     // ui: false
     ui: {
       port: 3080

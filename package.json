@@ -47,6 +47,7 @@
     "@types/pouchdb": "^6.4.0",
     "a11y-dialog": "^7.4.0",
     "autoprefixer": "^10.4.7",
+    "deep-object-diff": "^1.1.7",
     "events": "^3.3.0",
     "gulp-plumber": "^1.2.1",
     "gulp-postcss": "^9.0.1",

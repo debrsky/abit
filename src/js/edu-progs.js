@@ -1,28 +1,20 @@
 import {setFormData, getFormData} from './utils/index.js';
 import {createEduProgViewElemFromTemplate} from './edu-prog-view.js';
 import A11yDialog from 'a11y-dialog';
+import {
+  diff
+  // addedDiff,
+  // deletedDiff,
+  // updatedDiff,
+  // detailedDiff
+} from 'deep-object-diff';
 
 import {db} from './db/index.js';
 
-let items = [];
 let eduProgs = [];
 
 const outputElem = document.getElementById('edu-prog-list');
 const eduProgViewTemplateElem = document.getElementById('edu-prog-view');
-
-const openEditForm = async (elem) => {
-  const target = elem.closest('.edu-prog-view');
-  if (!target) return;
-
-  const id = target.dataset.id;
-
-  const eduProg = eduProgs.find((el) => el._id === id);
-
-  const {ok, data} = await dialog(eduProg);
-  if (ok) {
-    await db.put(data);
-  }
-};
 
 outputElem.addEventListener('dblclick', async (event) => {
   await openEditForm(event.target);
@@ -44,26 +36,68 @@ outputElem.addEventListener('keydown', async (event) => {
   }
 });
 
+document.documentElement.addEventListener('keydown', async (event) => {
+  if (event.code === 'Insert') {
+    await openEditForm(null);
+  }
+});
+
+const dbChangeHandlers = {
+  handlers: [],
+  subscribe(handler) {
+    this.handlers.push(handler);
+  },
+  unsubscribe(handler) {
+    const idx = this.handlers.findIndex((el) => el === handler);
+    if (idx === -1) return;
+    this.handlers.splice(idx, 1);
+  },
+  handle(change) {
+    this.handlers.forEach((handler) => handler(change));
+  }
+};
+
 function changeListHandler(change) {
   console.log('****************');
   console.log(change);
   const id = change.id;
-  const eduProg = eduProgs.find((el) => el._id === id);
+
+  let eduProgIdx = eduProgs.findIndex((el) => el._id === id);
+  let eduProg;
+
+  if (eduProgIdx === -1) {
+    eduProg = change.doc;
+    eduProgs.unshift(eduProg);
+    eduProgIdx = 0;
+  } else {
+    eduProg = eduProgs[eduProgIdx];
+  }
+
+  console.assert(eduProg);
+
+  const target = outputElem.querySelector(`[data-id="${id}"]`);
+
+  if (change.deleted) {
+    target?.remove();
+    eduProgs.splice(eduProgIdx, 1);
+    return;
+  }
+
   Object.assign(eduProg, change.doc);
   const elem = createEduProgViewElemFromTemplate(
     eduProgViewTemplateElem,
     eduProg
   );
 
-  const target = outputElem.querySelector(`[data-id="${id}"]`);
-  target.replaceWith(elem);
+  if (target) {
+    target.replaceWith(elem);
+  } else {
+    outputElem.prepend(elem);
+    elem.focus();
+  }
 }
 
-const changeHandlers = [changeListHandler];
-
-function handleChange(change) {
-  changeHandlers.forEach((handler) => handler(change));
-}
+dbChangeHandlers.subscribe(changeListHandler);
 
 db.changes({
   filter: function (doc) {
@@ -74,7 +108,7 @@ db.changes({
   include_docs: true,
   conflicts: true
 })
-  .on('change', handleChange)
+  .on('change', (change) => dbChangeHandlers.handle(change))
   .on('error', function (err) {
     console.log(err);
   });
@@ -102,7 +136,8 @@ db.changes({
   eduProgs = dbDocs.rows.map((row) => row.doc);
 
   console.time('1');
-  items = eduProgs
+
+  const eduProgElems = eduProgs
     .sort((a, b) => {
       const a0 = a.code;
       const b0 = b.code;
@@ -110,14 +145,17 @@ db.changes({
       if (a0 > b0) return 1;
       return 0;
     })
-    .map((eduProg) =>
-      createEduProgViewElemFromTemplate(eduProgViewTemplateElem, eduProg)
-    );
+    .map((eduProg) => {
+      return createEduProgViewElemFromTemplate(
+        eduProgViewTemplateElem,
+        eduProg
+      );
+    });
 
   const chunkSize = 150;
   let idx = 0;
-  while (idx <= items.length) {
-    const chunk = items.slice(idx, idx + chunkSize);
+  while (idx <= eduProgElems.length) {
+    const chunk = eduProgElems.slice(idx, idx + chunkSize);
     outputElem.append(...chunk);
 
     await new Promise((resolve) => setTimeout(resolve));
@@ -128,56 +166,93 @@ db.changes({
   console.timeEnd('1');
 })();
 
-// Dialog
-async function dialog(eduProg) {
-  const eduProgDialogTemplateElem = document.getElementById('edu-prog-dialog');
+//
+function createDialog(eduProg) {
+  const template = document.getElementById('edu-prog-dialog');
   const elem = document.createElement('div');
-  elem.append(eduProgDialogTemplateElem.content.cloneNode(true));
-  const eduProgDialogElem = elem.firstElementChild;
+  elem.append(template.content.cloneNode(true));
+  const dialogElem = elem.firstElementChild;
 
-  document.body.append(eduProgDialogElem);
+  document.body.append(dialogElem);
 
-  const eduProgDialogFormElem = eduProgDialogElem.querySelector('form');
-  const eduProgDialog = new A11yDialog(eduProgDialogElem);
+  const form = dialogElem.querySelector('form');
+  const btnDuplicate = form.querySelector('.edu-prog-form__btn--duplicate');
 
-  eduProgDialogFormElem.addEventListener('submit', (event) => {
+  const eduProgDialog = new A11yDialog(dialogElem);
+
+  // Duplicate button handler
+  form.addEventListener('click', (event) => {
+    if (event.target === btnDuplicate && form.reportValidity()) {
+      dialogElem.dataset.duplicate = true;
+      form.requestSubmit();
+    }
+  });
+
+  // Ok handler
+  form.addEventListener('submit', (event) => {
     event.preventDefault();
     eduProgDialog.hide();
   });
 
-  setFormData(eduProgDialogFormElem, eduProg);
+  if (!eduProg._id) {
+    // New
+    btnDuplicate.disabled = true;
+    const deletedElem = form.querySelector('[name="_deleted"]');
+    if (deletedElem) deletedElem.disabled = true;
 
+    form.dataset.status = 'new';
+  }
+
+  return {eduProgDialog, dialogElem, form};
+}
+
+// Dialog
+async function dialog(eduProg) {
+  const {eduProgDialog, dialogElem, form} = createDialog(eduProg);
+
+  // db change handler for dialog
   const changeDialogHandler = (change) => {
     const id = eduProg._id;
     if (change.id === id) {
-      console.log('dialog handler', id);
-      setFormData(eduProgDialogFormElem, change.doc);
+      setFormData(form, change.doc);
     }
   };
+  dbChangeHandlers.subscribe(changeDialogHandler);
 
-  changeHandlers.push(changeDialogHandler);
+  setFormData(form, eduProg);
 
   return await new Promise((resolve, reject) => {
-    eduProgDialogElem.addEventListener(
+    // close dialog handler
+    dialogElem.addEventListener(
       'hide',
       (event) => {
         const detailTarget = event.detail?.currentTarget;
 
-        // Esc
+        if (dialogElem.dataset.duplicate) {
+          // Duplicate
+          const data = getFormData(form);
+          delete data._id;
+          delete data._rev;
+
+          return resolve({ok: true, reason: 'Duplicate', data});
+        }
+
         if (detailTarget === document) {
+          // Esc
           return resolve({ok: false, reason: 'Esc'});
         }
 
         if (detailTarget?.matches('button[data-a11y-dialog-hide]')) {
+          // Cancel button
           return resolve({ok: false, reason: 'a11y-dialog-hide'});
         }
 
-        // submit
         if (detailTarget === undefined) {
+          // Submit
           return resolve({
             ok: true,
             reason: 'submit',
-            data: getFormData(eduProgDialogFormElem)
+            data: getFormData(form)
           });
         }
       },
@@ -186,13 +261,46 @@ async function dialog(eduProg) {
 
     eduProgDialog.show();
   }).finally(() => {
-    eduProgDialogElem.remove();
-
-    const idx = changeHandlers.findIndex(
-      (handler) => handler === changeDialogHandler
-    );
-    changeHandlers.splice(idx, 1);
+    dialogElem.remove();
+    eduProgDialog.destroy();
+    dbChangeHandlers.unsubscribe(changeDialogHandler);
   });
 }
 
-console.log('It works.');
+async function openEditForm(elem) {
+  const target = elem?.closest('.edu-prog-view');
+
+  let id;
+  let eduProg;
+
+  if (!target) {
+    // New
+    id = '';
+    eduProg = {type: 'edu-prog'};
+  } else {
+    // Edit
+    id = target.dataset.id;
+    eduProg = eduProgs.find((el) => el._id === id);
+  }
+
+  console.assert(Boolean(eduProg));
+
+  // Open dialog
+  const {ok, reason, data} = await dialog(eduProg);
+  console.log({ok, reason, data});
+
+  if (ok) {
+    const diffObject = diff(eduProg, data);
+
+    // No changes
+    if (Object.keys(diffObject).length === 0) return;
+
+    if (data._id) {
+      // Edit
+      await db.put(data);
+    } else {
+      // New
+      await db.post(data);
+    }
+  }
+}
