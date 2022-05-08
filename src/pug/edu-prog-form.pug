@@ -11,23 +11,36 @@ div(style="display: flex;")
     .edu-prog-form__qualification
       label.field
         span.field__title Квалификация
-        input.field__input(name="qualification", type="text", value="")
+        input.field__input(name="qualification", type="text", size="50", value="")
     .edu-prog-form__edu-form
       label.field
         span.field__title Форма обучения
-        input.field__input(name="edu-form", type="text", value="")
+        select.field_select(name="edu-form", value="")
+          option(value="очная") очная
+          option(value="заочна") заочна
+        //- input.field__input(name="edu-form", type="text", value="")
     .edu-prog-form__base-edu-level
       label.field
         span.field_title Базовое образование
-        input.field__input(type="text", name="base-edu-level", value="")
+        select.field__select(name="base-edu-level", value="")
+          option(value="11 классов") 11 классов
+          option(value="9 классов") 9 классов
+        //- input.field__input(type="text", name="base-edu-level", value="")
     .edu-prog-form__duration
       label.field
         span.field__title Продолжительность обучения
-        input.field__input(type="text", name="duration", value="")
+        select.field__select(name="duration", value="")
+          option(value="1 год 10 месяцев") 1 год 10 месяцев
+          option(value="2 года 10 месяцев") 2 года 10 месяцев
+          option(value="3 года 10 месяцев") 3 года 10 месяцев
+        //- input.field__input(type="text", name="duration", value="")
     .edu-prog-form__fin-source
       label.field
         span.field__title Источник финансирования
-        input.field__input(type="text", name="fin-source", value="")
+        select.field__select(name="fin-source", value="")
+          option(value="бюджет") бюджет
+          option(value="внебюджет") внебюджет
+        //- input.field__input(type="text", name="fin-source", value="")
     .edu-prog-form__places-number
       label.field
         span.field__title Количество мест
