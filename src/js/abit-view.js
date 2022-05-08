@@ -18,7 +18,9 @@ export function createAbitViewElem({
   tel,
   memo,
   contractReady,
-  applications
+  applications,
+  _id,
+  _rev
 } = {}) {
   const totalScoreNum =
     totalScore ??
@@ -27,7 +29,7 @@ export function createAbitViewElem({
   const totalScoreNumFixed = parseFloat(totalScoreNum.toFixed(2));
 
   const html = `
-  <div class="abit-view">
+  <div class="abit-view" data-id="${_id}" data-rev="${_rev}">
     <div class="field abit-view__reg-date">${regDate}</div>
     <div class="field abit-view__gender emoji">${
       {м: '♂️', ж: '♀️'}[gender] ?? '-'

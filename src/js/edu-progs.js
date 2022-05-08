@@ -1,6 +1,6 @@
 import {setFormData, getFormData} from './utils/index.js';
 import {createEduProgViewElemFromTemplate} from './edu-prog-view.js';
-import A11yDialog from 'a11y-dialog';
+import A11yDialog from 'a11y-dialog'; // TODO https://github.com/Ghosh/micromodal
 import {
   diff
   // addedDiff,
