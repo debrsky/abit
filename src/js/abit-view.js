@@ -1,61 +1,59 @@
-import {createElement} from './utils/index.js';
+import {createElementFromTemplate, kebabToCamel} from './utils/index.js';
 
-export function createAbitViewElem({
-  regDate,
-  fio,
-  gender,
-  certScore,
-  extraScore,
-  totalScore,
-  hasEduCertOriginal,
-  hasMedicalCert,
-  hasFluoro,
-  hasVaccine,
-  needDorm,
-  school,
-  schoolYear,
-  address,
-  tel,
-  memo,
-  contractReady,
-  applications,
-  _id,
-  _rev
-} = {}) {
-  const totalScoreNum =
-    totalScore ??
-    (parseFloat(certScore.replace(',', '.')) || 0) +
-      (parseFloat(extraScore.replace(',', '.')) || 0);
-  const totalScoreNumFixed = parseFloat(totalScoreNum.toFixed(2));
+export function createAbitViewElemFromTemplate(tmplElem, data) {
+  const abitViewElem = createElementFromTemplate(tmplElem);
 
-  const html = `
-  <div class="abit-view" data-id="${_id}" data-rev="${_rev}">
-    <div class="field abit-view__reg-date">${regDate}</div>
-    <div class="field abit-view__gender emoji">${
-      {м: '♂️', ж: '♀️'}[gender] ?? '-'
-    }</div>
-    <div class="field abit-view__fio">${fio}</div>
-    <div class="field-container">
-      <div class="field abit-view__cert-score">${certScore}</div>
-      <div class="field abit-view__extra-score">${extraScore}</div>
-      <div class="field abit-view__total-score">=${totalScoreNumFixed}</div>
-    </div>
-    <div class="field-container">
-      <div class="field abit-view__has-edu-cert-original">☑️</div>
-      <div class="field abit-view__has-medical-cert">✅</div>
-      <div class="field abit-view__has-fluoro">🗹</div>
-      <div class="field abit-view__has-vaccine">✔️</div>
-    </div>
-    <div class="field abit-view__address">${address}</div>
-    <div class="field abit-view__tel">${tel}</div>
-    <div class="field abit-view__need-dorm">🏨</div>
-    <div class="field-container">
-      <div class="field abit-view__school-year">${schoolYear}</div>
-      <div class="field abit-view__school">${school}</div>
-    </div>
-    <div class="field abit-view__contract-ready">✅</div>
-  </div>
-`;
+  for (const elem of abitViewElem.querySelectorAll(`[name]`)) {
+    const key = kebabToCamel(elem.getAttribute('name'));
+    if (data[key]) elem.textContent = data[key];
+  }
 
-  return createElement(html);
+  const idElem = abitViewElem;
+  const id = data.id ?? data._id;
+  if (idElem && id) idElem.dataset.id = id;
+
+  const genderElem = abitViewElem.querySelector('.abit-view__gender');
+  genderElem.textContent = data.gender === 'м' ? '♂️' : '♀️';
+
+  const needDormElem = abitViewElem.querySelector('.abit-view__need-dorm');
+  switch (Number(data.needDorm)) {
+    case 0:
+      needDormElem.textContent = '';
+      break;
+    case 1:
+      needDormElem.textContent = '🏨';
+      needDormElem.style.fontSize = '0.5em';
+      break;
+    case 2:
+      needDormElem.textContent = '🏨';
+      needDormElem.style.fontSize = '1em';
+      break;
+    default:
+      needDormElem.textContent = '<?>';
+  }
+
+  const applicationsListElem = abitViewElem.querySelector(
+    '.abit-view__applications-list'
+  );
+
+  applicationsListElem.replaceChildren();
+
+  data.applications.forEach((app) => {
+    const elem = document.createElement('span');
+    elem.innerHTML = `${app.eduProg}<span class="abit-view__application-grade">${app.grade}<span>`;
+    elem.classList.add('abit-view__application');
+
+    elem.setAttribute('title', app.grade);
+
+    if (app.priority) elem.classList.add('abit-view__application--priority');
+    if (app.disabled) elem.classList.add('abit-view__application--disabled');
+
+    if (app.priority) {
+      applicationsListElem.append(elem);
+    } else {
+      applicationsListElem.prepend(elem);
+    }
+  });
+
+  return abitViewElem;
 }

@@ -1,10 +1,63 @@
 .abit-view {
-  display: flex;
-  padding: 0.25em 0;
+  display: block;
+  padding: 0.5em 0;
 }
+
 .abit-view:not(:last-of-type) {
+  border-radius: 0.5em;
   border-bottom: 1px solid grey;
+  margin-bottom: 0.5em;
 }
 .abit-view__fio {
   font-weight: 700;
+  margin-right: auto;
+}
+
+.abit-view__address {
+  margin-right: auto;
+}
+
+.abit-view__need-dorm {
+  display: inline-flex;
+  place-content: center;
+  place-items: center;
+  min-width: 2rem;
+  flex-shrink: 0;
+}
+
+.abit-view__applications-list {
+  display: inline-flex;
+  place-content: center;
+  place-items: center;
+  font-size: 0.8rem;
+}
+
+.abit-view__applications-list:empty {
+  display: none;
+}
+
+.abit-view__application {
+  font-size: inherit;
+  margin: 0 0.2ch 0;
+  padding: 0.2em;
+  border-radius: 5px;
+
+  font-weight: bold;
+  background-color: lightgrey;
+}
+.abit-view__application:not(.abit-view__application--priority) {
+  color: darkgrey;
+}
+.abit-view__application--priority {
+  background-color: lightpink;
+}
+.abit-view__application--disabled {
+  text-decoration: line-through;
+}
+
+.abit-view__application-grade {
+  font-size: x-small;
+  margin-left: 0.3ch;
+  position: relative;
+  bottom: -3px;
 }

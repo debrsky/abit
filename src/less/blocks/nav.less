@@ -25,11 +25,11 @@
   margin-right: auto;
 }
 
-.nav__item--home::before {
+.nav__item--home .nav__link::before {
   content: '☕'; /* '🙋🏻‍♂️'; */
   margin-right: 0.2ch;
   position: relative;
-  top: 2px;
+  top: -2px;
 }
 
 .nav__item:hover {
@@ -43,7 +43,7 @@
   margin: auto;
 }
 
-.nav__link::before {
+.nav__link::after {
   content: '';
   position: absolute;
   left: 0;

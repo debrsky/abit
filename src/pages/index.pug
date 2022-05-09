@@ -1,0 +1,19 @@
+extends ../pug/layout.pug
+
+mixin item(link)
+  li
+    a(href=link)=link
+
+block content
+  ul
+    -
+      const links = [
+        'edu-prog-form.html',
+        'edu-prog-view.html',
+        'edu-progs.html',
+        'abit-view.html',
+        'abit-view.html',
+        'backup.html'
+      ]
+    each link in links
+      +item(link)

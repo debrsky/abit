@@ -1,0 +1,11 @@
+extends ../pug/layout.pug
+
+block content
+  form(name="form")
+    label
+      span Импорт
+      input#file(type="file", name="file", accept="application/json")
+    button(type="button") Экспорт
+
+block assets
+  script(src="js/backup.js")

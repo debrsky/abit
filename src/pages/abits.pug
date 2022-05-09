@@ -12,9 +12,12 @@ block style
     }
 
 block content
-  h2 List
-  div
-    progress#progress(max="100", value="0", style="width: 100%")
+  progress#progress(max="100", value="0", style="width: 100%")
 
   #abit-list
+
+block assets
+  template#abit-view
+    include ../pug/includes/abit-view.pug
+
   script(src="js/abits.js")

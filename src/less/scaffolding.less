@@ -11,15 +11,29 @@
 
 html {
   box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: grey;
+  font: 16px/1.15 Arial, Helvetica, sans-serif;
+  color: #333;
+
   padding: 0;
+
+  background-color: grey;
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   padding: 0;
   margin: 0 auto;
   max-width: 968px;
+
   background-color: white;
-  color: #444;
+}
+
+main {
+  background-color: white;
+}
+
+footer {
+  margin-top: auto;
 }
