@@ -1,0 +1,20 @@
+extends ../pug/layout
+block style
+  style.
+    .dark {
+      background-color: grey;
+    }
+    #abit-list {
+      counter-reset: n;
+    }
+    details.item summary {
+      cursor: pointer;
+    }
+
+block content
+  h2 List
+  div
+    progress#progress(max="100", value="0", style="width: 100%")
+
+  #abit-list
+  script(src="js/abits.js")
