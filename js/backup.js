@@ -9369,8 +9369,6 @@
   };
   var path = document.currentScript.src.match(/^(.+)\/[^/]+$/)[1];
   var btnLoadFakeDataHandler = async (event) => {
-    if (!event.altKey || !event.ctrlKey)
-      return;
     output.append("\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430...");
     const res = await fetch(`${path}/fake-data.json`);
     if (res.ok) {
