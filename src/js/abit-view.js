@@ -5,7 +5,7 @@ export function createAbitViewElemFromTemplate(tmplElem, data) {
 
   for (const elem of abitViewElem.querySelectorAll(`[name]`)) {
     const key = kebabToCamel(elem.getAttribute('name'));
-    if (data[key]) elem.textContent = data[key];
+    elem.textContent = data[key] ?? '';
   }
 
   const idElem = abitViewElem;
@@ -21,11 +21,11 @@ export function createAbitViewElemFromTemplate(tmplElem, data) {
       needDormElem.textContent = '';
       break;
     case 1:
-      needDormElem.textContent = '🏨';
+      needDormElem.innerHTML = '<span class="emoji">🏨</span>';
       needDormElem.style.fontSize = '0.5em';
       break;
     case 2:
-      needDormElem.textContent = '🏨';
+      needDormElem.innerHTML = '<span class="emoji">🏨</span>';
       needDormElem.style.fontSize = '1em';
       break;
     default:
@@ -54,6 +54,60 @@ export function createAbitViewElemFromTemplate(tmplElem, data) {
       applicationsListElem.prepend(elem);
     }
   });
+
+  // scores
+  const scoreListElem = abitViewElem.querySelector('.abit-view__score-list');
+
+  const certScore = parseFloat(
+    (data.certScore || 0).toString().replace(',', '.')
+  );
+  const extraScore = parseFloat(
+    (data.extraScore || 0).toString().replace(',', '.')
+  );
+  const totalScore = certScore + extraScore;
+
+  scoreListElem.replaceChildren();
+
+  if (totalScore === 0) return;
+
+  if (extraScore > 0 && certScore > 0) {
+    {
+      const elem = document.createElement('span');
+      elem.classList.add('abit-view__cert-score');
+      elem.textContent = certScore.toString().replace('.', ',');
+      scoreListElem.append(elem);
+    }
+    {
+      const elem = document.createElement('span');
+      elem.classList.add('abit-view__extra-score');
+      elem.textContent = extraScore.toString().replace('.', ',');
+      scoreListElem.append('+', elem, '=');
+    }
+  }
+
+  if (totalScore > 0) {
+    const elem = document.createElement('span');
+    elem.classList.add('abit-view__total-score');
+    elem.textContent = parseFloat(totalScore.toFixed(2))
+      .toString()
+      .replace('.', ',');
+    scoreListElem.append(elem);
+  }
+
+  // --------------------
+  const hasMedicalCert = abitViewElem.querySelector(
+    '.abit-view__has-medical-cert span'
+  );
+  const hasFluoro = abitViewElem.querySelector('.abit-view__has-fluoro span');
+  const hasVaccine = abitViewElem.querySelector('.abit-view__has-vaccine span');
+  const hasEduCertOriginal = abitViewElem.querySelector(
+    '.abit-view__has-edu-cert-original span'
+  );
+
+  if (!data.hasMedicalCert) hasMedicalCert.classList.add('not-visible');
+  if (!data.hasFluoro) hasFluoro.classList.add('not-visible');
+  if (!data.hasVaccine) hasVaccine.classList.add('not-visible');
+  if (!data.hasEduCertOriginal) hasEduCertOriginal.classList.add('not-visible');
 
   return abitViewElem;
 }

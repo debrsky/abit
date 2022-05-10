@@ -9,17 +9,20 @@ article.abit-view
       span.abit-view__application СЭЗИС
       span.abit-view__application.abit-view__application--priority ПБ
 
-    .value.abit-view__cert-score 4,25
-    .value.abit-view__extra-score 0,25
-    .value.abit-view__total-score 4,5
+    .value.abit-view__score-list
+      span.abit-view__cert-score(name="cert-score") 4,25
+      | +
+      span.abit-view__extra-score(name="extra-score") 0,7
+      | =
+      span.abit-view__total-score(name="total-score") 4,5
 
-    .value.abit-view__has-edu-cert-original ☑️
-    .value.abit-view__has-medical-cert ✅
-    .value.abit-view__has-fluoro 🗹
-    .value.abit-view__has-vaccine ✔️
+    .value.abit-view__has-medical-cert #[span.emoji ⚕️]
+    .value.abit-view__has-fluoro #[span.emoji &#129729;]
+    .value.abit-view__has-vaccine #[span.emoji 💉]
+    .value.abit-view__has-edu-cert-original #[span.emoji ✔️]
 
   .container(style="display: flex;")
-    .value.abit-view__need-dorm 🏨
+    .value.abit-view__need-dorm #[span.emoji 🏨]
     .value.abit-view__address #[span(name="address") Республика Саха (Якутия) Хангаласский улус]
     .value.abit-view__tel #[span(name="tel") +79243212565]
 

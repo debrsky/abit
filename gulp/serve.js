@@ -1,6 +1,7 @@
 import gulp from 'gulp';
 import browserSync from 'browser-sync';
 
+import copy from './copy.js';
 import html from './html.js';
 import pug2html from './pug2html.js';
 import svelte from './svelte.esbuild.js';
@@ -33,6 +34,7 @@ export default function serve() {
     }
   });
 
+  gulp.watch(`src/**/*.{ttf,json}`, gulp.series(copy, readyFullReload));
   gulp.watch(`src/**/*.html`, gulp.series(html, readyFullReload));
   gulp.watch(
     `src/js/svelte/**/*.{svelte,js}`,

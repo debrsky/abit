@@ -2,9 +2,11 @@ import PouchDB from 'pouchdb';
 
 const DB_NAME = 'my_database';
 let db = new PouchDB(DB_NAME);
-let remoteDB = new PouchDB(`http://localhost:5984/${DB_NAME}`);
 
 const input = document.forms.form.file;
+const btnLoadFakeData = document.getElementById('load-fake-data');
+const output = document.getElementById('output');
+
 const selectFileHandler = (event) => {
   const [file] = event.target.files;
   const reader = new FileReader();
@@ -12,34 +14,46 @@ const selectFileHandler = (event) => {
     const data = JSON.parse(reader.result);
 
     await createDb();
-    db.replicate.to(remoteDB, {live: true, retry: true});
 
     await db.bulkDocs(data.abits);
     await db.bulkDocs(data.eduProgs);
-
-    const docs = await db.query(
-      function (doc, emit) {
-        if (doc.type === 'edu-prog') {
-          emit(doc.code, null);
-        }
-      },
-      {include_docs: false}
-    );
-    console.log(docs);
 
     event.target.value = null;
   });
   reader.readAsText(file);
 };
 
+const path = document.currentScript.src.match(/^(.+)\/[^/]+$/)[1];
+
+const btnLoadFakeDataHandler = async (event) => {
+  if (!event.altKey || !event.ctrlKey) return;
+
+  output.append('Загрузка...');
+  const res = await fetch(`${path}/fake-data.json`);
+  if (res.ok) {
+    const data = await res.json();
+
+    output.append('\nСоздание БД...');
+    await createDb();
+
+    output.append('\nДобавление абитуриентов...');
+    await db.bulkDocs(data.abits);
+    output.append(data.abits.length);
+
+    output.append('\nДобавление образовательных программ...');
+    await db.bulkDocs(data.eduProgs);
+    output.append(data.eduProgs.length);
+
+    output.append('\n∎');
+  }
+};
+
 input.addEventListener('change', selectFileHandler);
+btnLoadFakeData.addEventListener('click', btnLoadFakeDataHandler);
 
 async function createDb() {
   await db.destroy();
   db = new PouchDB(DB_NAME);
-
-  await remoteDB.destroy();
-  remoteDB = new PouchDB(`http://localhost:5984/${DB_NAME}`);
 
   await createEduProgsView(db);
   await createAbitsView(db);

@@ -1,11 +1,20 @@
 extends ../pug/layout.pug
+block style
+  style.
+    .form, .div {
+      padding: 1em;
+    }
 
 block content
-  form(name="form")
+  form.form(name="form")
     label
       span Импорт
       input#file(type="file", name="file", accept="application/json")
     button(type="button") Экспорт
 
+  .div(style="padding: 1em;")
+    button#load-fake-data(type="button") Загрузить тестовые данные
+
+  #output(style="white-space: pre;")
 block assets
   script(src="js/backup.js")
