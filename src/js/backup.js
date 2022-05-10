@@ -26,8 +26,6 @@ const selectFileHandler = (event) => {
 const path = document.currentScript.src.match(/^(.+)\/[^/]+$/)[1];
 
 const btnLoadFakeDataHandler = async (event) => {
-  if (!event.altKey || !event.ctrlKey) return;
-
   output.append('Загрузка...');
   const res = await fetch(`${path}/fake-data.json`);
   if (res.ok) {
