@@ -34,7 +34,7 @@ export default function serve() {
     }
   });
 
-  gulp.watch(`src/**/*.{ttf,json}`, gulp.series(copy, readyFullReload));
+  gulp.watch(`src/**/*.{ttf,json,txt}`, gulp.series(copy, readyFullReload));
   gulp.watch(`src/**/*.html`, gulp.series(html, readyFullReload));
   gulp.watch(
     `src/js/svelte/**/*.{svelte,js}`,
