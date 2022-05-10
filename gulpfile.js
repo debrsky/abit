@@ -12,6 +12,8 @@ import svelte from './gulp/svelte.esbuild.js';
 import serve from './gulp/serve.js';
 import less from './gulp/less.js';
 
+import ghPages from './gulp/deploy-to-gh-pages.js';
+
 process.rootDir = dirname(fileURLToPath(import.meta.url));
 
 export default function defaultTask(cb) {
@@ -22,5 +24,17 @@ export default function defaultTask(cb) {
 const build = gulp.series(clean, copy, less, html, pug2html, svelte, script);
 
 export const dev = gulp.series(build, serve);
+export const deployGh = gulp.series(build, ghPages);
 
-export {clean, copy, less, html, pug2html, svelte, script, build, serve};
+export {
+  clean,
+  copy,
+  less,
+  html,
+  pug2html,
+  svelte,
+  script,
+  build,
+  serve,
+  ghPages
+};
