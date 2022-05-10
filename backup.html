@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <title>ДВГГТК. Абитуриенты</title><!-- https://css-tricks.com/emoji-as-a-favicon/ -->
+    <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2280%22&gt;☕&lt;/text&gt;&lt;/svg&gt;">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+      .form, .div {
+        padding: 1em;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <ul class="nav__list">
+          <li class="nav__item nav__item--home"><a class="nav__link" href="/">База данных</a></li>
+          <li class="nav__item"><a class="nav__link" href="abits.html">Абитуриенты</a></li>
+          <li class="nav__item"><a class="nav__link" href="edu-progs.html">Образовательные программы</a></li>
+          <li class="nav__item"><a class="nav__link" href="backup.html">Backup</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <form class="form" name="form">
+        <label><span>Импорт</span>
+          <input id="file" type="file" name="file" accept="application/json">
+        </label>
+        <button type="button">Экспорт</button>
+      </form>
+      <div class="div" style="padding: 1em;">
+        <button id="load-fake-data" type="button">Загрузить тестовые данные</button>
+      </div>
+      <div id="output" style="white-space: pre;"></div>
+    </main>
+    <footer style="min-height: 3em; background-color: lightgrey;"></footer>
+    <script src="js/backup.js"></script>
+  </body>
+</html>

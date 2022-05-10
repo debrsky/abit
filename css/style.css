@@ -1,0 +1,349 @@
+@font-face {
+  font-family: 'twemoji mozilla';
+  src: url(../fonts/TwemojiMozilla.ttf) format('truetype');
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+html {
+  box-sizing: border-box;
+  font: 16px/1.15 Arial, Helvetica, sans-serif;
+  color: #333;
+  padding: 0;
+  background-color: grey;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 968px;
+  background-color: white;
+}
+main {
+  background-color: white;
+}
+footer {
+  margin-top: auto;
+}
+.not-visible {
+  visibility: hidden;
+}
+/**
+    * 1. Make the dialog container, and its child overlay spread across
+    *    the entire window.
+    */
+.dialog-container,
+.dialog-overlay {
+  position: fixed;
+  /* 1 */
+  top: 0;
+  /* 1 */
+  right: 0;
+  /* 1 */
+  bottom: 0;
+  /* 1 */
+  left: 0;
+  /* 1 */
+}
+/**
+    * 1. Make sure the dialog container and all its descendants sits on
+    *    top of the rest of the page.
+    * 2. Make the dialog container a flex container to easily center the
+    *    dialog.
+    */
+.dialog-container {
+  z-index: 2;
+  /* 1 */
+  display: flex;
+  /* 2 */
+}
+/**
+    * 1. Make sure the dialog container and all its descendants are not
+    *    visible and not focusable when it is hidden.
+    */
+.dialog-container[aria-hidden='true'] {
+  display: none;
+  /* 1 */
+}
+/**
+    * 1. Make the overlay look like an overlay.
+    */
+.dialog-overlay {
+  background-color: rgba(43, 46, 56, 0.9);
+  /* 1 */
+}
+/**
+    * 1. Vertically and horizontally center the dialog in the page.
+    * 2. Make sure the dialog sits on top of the overlay.
+    * 3. Make sure the dialog has an opaque background.
+    */
+.dialog-content {
+  margin: auto;
+  /* 1 */
+  z-index: 2;
+  /* 2 */
+  position: relative;
+  /* 2 */
+  background-color: white;
+  /* 3 */
+}
+.dialog-close-button {
+  position: absolute;
+  display: flex;
+  place-content: center;
+  place-items: center;
+  top: 2px;
+  right: 2px;
+  width: 1.2em;
+  height: 1.2em;
+  background-color: tomato;
+  border: 1px solid tomato;
+  border-radius: 0.3em;
+  color: white;
+  font-size: 18px;
+}
+.dialog-close-button:hover {
+  background-color: lightcoral;
+}
+.emoji {
+  font-family: apple color emoji, segoe ui emoji, noto color emoji,
+    android emoji, emojisymbols, emojione mozilla, twemoji mozilla,
+    segoe ui symbol;
+}
+.button {
+  min-height: 2em;
+  transition: transform 0.1s ease-out;
+}
+.button--primary {
+  background-color: lightseagreen;
+  border: 1px solid lightseagreen;
+  border-radius: 0.4em;
+}
+.button--primary:hover {
+  background-color: aquamarine;
+}
+.button--primary:active {
+  transform: scale(0.95);
+}
+.nav {
+  background-color: lightgrey;
+  margin-bottom: 1em;
+}
+.nav__list {
+  display: flex;
+  justify-items: flex-start;
+  align-items: stretch;
+  padding: 0;
+  margin: 0;
+  min-height: 3em;
+}
+.nav__item {
+  display: flex;
+  position: relative;
+  list-style: none;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
+  padding: 0.5em;
+}
+.nav__item--home {
+  margin-right: auto;
+}
+.nav__item--home .nav__link::before {
+  content: '☕';
+  /* '🙋🏻‍♂️'; */
+  margin-right: 0.2ch;
+  position: relative;
+  top: -2px;
+}
+.nav__item:hover {
+  background-color: tomato;
+  color: white;
+}
+.nav__link {
+  text-decoration: none;
+  color: inherit;
+  margin: auto;
+}
+.nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+.item {
+  position: relative;
+  margin: 0;
+  margin-bottom: 0.25em;
+  margin-left: 5ch;
+  padding: 0 0 0.25em;
+}
+.item:not(:last-of-type) {
+  border-bottom: 1px solid grey;
+}
+.item::before {
+  counter-increment: n;
+  content: counter(n);
+  position: absolute;
+  display: block;
+  width: 4ch;
+  text-align: right;
+  left: -5ch;
+  top: 0;
+}
+.value {
+  padding: 0.2em;
+  margin: 0.2em;
+  background-color: ghostwhite;
+  box-shadow: 0 0 10px 2px lightgray;
+}
+.abit-view {
+  display: block;
+  padding: 0.5em 0;
+}
+.abit-view:not(:last-of-type) {
+  border-radius: 0.5em;
+  border-bottom: 1px solid grey;
+  margin-bottom: 0.5em;
+}
+.abit-view__fio {
+  font-weight: 700;
+  margin-right: auto;
+}
+.abit-view__address {
+  margin-right: auto;
+}
+.abit-view__need-dorm {
+  display: inline-flex;
+  place-content: center;
+  place-items: center;
+  min-width: 2rem;
+  flex-shrink: 0;
+}
+.abit-view__applications-list {
+  display: inline-flex;
+  place-content: center;
+  place-items: center;
+  font-size: 0.8rem;
+}
+.abit-view__applications-list:empty {
+  display: none;
+}
+.abit-view__application {
+  font-size: inherit;
+  margin: 0 0.2ch 0;
+  padding: 0.2em;
+  border-radius: 5px;
+  font-weight: bold;
+  background-color: lightgrey;
+}
+.abit-view__application:not(.abit-view__application--priority) {
+  color: darkgrey;
+}
+.abit-view__application--priority {
+  background-color: lightpink;
+}
+.abit-view__application--disabled {
+  text-decoration: line-through;
+}
+.abit-view__application-grade {
+  font-size: x-small;
+  margin-left: 0.3ch;
+  position: relative;
+  bottom: -3px;
+}
+.abit-view__score-list {
+  font-size: small;
+}
+.abit-view__score-list span {
+  padding: 0 0.3ch 0;
+}
+.abit-view__total-score {
+  font-weight: bold;
+  font-size: 1rem;
+}
+.abit-view__has-medical-cert,
+.abit-view__has-fluoro,
+.abit-view__has-vaccine,
+.abit-view__has-edu-cert-original {
+  display: flex;
+  place-content: center;
+  place-items: center;
+  width: 3ch;
+}
+.edu-prog-view {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.25em;
+}
+.edu-prog-view:focus {
+  background-color: aquamarine;
+}
+.edu-prog-view__value {
+  background-color: lightgoldenrodyellow;
+  border-radius: 0.5em;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.edu-prog-view__value--code {
+  width: 10ch;
+}
+.edu-prog-view__value--speciality {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.edu-prog-view__value--qualification {
+  width: 30ch;
+}
+.edu-prog-view__value--qualification {
+  width: 20ch;
+}
+.edu-prog-view__value--edu-form {
+  width: 8ch;
+}
+.edu-prog-view__value--base-edu-level {
+  width: 10ch;
+}
+.edu-prog-view__value--duration {
+  width: 10ch;
+}
+.edu-prog-view__value--fin-source {
+  width: 11ch;
+}
+.edu-prog-view__value--places-number {
+  width: 5ch;
+}
+.edu-prog-form {
+  display: flex;
+  flex-direction: column;
+}
+.edu-prog-form[data-status='new'] {
+  background-color: lightgoldenrodyellow;
+}
+.edu-prog-form__btn-panel {
+  display: flex;
+  gap: 1ch;
+  justify-content: flex-end;
+  padding: 1ch;
+  border-top: 1px solid lightgrey;
+}
+.field {
+  padding: 0.25em;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1ch;
+}
+.field__title {
+  width: initial;
+}
+.field-container {
+  display: flex;
+}
+
+/*# sourceMappingURL=style.css.map */

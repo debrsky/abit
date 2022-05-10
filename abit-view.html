@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <title>ДВГГТК. Абитуриенты</title><!-- https://css-tricks.com/emoji-as-a-favicon/ -->
+    <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2280%22&gt;☕&lt;/text&gt;&lt;/svg&gt;">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <ul class="nav__list">
+          <li class="nav__item nav__item--home"><a class="nav__link" href="/">База данных</a></li>
+          <li class="nav__item"><a class="nav__link" href="abits.html">Абитуриенты</a></li>
+          <li class="nav__item"><a class="nav__link" href="edu-progs.html">Образовательные программы</a></li>
+          <li class="nav__item"><a class="nav__link" href="backup.html">Backup</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <article class="abit-view">
+        <div class="container" style="display: flex;">
+          <div class="value abit-view__reg-date"><span name="reg-date">09.08.2021</span></div>
+          <div class="value abit-view__gender emoji">♂️</div>
+          <div class="value abit-view__fio"><span name="fio">Абдулаев Алексей Евгеньевич</span></div>
+          <div class="value abit-view__applications-list"><span class="abit-view__application">БУ</span><span class="abit-view__application">СЭЗИС</span><span class="abit-view__application abit-view__application--priority">ПБ</span></div>
+          <div class="value abit-view__score-list"><span class="abit-view__cert-score" name="cert-score">4,25</span>+<span class="abit-view__extra-score" name="extra-score">0,7</span>=<span class="abit-view__total-score" name="total-score">4,5</span></div>
+          <div class="value abit-view__has-medical-cert"><span class="emoji">⚕️</span></div>
+          <div class="value abit-view__has-fluoro"><span class="emoji">&#129729;</span></div>
+          <div class="value abit-view__has-vaccine"><span class="emoji">💉</span></div>
+          <div class="value abit-view__has-edu-cert-original"><span class="emoji">✔️</span></div>
+        </div>
+        <div class="container" style="display: flex;">
+          <div class="value abit-view__need-dorm"><span class="emoji">🏨</span></div>
+          <div class="value abit-view__address"><span name="address">Республика Саха (Якутия) Хангаласский улус</span></div>
+          <div class="value abit-view__tel"><span name="tel">+79243212565</span></div>
+        </div>
+        <div class="container" style="display: flex;">
+          <div class="value abit-view__school-year"><span name="school-year">2021</span></div>
+          <div class="value abit-view__school"><span name="school">МКОУ СОШ №17 с. Прохладное Надеждинского р-на</span></div>
+        </div>
+        <div class="value abit-view--memo"><span name="memo"></span></div>
+      </article>
+    </main>
+    <footer style="min-height: 3em; background-color: lightgrey;"></footer>
+  </body>
+</html>

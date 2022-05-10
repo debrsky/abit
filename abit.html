@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Абитуриенты</title>
+    <style>
+      .field {
+        padding: 0.3em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Абитуриенты</h1>
+    <p>It works.</p>
+    <hr />
+    <div id="svelte"></div>
+    <script type="module">
+      import App from './js/svelte/comp.js';
+      const svelte = document.getElementById('svelte');
+      const app = new App({
+        target: svelte
+      });
+    </script>
+  </body>
+</html>

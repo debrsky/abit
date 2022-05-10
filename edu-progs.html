@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <title>ДВГГТК. Абитуриенты</title><!-- https://css-tricks.com/emoji-as-a-favicon/ -->
+    <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2280%22&gt;☕&lt;/text&gt;&lt;/svg&gt;">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <ul class="nav__list">
+          <li class="nav__item nav__item--home"><a class="nav__link" href="/">База данных</a></li>
+          <li class="nav__item"><a class="nav__link" href="abits.html">Абитуриенты</a></li>
+          <li class="nav__item"><a class="nav__link" href="edu-progs.html">Образовательные программы</a></li>
+          <li class="nav__item"><a class="nav__link" href="backup.html">Backup</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div id="edu-prog-list"></div>
+    </main>
+    <footer style="min-height: 3em; background-color: lightgrey;"></footer>
+    <template id="edu-prog-dialog">
+      <!-- 1. The dialog container-->
+      <div class="dialog-container" aria-labelledby="your-dialog-title-id" aria-hidden="true">
+        <!-- 2. The dialog overlay-->
+        <div class="dialog-overlay" data-a11y-dialog-no-hide></div>
+        <!-- 3. The actual dialog-->
+        <div class="dialog-content" role="document">
+          <!-- 4. The close button-->
+          <button class="dialog-close-button" type="button" data-a11y-dialog-hide aria-label="Close dialog">&times;</button>
+          <!-- 5. The dialog title-->
+          <h3>Образовательная программа</h3>
+          <!-- 6. Dialog content-->
+          <div style="display: flex;">
+            <form class="edu-prog-form" style="margin: auto;" data-status="edit">
+              <div class="edu-prog-form__code">
+                <label class="field"><span class="field__title">Код образовательной программы</span>
+                  <input class="field__input" name="code" type="text" value="" size="15" autofocus required>
+                </label>
+              </div>
+              <div class="edu-prog-form__speciality">
+                <label class="field"><span class="field__title">Специальность</span>
+                  <input class="field__input" name="speciality" type="text" size="50" value="">
+                </label>
+              </div>
+              <div class="edu-prog-form__qualification">
+                <label class="field"><span class="field__title">Квалификация</span>
+                  <input class="field__input" name="qualification" type="text" size="50" value="">
+                </label>
+              </div>
+              <div class="edu-prog-form__edu-form">
+                <label class="field"><span class="field__title">Форма обучения</span>
+                  <select class="field_select" name="edu-form" value="">
+                    <option value="очная">очная</option>
+                    <option value="заочна">заочна</option>
+                  </select>
+                </label>
+              </div>
+              <div class="edu-prog-form__base-edu-level">
+                <label class="field"><span class="field_title">Базовое образование</span>
+                  <select class="field__select" name="base-edu-level" value="">
+                    <option value="11 классов">11 классов</option>
+                    <option value="9 классов">9 классов</option>
+                  </select>
+                </label>
+              </div>
+              <div class="edu-prog-form__duration">
+                <label class="field"><span class="field__title">Продолжительность обучения</span>
+                  <select class="field__select" name="duration" value="">
+                    <option value="1 год 10 месяцев">1 год 10 месяцев</option>
+                    <option value="2 года 10 месяцев">2 года 10 месяцев</option>
+                    <option value="3 года 10 месяцев">3 года 10 месяцев</option>
+                  </select>
+                </label>
+              </div>
+              <div class="edu-prog-form__fin-source">
+                <label class="field"><span class="field__title">Источник финансирования</span>
+                  <select class="field__select" name="fin-source" value="">
+                    <option value="бюджет">бюджет</option>
+                    <option value="внебюджет">внебюджет</option>
+                  </select>
+                </label>
+              </div>
+              <div class="edu-prog-form__places-number">
+                <label class="field"><span class="field__title">Количество мест</span>
+                  <input class="field__input" type="text" name="places-number" value="">
+                </label>
+              </div>
+              <div class="edu-prog-form__deleted">
+                <label class="field">
+                  <input class="field__input" type="checkbox" name="_deleted" value="true"><span class="field__title">Удалено</span>
+                </label>
+              </div>
+              <input type="hidden" name="_rev" value="">
+              <input type="hidden" name="_id" value="">
+              <input type="hidden" name="type" value="">
+              <div class="edu-prog-form__btn-panel">
+                <button class="button button--primary" type="submit">✔️ Сохранить и закрыть</button>
+                <button class="button button--secondary edu-prog-form__btn--duplicate" type="button">📑 Дублировать</button>
+                <button class="button button--secondary" type="button" data-a11y-dialog-hide>❌ Закрыть без сохранения</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template id="edu-prog-view">
+      <article class="edu-prog-view" data-id="###" tabindex="0">
+        <div class="value edu-prog-view__value edu-prog-view__value--code"><span name="code"></span></div>
+        <div class="value edu-prog-view__value edu-prog-view__value--speciality"><span name="speciality"></span></div>
+        <div class="value edu-prog-view__value edu-prog-view__value--qualification"><span name="qualification"></span></div>
+        <div class="value edu-prog-view__value edu-prog-view__value--edu-form"><span name="edu-form"></span></div>
+        <div class="value edu-prog-view__value edu-prog-view__value--base-edu-level"><span name="base-edu-level"></span></div>
+        <div class="value edu-prog-view__value edu-prog-view__value--duration"><span name="duration"></span></div>
+        <div class="value edu-prog-view__value edu-prog-view__value--fin-source"><span name="fin-source"></span></div>
+        <div class="value edu-prog-view__value edu-prog-view__value--places-number"><span name="places-number"></span></div>
+      </article>
+    </template>
+    <script src="js/edu-progs.js"></script>
+  </body>
+</html>
