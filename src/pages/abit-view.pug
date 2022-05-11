@@ -1,4 +1,40 @@
 extends ../pug/layout.pug
 
 block content
+  -
+    const data =
+      {
+          "type": "abit",
+          "regDate": "07.07.2021",
+          "fio": "Балашова Валерия Андреевна",
+          "gender": "ж",
+          "certScore": "4,75",
+          "extraScore": "0,3",
+          "hasEduCertOriginal": true,
+          "address": "г. Владивосток ",
+          "tel": "89500898430",
+          "needDorm": 2,
+          "schoolYear": "2021",
+          "school": "МБОУ СОШ №64 г. Владивосток ",
+          "memo": "рассматривает внебюджет ",
+          "applications": [
+              {
+                  "eduProg": "ПСО",
+                  "grade": "5",
+                  "priority": true,
+                  "disabled": false
+              },
+              {
+                  "eduProg": "СР",
+                  "grade": "5",
+                  "priority": false,
+                  "disabled": false
+              }
+          ],
+          "hasMedicalCert": true,
+          "hasFluoro": true,
+          "hasVaccine": true,
+          "_id": "acfc209c-44ea-458b-bff2-eb06e86dd9a7"
+      }
+
   include ../pug/includes/abit-view.pug

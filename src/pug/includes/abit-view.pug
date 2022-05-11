@@ -1,33 +1,66 @@
-article.abit-view
+article.abit-view(data-id=data._id)
   .container(style="display: flex;")
-    .value.abit-view__reg-date #[span(name="reg-date") 09.08.2021]
-    .value.abit-view__gender.emoji ♂️
-    .value.abit-view__fio #[span(name="fio") Абдулаев Алексей Евгеньевич]
+    .value.abit-view__reg-date=data.regDate
+
+    .value.abit-view__gender
+      if data.gender === 'м'
+        .emoji ♂️
+      if data.gender === 'ж'
+        .emoji ♀️
+
+    .value.abit-view__fio=data.fio
 
     .value.abit-view__applications-list
-      span.abit-view__application БУ
-      span.abit-view__application СЭЗИС
-      span.abit-view__application.abit-view__application--priority ПБ
+      each app in data.applications
+        -
+          const classes = {
+            'abit-view__application--priority': app.priority,
+            'abit-view__application--disabled': app.disabled
+          }
+        span.abit-view__application(class=classes)
+          | #{app.eduProg}
+          span.abit-view__application-grade=app.grade
+
+    -
+      const certScore = parseFloat((data.certScore || 0).toString().replace(',', '.'));
+      const extraScore = parseFloat((data.extraScore || 0).toString().replace(',', '.'));
+      const totalScore = parseFloat((certScore + extraScore).toFixed(2));
 
     .value.abit-view__score-list
-      span.abit-view__cert-score(name="cert-score") 4,25
-      | +
-      span.abit-view__extra-score(name="extra-score") 0,7
-      | =
-      span.abit-view__total-score(name="total-score") 4,5
+      if extraScore > 0 && certScore > 0
+        span.abit-view__cert-score=certScore.toString().replace('.', ',')
+        | +
+        span.abit-view__extra-score=extraScore.toString().replace('.', ',')
+        | =
 
-    .value.abit-view__has-medical-cert #[span.emoji ⚕️]
-    .value.abit-view__has-fluoro #[span.emoji &#129729;]
-    .value.abit-view__has-vaccine #[span.emoji 💉]
-    .value.abit-view__has-edu-cert-original #[span.emoji ✔️]
+      if totalScore
+        span.abit-view__total-score=totalScore.toString().replace('.', ',')
+
+    .value.abit-view__has-medical-cert
+      if data.hasMedicalCert
+        span.emoji ⚕️
+    .value.abit-view__has-fluoro
+      if data.hasFluoro
+        span.emoji='\u{1FAC1}'
+    .value.abit-view__has-vaccine
+      if data.hasVaccine
+        span.emoji 💉
+    .value.abit-view__has-edu-cert-original
+      if data.hasEduCertOriginal
+        span.emoji ✔️
 
   .container(style="display: flex;")
-    .value.abit-view__need-dorm #[span.emoji 🏨]
-    .value.abit-view__address #[span(name="address") Республика Саха (Якутия) Хангаласский улус]
-    .value.abit-view__tel #[span(name="tel") +79243212565]
+    .value.abit-view__need-dorm
+      if Number(data.needDorm) === 1
+        span.emoji(style="font-size: 0.5em") 🏨
+      if Number(data.needDorm) === 2
+        span.emoji 🏨
+
+    .value.abit-view__address=data.address
+    .value.abit-view__tel=data.tel
 
   .container(style="display: flex;")
-    .value.abit-view__school-year #[span(name="school-year") 2021]
-    .value.abit-view__school #[span(name="school") МКОУ СОШ №17 с. Прохладное Надеждинского р-на]
+    .value.abit-view__school-year=data.schoolYear
+    .value.abit-view__school=data.school
 
-  .value.abit-view--memo #[span(name="memo")]
+  .value.abit-view--memo=data.memo

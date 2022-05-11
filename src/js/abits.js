@@ -1,8 +1,7 @@
-import {createAbitViewElemFromTemplate} from './abit-view.js';
+import {createAbitViewElem} from './abit-view.js';
 import PouchDB from 'pouchdb';
 const db = new PouchDB('my_database');
 
-const templateAbit = document.getElementById('abit-view');
 const outputElem = document.getElementById('abit-list');
 const progressElem = document.getElementById('progress');
 
@@ -42,7 +41,7 @@ let items = [];
       if (a0 > b0) return 1;
       return 0;
     })
-    .map((abit) => createAbitViewElemFromTemplate(templateAbit, abit));
+    .map((abit) => createAbitViewElem(abit));
 
   progressElem.max = items.length - 1;
   progressElem.value = 0;
