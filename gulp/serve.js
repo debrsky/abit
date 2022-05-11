@@ -41,7 +41,11 @@ export default function serve() {
     gulp.series(svelte, readyFullReload)
   );
   gulp.watch(
-    [`src/js/**/*.js`, '!src/js/svelte/**/*.{svelte,js}'],
+    [
+      `src/js/**/*.js`,
+      '!src/js/svelte/**/*.{svelte,js}',
+      'src/pug/includes/**/*.pug'
+    ],
     gulp.series(script, readyFullReload)
   );
   gulp.watch(`src/**/*.pug`, gulp.series(pug2html, readyFullReload));
