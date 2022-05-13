@@ -29,8 +29,8 @@ function _typeof(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof(obj);
 }
-function _classCallCheck(instance7, Constructor) {
-  if (!(instance7 instanceof Constructor)) {
+function _classCallCheck(instance8, Constructor) {
+  if (!(instance8 instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
@@ -3622,11 +3622,6 @@ var require_svelte_imask = __commonJS({
 // node_modules/svelte/internal/index.mjs
 function noop() {
 }
-function assign(tar, src) {
-  for (const k in src)
-    tar[k] = src[k];
-  return tar;
-}
 function run(fn) {
   return fn();
 }
@@ -3645,16 +3640,6 @@ function safe_not_equal(a, b) {
 function is_empty(obj) {
   return Object.keys(obj).length === 0;
 }
-function exclude_internal_props(props) {
-  const result = {};
-  for (const k in props)
-    if (k[0] !== "$")
-      result[k] = props[k];
-  return result;
-}
-function action_destroyer(action_result) {
-  return action_result && is_function(action_result.destroy) ? action_result.destroy : noop;
-}
 var is_hydrating = false;
 function start_hydrating() {
   is_hydrating = true;
@@ -3664,6 +3649,27 @@ function end_hydrating() {
 }
 function append(target, node) {
   target.appendChild(node);
+}
+function append_styles(target, style_sheet_id, styles) {
+  const append_styles_to = get_root_for_style(target);
+  if (!append_styles_to.getElementById(style_sheet_id)) {
+    const style = element("style");
+    style.id = style_sheet_id;
+    style.textContent = styles;
+    append_stylesheet(append_styles_to, style);
+  }
+}
+function get_root_for_style(node) {
+  if (!node)
+    return document;
+  const root = node.getRootNode ? node.getRootNode() : node.ownerDocument;
+  if (root && root.host) {
+    return root;
+  }
+  return node.ownerDocument;
+}
+function append_stylesheet(node, style) {
+  append(node.head || node, style);
 }
 function insert(target, node, anchor) {
   target.insertBefore(node, anchor || null);
@@ -3684,27 +3690,17 @@ function listen(node, event, handler, options) {
   node.addEventListener(event, handler, options);
   return () => node.removeEventListener(event, handler, options);
 }
+function prevent_default(fn) {
+  return function(event) {
+    event.preventDefault();
+    return fn.call(this, event);
+  };
+}
 function attr(node, attribute, value) {
   if (value == null)
     node.removeAttribute(attribute);
   else if (node.getAttribute(attribute) !== value)
     node.setAttribute(attribute, value);
-}
-function set_attributes(node, attributes) {
-  const descriptors = Object.getOwnPropertyDescriptors(node.__proto__);
-  for (const key in attributes) {
-    if (attributes[key] == null) {
-      node.removeAttribute(key);
-    } else if (key === "style") {
-      node.style.cssText = attributes[key];
-    } else if (key === "__value") {
-      node.value = node[key] = attributes[key];
-    } else if (descriptors[key] && descriptors[key].set) {
-      node[key] = attributes[key];
-    } else {
-      attr(node, key, attributes[key]);
-    }
-  }
 }
 function children(element2) {
   return Array.from(element2.childNodes);
@@ -3735,17 +3731,6 @@ var current_component;
 function set_current_component(component) {
   current_component = component;
 }
-function get_current_component() {
-  if (!current_component)
-    throw new Error("Function called outside component initialization");
-  return current_component;
-}
-function onMount(fn) {
-  get_current_component().$$.on_mount.push(fn);
-}
-function onDestroy(fn) {
-  get_current_component().$$.on_destroy.push(fn);
-}
 function bubble(component, event) {
   const callbacks = component.$$.callbacks[event.type];
   if (callbacks) {
@@ -3763,10 +3748,6 @@ function schedule_update() {
     update_scheduled = true;
     resolved_promise.then(flush);
   }
-}
-function tick() {
-  schedule_update();
-  return resolved_promise;
 }
 function add_render_callback(fn) {
   render_callbacks.push(fn);
@@ -3912,38 +3893,6 @@ function update_keyed_each(old_blocks, dirty, get_key, dynamic, ctx, list, looku
     insert2(new_blocks[n - 1]);
   return new_blocks;
 }
-function get_spread_update(levels, updates) {
-  const update2 = {};
-  const to_null_out = {};
-  const accounted_for = { $$scope: 1 };
-  let i = levels.length;
-  while (i--) {
-    const o = levels[i];
-    const n = updates[i];
-    if (n) {
-      for (const key in o) {
-        if (!(key in n))
-          to_null_out[key] = 1;
-      }
-      for (const key in n) {
-        if (!accounted_for[key]) {
-          update2[key] = n[key];
-          accounted_for[key] = 1;
-        }
-      }
-      levels[i] = n;
-    } else {
-      for (const key in o) {
-        accounted_for[key] = 1;
-      }
-    }
-  }
-  for (const key in to_null_out) {
-    if (!(key in update2))
-      update2[key] = void 0;
-  }
-  return update2;
-}
 function bind(component, name, callback) {
   const index = component.$$.props[name];
   if (index !== void 0) {
@@ -3987,7 +3936,7 @@ function make_dirty(component, i) {
   }
   component.$$.dirty[i / 31 | 0] |= 1 << i % 31;
 }
-function init(component, options, instance7, create_fragment7, not_equal, props, append_styles, dirty = [-1]) {
+function init(component, options, instance8, create_fragment8, not_equal, props, append_styles2, dirty = [-1]) {
   const parent_component = current_component;
   set_current_component(component);
   const $$ = component.$$ = {
@@ -4008,9 +3957,9 @@ function init(component, options, instance7, create_fragment7, not_equal, props,
     skip_bound: false,
     root: options.target || parent_component.$$.root
   };
-  append_styles && append_styles($$.root);
+  append_styles2 && append_styles2($$.root);
   let ready = false;
-  $$.ctx = instance7 ? instance7(component, options.props || {}, (i, ret, ...rest) => {
+  $$.ctx = instance8 ? instance8(component, options.props || {}, (i, ret, ...rest) => {
     const value = rest.length ? rest[0] : ret;
     if ($$.ctx && not_equal($$.ctx[i], $$.ctx[i] = value)) {
       if (!$$.skip_bound && $$.bound[i])
@@ -4023,7 +3972,7 @@ function init(component, options, instance7, create_fragment7, not_equal, props,
   $$.update();
   ready = true;
   run_all($$.before_update);
-  $$.fragment = create_fragment7 ? create_fragment7($$.ctx) : false;
+  $$.fragment = create_fragment8 ? create_fragment8($$.ctx) : false;
   if (options.target) {
     if (options.hydrate) {
       start_hydrating();
@@ -4187,29 +4136,16 @@ var Text = class extends SvelteComponent {
 };
 var text_default = Text;
 
-// src/js/svelte/fields/text-masked.svelte
-var import_svelte2 = __toESM(require_svelte_imask(), 1);
-init_esm();
+// src/js/svelte/fields/decimal.svelte
 function create_fragment2(ctx) {
   let div;
   let label;
   let span;
   let t0;
   let t1;
-  let input_1;
-  let action_action;
+  let input;
   let mounted;
   let dispose;
-  let input_1_levels = [
-    { type: "text" },
-    ctx[5],
-    { size: ctx[1] },
-    { readOnly: ctx[2] }
-  ];
-  let input_1_data = {};
-  for (let i = 0; i < input_1_levels.length; i += 1) {
-    input_1_data = assign(input_1_data, input_1_levels[i]);
-  }
   return {
     c() {
       div = element("div");
@@ -4217,8 +4153,9 @@ function create_fragment2(ctx) {
       span = element("span");
       t0 = text(ctx[0]);
       t1 = space();
-      input_1 = element("input");
-      set_attributes(input_1, input_1_data);
+      input = element("input");
+      attr(input, "type", "text");
+      attr(input, "size", ctx[1]);
       attr(div, "class", "field");
     },
     m(target, anchor) {
@@ -4227,143 +4164,189 @@ function create_fragment2(ctx) {
       append(label, span);
       append(span, t0);
       append(label, t1);
-      append(label, input_1);
-      if (input_1.autofocus)
-        input_1.focus();
-      ctx[11](input_1);
+      append(label, input);
+      set_input_value(input, ctx[2]);
       if (!mounted) {
-        dispose = [
-          action_destroyer(action_action = ctx[6].call(null, input_1, ctx[3])),
-          listen(input_1, "accept", ctx[7]),
-          listen(input_1, "accept", ctx[9]),
-          listen(input_1, "complete", ctx[10])
-        ];
+        dispose = listen(input, "input", ctx[4]);
         mounted = true;
       }
     },
     p(ctx2, [dirty]) {
       if (dirty & 1)
         set_data(t0, ctx2[0]);
-      set_attributes(input_1, input_1_data = get_spread_update(input_1_levels, [
-        { type: "text" },
-        dirty & 32 && ctx2[5],
-        dirty & 2 && { size: ctx2[1] },
-        dirty & 4 && { readOnly: ctx2[2] }
-      ]));
-      if (action_action && is_function(action_action.update) && dirty & 8)
-        action_action.update.call(null, ctx2[3]);
+      if (dirty & 2) {
+        attr(input, "size", ctx2[1]);
+      }
+      if (dirty & 4 && input.value !== ctx2[2]) {
+        set_input_value(input, ctx2[2]);
+      }
     },
     i: noop,
     o: noop,
     d(detaching) {
       if (detaching)
         detach(div);
-      ctx[11](null);
       mounted = false;
-      run_all(dispose);
+      dispose();
     }
   };
 }
 function instance2($$self, $$props, $$invalidate) {
-  const action = import_svelte2.default.imask;
   let { title = "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } = $$props;
   let { value } = $$props;
   let { size = 20 } = $$props;
-  let { readonly = false } = $$props;
-  let input;
-  let maskRef, imask, unmask, attrs;
-  function getValue() {
-    if (unmask === "typed")
-      return maskRef.typedValue;
-    if (unmask)
-      return maskRef.unmaskedValue;
-    return maskRef.value;
-  }
-  function setValue(v) {
-    v = v == null ? "" : v;
-    if (unmask === "typed")
-      $$invalidate(3, maskRef.typedValue = v, maskRef);
-    else if (unmask)
-      $$invalidate(3, maskRef.unmaskedValue = v, maskRef);
-    else
-      $$invalidate(3, maskRef.value = v, maskRef);
-  }
-  function writeValue(v) {
-    if (getValue() !== v || typeof v !== "string" && value === "" && !maskRef.el.isActive) {
-      setValue(v);
+  let rawValue;
+  const setRawValue = (v) => {
+    $$invalidate(2, rawValue = (v || "").toString().replace(".", ","));
+  };
+  const setValue = (r) => {
+    const v = Number((r || "").toString().replace(",", "."));
+    if (Number.isFinite(v)) {
+      $$invalidate(3, value = v);
+    } else {
+      $$invalidate(3, value = r);
     }
+  };
+  setRawValue(value);
+  function input_input_handler() {
+    rawValue = this.value;
+    $$invalidate(2, rawValue);
   }
-  onMount(() => {
-    $$invalidate(3, maskRef = IMask(input, imask));
-    setValue(value);
-  });
-  onDestroy(() => {
-    if (maskRef)
-      maskRef.destroy();
-    $$invalidate(3, maskRef = void 0);
-  });
-  function accept({ detail: mask }) {
-    $$invalidate(8, value = getValue());
-  }
-  function accept_handler(event) {
-    bubble.call(this, $$self, event);
-  }
-  function complete_handler(event) {
-    bubble.call(this, $$self, event);
-  }
-  function input_1_binding($$value) {
-    binding_callbacks[$$value ? "unshift" : "push"](() => {
-      input = $$value;
-      $$invalidate(4, input);
-    });
-  }
-  $$self.$$set = ($$new_props) => {
-    $$invalidate(17, $$props = assign(assign({}, $$props), exclude_internal_props($$new_props)));
-    if ("title" in $$new_props)
-      $$invalidate(0, title = $$new_props.title);
-    if ("value" in $$new_props)
-      $$invalidate(8, value = $$new_props.value);
-    if ("size" in $$new_props)
-      $$invalidate(1, size = $$new_props.size);
-    if ("readonly" in $$new_props)
-      $$invalidate(2, readonly = $$new_props.readonly);
+  $$self.$$set = ($$props2) => {
+    if ("title" in $$props2)
+      $$invalidate(0, title = $$props2.title);
+    if ("value" in $$props2)
+      $$invalidate(3, value = $$props2.value);
+    if ("size" in $$props2)
+      $$invalidate(1, size = $$props2.size);
   };
   $$self.$$.update = () => {
-    $: {
-      $$invalidate(5, { imask, unmask, ...attrs } = $$props, attrs);
-      if (maskRef) {
-        writeValue(value);
-        $$invalidate(5, attrs.value = maskRef.value, attrs);
-        tick().then(() => $$invalidate(8, value = getValue()));
+    if ($$self.$$.dirty & 8) {
+      $:
+        setRawValue(value);
+    }
+    if ($$self.$$.dirty & 4) {
+      $:
+        setValue(rawValue);
+    }
+  };
+  return [title, size, rawValue, value, input_input_handler];
+}
+var Decimal = class extends SvelteComponent {
+  constructor(options) {
+    super();
+    init(this, options, instance2, create_fragment2, safe_not_equal, { title: 0, value: 3, size: 1 });
+  }
+};
+var decimal_default = Decimal;
+
+// src/js/svelte/fields/date.svelte
+function create_fragment3(ctx) {
+  let div;
+  let label;
+  let span;
+  let t0;
+  let t1;
+  let input;
+  let mounted;
+  let dispose;
+  return {
+    c() {
+      div = element("div");
+      label = element("label");
+      span = element("span");
+      t0 = text(ctx[1]);
+      t1 = space();
+      input = element("input");
+      attr(input, "type", "date");
+      input.required = ctx[2];
+      attr(div, "class", "field");
+    },
+    m(target, anchor) {
+      insert(target, div, anchor);
+      append(div, label);
+      append(label, span);
+      append(span, t0);
+      append(label, t1);
+      append(label, input);
+      set_input_value(input, ctx[0]);
+      if (!mounted) {
+        dispose = listen(input, "input", ctx[3]);
+        mounted = true;
+      }
+    },
+    p(ctx2, [dirty]) {
+      if (dirty & 2)
+        set_data(t0, ctx2[1]);
+      if (dirty & 4) {
+        input.required = ctx2[2];
+      }
+      if (dirty & 1) {
+        set_input_value(input, ctx2[0]);
+      }
+    },
+    i: noop,
+    o: noop,
+    d(detaching) {
+      if (detaching)
+        detach(div);
+      mounted = false;
+      dispose();
+    }
+  };
+}
+var re = /^\s*(\d{1,2})[.,/-](\d{1,2})[.,/-](\d{2}|\d{4})\s*$/;
+function instance3($$self, $$props, $$invalidate) {
+  let { title = "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } = $$props;
+  let { required } = $$props;
+  let { value } = $$props;
+  const setValue = (v) => {
+    const match = v.match(re);
+    if (match) {
+      let [, dd, mm, yyyy] = match;
+      if (yyyy.length == 2)
+        yyyy = `20${yyyy}`;
+      const valueStr = `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+      if (!Number.isNaN(Date.parse(valueStr))) {
+        $$invalidate(0, value = valueStr);
       }
     }
   };
-  $$props = exclude_internal_props($$props);
-  return [
-    title,
-    size,
-    readonly,
-    maskRef,
-    input,
-    attrs,
-    action,
-    accept,
-    value,
-    accept_handler,
-    complete_handler,
-    input_1_binding
-  ];
+  setValue(value);
+  function input_input_handler() {
+    value = this.value;
+    $$invalidate(0, value);
+  }
+  $$self.$$set = ($$props2) => {
+    if ("title" in $$props2)
+      $$invalidate(1, title = $$props2.title);
+    if ("required" in $$props2)
+      $$invalidate(2, required = $$props2.required);
+    if ("value" in $$props2)
+      $$invalidate(0, value = $$props2.value);
+  };
+  $$self.$$.update = () => {
+    if ($$self.$$.dirty & 1) {
+      $:
+        setValue(value);
+    }
+  };
+  return [value, title, required, input_input_handler];
 }
-var Text_masked = class extends SvelteComponent {
+var Date_1 = class extends SvelteComponent {
   constructor(options) {
     super();
-    init(this, options, instance2, create_fragment2, safe_not_equal, { title: 0, value: 8, size: 1, readonly: 2 });
+    init(this, options, instance3, create_fragment3, safe_not_equal, { title: 1, required: 2, value: 0 });
   }
 };
-var text_masked_default = Text_masked;
+var date_default = Date_1;
+
+// src/js/svelte/fields/text-masked.svelte
+var import_svelte2 = __toESM(require_svelte_imask(), 1);
+init_esm();
 
 // src/js/svelte/fields/textarea.svelte
-function create_fragment3(ctx) {
+function create_fragment4(ctx) {
   let div;
   let label;
   let span;
@@ -4416,7 +4399,7 @@ function create_fragment3(ctx) {
     }
   };
 }
-function instance3($$self, $$props, $$invalidate) {
+function instance4($$self, $$props, $$invalidate) {
   let { title = "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } = $$props;
   let { value } = $$props;
   let { size = 20 } = $$props;
@@ -4437,7 +4420,7 @@ function instance3($$self, $$props, $$invalidate) {
 var Textarea = class extends SvelteComponent {
   constructor(options) {
     super();
-    init(this, options, instance3, create_fragment3, safe_not_equal, { title: 1, value: 0, size: 2 });
+    init(this, options, instance4, create_fragment4, safe_not_equal, { title: 1, value: 0, size: 2 });
   }
 };
 var textarea_default = Textarea;
@@ -4483,7 +4466,7 @@ function create_each_block(key_1, ctx) {
     }
   };
 }
-function create_fragment4(ctx) {
+function create_fragment5(ctx) {
   let div;
   let label;
   let span;
@@ -4561,7 +4544,7 @@ function create_fragment4(ctx) {
     }
   };
 }
-function instance4($$self, $$props, $$invalidate) {
+function instance5($$self, $$props, $$invalidate) {
   let { title = "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } = $$props;
   let { options = [] } = $$props;
   let { size } = $$props;
@@ -4586,13 +4569,16 @@ function instance4($$self, $$props, $$invalidate) {
 var Select = class extends SvelteComponent {
   constructor(options) {
     super();
-    init(this, options, instance4, create_fragment4, safe_not_equal, { title: 3, options: 1, size: 2, value: 0 });
+    init(this, options, instance5, create_fragment5, safe_not_equal, { title: 3, options: 1, size: 2, value: 0 });
   }
 };
 var select_default = Select;
 
 // src/js/svelte/fields/checkbox.svelte
-function create_fragment5(ctx) {
+function add_css(target) {
+  append_styles(target, "svelte-11uojqh", "label.svelte-11uojqh{cursor:pointer}");
+}
+function create_fragment6(ctx) {
   let div;
   let label;
   let input;
@@ -4610,6 +4596,7 @@ function create_fragment5(ctx) {
       span = element("span");
       t1 = text(ctx[1]);
       attr(input, "type", "checkbox");
+      attr(label, "class", "svelte-11uojqh");
       attr(div, "class", "field");
     },
     m(target, anchor) {
@@ -4642,7 +4629,7 @@ function create_fragment5(ctx) {
     }
   };
 }
-function instance5($$self, $$props, $$invalidate) {
+function instance6($$self, $$props, $$invalidate) {
   let { title = "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } = $$props;
   let { value } = $$props;
   function input_change_handler() {
@@ -4660,221 +4647,182 @@ function instance5($$self, $$props, $$invalidate) {
 var Checkbox = class extends SvelteComponent {
   constructor(options) {
     super();
-    init(this, options, instance5, create_fragment5, safe_not_equal, { title: 1, value: 0 });
+    init(this, options, instance6, create_fragment6, safe_not_equal, { title: 1, value: 0 }, add_css);
   }
 };
 var checkbox_default = Checkbox;
 
 // src/js/svelte/comp.svelte
-function create_fragment6(ctx) {
-  let pre0;
-  let t0;
-  let t1;
+function add_css2(target) {
+  append_styles(target, "svelte-h56698", ".checkbox-container.svelte-h56698{display:flex}#debug.svelte-h56698{display:none}#debug.svelte-h56698:target{display:block}");
+}
+function create_fragment7(ctx) {
   let form;
-  let textmasked0;
+  let dateinput;
   let updating_value;
-  let t2;
+  let t0;
   let text0;
   let updating_value_1;
-  let t3;
+  let t1;
   let select0;
   let updating_value_2;
-  let t4;
-  let textmasked1;
+  let t2;
+  let decimal0;
   let updating_value_3;
-  let t5;
-  let textmasked2;
+  let t3;
+  let decimal1;
   let updating_value_4;
-  let t6;
-  let textmasked3;
+  let t4;
+  let text1;
   let updating_value_5;
-  let t7;
+  let t5;
+  let div;
   let checkbox0;
   let updating_value_6;
-  let t8;
+  let t6;
   let checkbox1;
   let updating_value_7;
-  let t9;
+  let t7;
   let checkbox2;
   let updating_value_8;
-  let t10;
+  let t8;
   let checkbox3;
   let updating_value_9;
-  let t11;
+  let t9;
   let select1;
   let updating_value_10;
-  let t12;
-  let text1;
-  let updating_value_11;
-  let t13;
+  let t10;
   let text2;
-  let updating_value_12;
-  let t14;
+  let updating_value_11;
+  let t11;
   let text3;
-  let updating_value_13;
-  let t15;
+  let updating_value_12;
+  let t12;
   let text4;
+  let updating_value_13;
+  let t13;
+  let text5;
   let updating_value_14;
-  let t16;
+  let t14;
   let textarea;
   let updating_value_15;
+  let t15;
+  let pre0;
+  let t16_value = ctx[2].join(", ") + "";
+  let t16;
   let t17;
-  let checkbox4;
-  let updating_value_16;
+  let input0;
   let t18;
-  let pre1;
-  let t19_value = JSON.stringify({
-    regDate: ctx[2],
-    fio: ctx[3],
-    gender: ctx[4],
-    certScore: ctx[0],
-    extraScore: ctx[1],
-    totalScore: ctx[5],
-    hasEduCertOriginal: ctx[6],
-    hasMedicalCert: ctx[7],
-    hasFluoro: ctx[8],
-    hasVaccine: ctx[9],
-    needDorm: ctx[10],
-    school: ctx[11],
-    schoolYear: ctx[12],
-    address: ctx[13],
-    tel: ctx[14],
-    memo: ctx[15],
-    paidEduReady: ctx[16]
-  }, null, 4) + "";
+  let input1;
   let t19;
+  let pre1;
+  let t20_value = JSON.stringify(ctx[0], null, 4) + "";
+  let t20;
   let current;
-  function textmasked0_value_binding(value) {
-    ctx[17](value);
+  let mounted;
+  let dispose;
+  function dateinput_value_binding(value) {
+    ctx[4](value);
   }
-  let textmasked0_props = {
+  let dateinput_props = {
     title: "\u0414\u0430\u0442\u0430 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u0438",
-    unmask: "untyped",
-    imask: { mask: Date }
+    required: true
   };
-  if (ctx[2] !== void 0) {
-    textmasked0_props.value = ctx[2];
+  if (ctx[0].regDate !== void 0) {
+    dateinput_props.value = ctx[0].regDate;
   }
-  textmasked0 = new text_masked_default({ props: textmasked0_props });
-  binding_callbacks.push(() => bind(textmasked0, "value", textmasked0_value_binding));
+  dateinput = new date_default({ props: dateinput_props });
+  binding_callbacks.push(() => bind(dateinput, "value", dateinput_value_binding));
   function text0_value_binding(value) {
-    ctx[18](value);
+    ctx[5](value);
   }
   let text0_props = { title: "\u0424\u0418\u041E", size: 50 };
-  if (ctx[3] !== void 0) {
-    text0_props.value = ctx[3];
+  if (ctx[0].fio !== void 0) {
+    text0_props.value = ctx[0].fio;
   }
   text0 = new text_default({ props: text0_props });
   binding_callbacks.push(() => bind(text0, "value", text0_value_binding));
   function select0_value_binding(value) {
-    ctx[19](value);
+    ctx[6](value);
   }
   let select0_props = {
     title: "\u041F\u043E\u043B",
-    size: 50,
-    options: { "\u043C": "\u043C\u0443\u0436\u0441\u043A\u043E\u0439", "\u0436": "\u0436\u0435\u043D\u0441\u043A\u0438\u0439" }
+    options: { \u043C: "\u043C\u0443\u0436\u0441\u043A\u043E\u0439", \u0436: "\u0436\u0435\u043D\u0441\u043A\u0438\u0439" }
   };
-  if (ctx[4] !== void 0) {
-    select0_props.value = ctx[4];
+  if (ctx[0].gender !== void 0) {
+    select0_props.value = ctx[0].gender;
   }
   select0 = new select_default({ props: select0_props });
   binding_callbacks.push(() => bind(select0, "value", select0_value_binding));
-  function textmasked1_value_binding(value) {
-    ctx[20](value);
+  function decimal0_value_binding(value) {
+    ctx[7](value);
   }
-  let textmasked1_props = {
-    title: "\u0421\u0440\u0435\u0434\u043D\u0438\u0439 \u0431\u0430\u043B\u043B \u0430\u0442\u0442\u0435\u0441\u0442\u0430\u0442\u0430",
-    size: 5,
-    unmask: "typed",
-    imask: {
-      mask: Number,
-      scale: 2,
-      radix: ",",
-      mapToRadix: ["."]
-    }
-  };
-  if (ctx[0] !== void 0) {
-    textmasked1_props.value = ctx[0];
+  let decimal0_props = { title: "\u0421\u0440\u0435\u0434\u043D\u0438\u0439 \u0431\u0430\u043B\u043B \u0430\u0442\u0442\u0435\u0441\u0442\u0430\u0442\u0430", size: 5 };
+  if (ctx[0].certScore !== void 0) {
+    decimal0_props.value = ctx[0].certScore;
   }
-  textmasked1 = new text_masked_default({ props: textmasked1_props });
-  binding_callbacks.push(() => bind(textmasked1, "value", textmasked1_value_binding));
-  function textmasked2_value_binding(value) {
-    ctx[21](value);
+  decimal0 = new decimal_default({ props: decimal0_props });
+  binding_callbacks.push(() => bind(decimal0, "value", decimal0_value_binding));
+  function decimal1_value_binding(value) {
+    ctx[8](value);
   }
-  let textmasked2_props = {
-    title: "\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0431\u0430\u043B\u043B\u044B",
-    size: 5,
-    unmask: "typed",
-    imask: {
-      mask: Number,
-      scale: 2,
-      radix: ",",
-      mapToRadix: ["."]
-    }
-  };
-  if (ctx[1] !== void 0) {
-    textmasked2_props.value = ctx[1];
+  let decimal1_props = { title: "\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0431\u0430\u043B\u043B\u044B", size: 5 };
+  if (ctx[0].extraScore !== void 0) {
+    decimal1_props.value = ctx[0].extraScore;
   }
-  textmasked2 = new text_masked_default({ props: textmasked2_props });
-  binding_callbacks.push(() => bind(textmasked2, "value", textmasked2_value_binding));
-  function textmasked3_value_binding(value) {
-    ctx[22](value);
+  decimal1 = new decimal_default({ props: decimal1_props });
+  binding_callbacks.push(() => bind(decimal1, "value", decimal1_value_binding));
+  function text1_value_binding(value) {
+    ctx[9](value);
   }
-  let textmasked3_props = {
+  let text1_props = {
     title: "\u0418\u0442\u043E\u0433\u043E\u0432\u044B\u0439 \u043A\u043E\u043D\u043A\u0443\u0440\u0441\u043D\u044B\u0439 \u0431\u0430\u043B\u043B",
     size: 5,
-    readonly: true,
-    unmask: "typed",
-    imask: {
-      mask: Number,
-      scale: 2,
-      radix: ",",
-      mapToRadix: ["."]
-    }
+    readonly: true
   };
-  if (ctx[5] !== void 0) {
-    textmasked3_props.value = ctx[5];
+  if (ctx[1] !== void 0) {
+    text1_props.value = ctx[1];
   }
-  textmasked3 = new text_masked_default({ props: textmasked3_props });
-  binding_callbacks.push(() => bind(textmasked3, "value", textmasked3_value_binding));
+  text1 = new text_default({ props: text1_props });
+  binding_callbacks.push(() => bind(text1, "value", text1_value_binding));
   function checkbox0_value_binding(value) {
-    ctx[23](value);
+    ctx[10](value);
   }
   let checkbox0_props = { title: "\u041F\u043E\u0434\u043B\u0438\u043D\u043D\u0438\u043A \u0430\u0442\u0442\u0435\u0441\u0442\u0430\u0442\u0430" };
-  if (ctx[6] !== void 0) {
-    checkbox0_props.value = ctx[6];
+  if (ctx[0].hasEduCertOriginal !== void 0) {
+    checkbox0_props.value = ctx[0].hasEduCertOriginal;
   }
   checkbox0 = new checkbox_default({ props: checkbox0_props });
   binding_callbacks.push(() => bind(checkbox0, "value", checkbox0_value_binding));
   function checkbox1_value_binding(value) {
-    ctx[24](value);
+    ctx[11](value);
   }
   let checkbox1_props = { title: "\u041C\u0435\u0434\u0438\u0446\u0438\u043D\u0441\u043A\u0430\u044F \u0441\u043F\u0440\u0430\u0432\u043A\u0430" };
-  if (ctx[7] !== void 0) {
-    checkbox1_props.value = ctx[7];
+  if (ctx[0].hasMedicalCert !== void 0) {
+    checkbox1_props.value = ctx[0].hasMedicalCert;
   }
   checkbox1 = new checkbox_default({ props: checkbox1_props });
   binding_callbacks.push(() => bind(checkbox1, "value", checkbox1_value_binding));
   function checkbox2_value_binding(value) {
-    ctx[25](value);
+    ctx[12](value);
   }
   let checkbox2_props = { title: "\u0424\u043B\u044E\u043E\u0440\u043E\u0433\u0440\u0430\u0444\u0438\u044F" };
-  if (ctx[8] !== void 0) {
-    checkbox2_props.value = ctx[8];
+  if (ctx[0].hasFluoro !== void 0) {
+    checkbox2_props.value = ctx[0].hasFluoro;
   }
   checkbox2 = new checkbox_default({ props: checkbox2_props });
   binding_callbacks.push(() => bind(checkbox2, "value", checkbox2_value_binding));
   function checkbox3_value_binding(value) {
-    ctx[26](value);
+    ctx[13](value);
   }
   let checkbox3_props = { title: "\u041F\u0440\u0438\u0432\u0438\u0432\u043A\u0438" };
-  if (ctx[9] !== void 0) {
-    checkbox3_props.value = ctx[9];
+  if (ctx[0].hasVaccine !== void 0) {
+    checkbox3_props.value = ctx[0].hasVaccine;
   }
   checkbox3 = new checkbox_default({ props: checkbox3_props });
   binding_callbacks.push(() => bind(checkbox3, "value", checkbox3_value_binding));
   function select1_value_binding(value) {
-    ctx[27](value);
+    ctx[14](value);
   }
   let select1_props = {
     title: "\u041E\u0431\u0449\u0435\u0436\u0438\u0442\u0438\u0435",
@@ -4884,557 +4832,523 @@ function create_fragment6(ctx) {
       "2": "\u043F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442\u043D\u043E\u0435"
     }
   };
-  if (ctx[10] !== void 0) {
-    select1_props.value = ctx[10];
+  if (ctx[0].needDorm !== void 0) {
+    select1_props.value = ctx[0].needDorm;
   }
   select1 = new select_default({ props: select1_props });
   binding_callbacks.push(() => bind(select1, "value", select1_value_binding));
-  function text1_value_binding(value) {
-    ctx[28](value);
-  }
-  let text1_props = { title: "\u0410\u0434\u0440\u0435\u0441", size: 50 };
-  if (ctx[13] !== void 0) {
-    text1_props.value = ctx[13];
-  }
-  text1 = new text_default({ props: text1_props });
-  binding_callbacks.push(() => bind(text1, "value", text1_value_binding));
   function text2_value_binding(value) {
-    ctx[29](value);
+    ctx[15](value);
   }
-  let text2_props = { title: "\u0428\u043A\u043E\u043B\u0430", size: 50 };
-  if (ctx[11] !== void 0) {
-    text2_props.value = ctx[11];
+  let text2_props = { title: "\u0410\u0434\u0440\u0435\u0441", size: 50 };
+  if (ctx[0].address !== void 0) {
+    text2_props.value = ctx[0].address;
   }
   text2 = new text_default({ props: text2_props });
   binding_callbacks.push(() => bind(text2, "value", text2_value_binding));
   function text3_value_binding(value) {
-    ctx[30](value);
+    ctx[16](value);
   }
-  let text3_props = { title: "\u0413\u043E\u0434 \u043E\u043A\u043E\u043D\u0447\u0430\u043D\u0438\u044F \u0448\u043A\u043E\u043B\u044B", size: 5 };
-  if (ctx[12] !== void 0) {
-    text3_props.value = ctx[12];
+  let text3_props = { title: "\u0428\u043A\u043E\u043B\u0430", size: 50 };
+  if (ctx[0].school !== void 0) {
+    text3_props.value = ctx[0].school;
   }
   text3 = new text_default({ props: text3_props });
   binding_callbacks.push(() => bind(text3, "value", text3_value_binding));
   function text4_value_binding(value) {
-    ctx[31](value);
+    ctx[17](value);
   }
-  let text4_props = { title: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D", size: 50 };
-  if (ctx[14] !== void 0) {
-    text4_props.value = ctx[14];
+  let text4_props = { title: "\u0413\u043E\u0434 \u043E\u043A\u043E\u043D\u0447\u0430\u043D\u0438\u044F \u0448\u043A\u043E\u043B\u044B", size: 5 };
+  if (ctx[0].schoolYear !== void 0) {
+    text4_props.value = ctx[0].schoolYear;
   }
   text4 = new text_default({ props: text4_props });
   binding_callbacks.push(() => bind(text4, "value", text4_value_binding));
+  function text5_value_binding(value) {
+    ctx[18](value);
+  }
+  let text5_props = { title: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D", size: 50 };
+  if (ctx[0].tel !== void 0) {
+    text5_props.value = ctx[0].tel;
+  }
+  text5 = new text_default({ props: text5_props });
+  binding_callbacks.push(() => bind(text5, "value", text5_value_binding));
   function textarea_value_binding(value) {
-    ctx[32](value);
+    ctx[19](value);
   }
   let textarea_props = { title: "\u041F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435", size: 50 };
-  if (ctx[15] !== void 0) {
-    textarea_props.value = ctx[15];
+  if (ctx[0].memo !== void 0) {
+    textarea_props.value = ctx[0].memo;
   }
   textarea = new textarea_default({ props: textarea_props });
   binding_callbacks.push(() => bind(textarea, "value", textarea_value_binding));
-  function checkbox4_value_binding(value) {
-    ctx[33](value);
-  }
-  let checkbox4_props = { title: "\u0420\u0430\u0441\u0441\u043C\u0430\u0442\u0440\u0438\u0432\u0430\u0435\u0442 \u043F\u043B\u0430\u0442\u043D\u043E\u0435 \u043E\u0431\u0443\u0447\u0435\u043D\u0438\u0435" };
-  if (ctx[16] !== void 0) {
-    checkbox4_props.value = ctx[16];
-  }
-  checkbox4 = new checkbox_default({ props: checkbox4_props });
-  binding_callbacks.push(() => bind(checkbox4, "value", checkbox4_value_binding));
   return {
     c() {
-      pre0 = element("pre");
-      t0 = text(ctx[2]);
-      t1 = space();
       form = element("form");
-      create_component(textmasked0.$$.fragment);
-      t2 = space();
+      create_component(dateinput.$$.fragment);
+      t0 = space();
       create_component(text0.$$.fragment);
-      t3 = space();
+      t1 = space();
       create_component(select0.$$.fragment);
+      t2 = space();
+      create_component(decimal0.$$.fragment);
+      t3 = space();
+      create_component(decimal1.$$.fragment);
       t4 = space();
-      create_component(textmasked1.$$.fragment);
-      t5 = space();
-      create_component(textmasked2.$$.fragment);
-      t6 = space();
-      create_component(textmasked3.$$.fragment);
-      t7 = space();
-      create_component(checkbox0.$$.fragment);
-      t8 = space();
-      create_component(checkbox1.$$.fragment);
-      t9 = space();
-      create_component(checkbox2.$$.fragment);
-      t10 = space();
-      create_component(checkbox3.$$.fragment);
-      t11 = space();
-      create_component(select1.$$.fragment);
-      t12 = space();
       create_component(text1.$$.fragment);
-      t13 = space();
+      t5 = space();
+      div = element("div");
+      create_component(checkbox0.$$.fragment);
+      t6 = space();
+      create_component(checkbox1.$$.fragment);
+      t7 = space();
+      create_component(checkbox2.$$.fragment);
+      t8 = space();
+      create_component(checkbox3.$$.fragment);
+      t9 = space();
+      create_component(select1.$$.fragment);
+      t10 = space();
       create_component(text2.$$.fragment);
-      t14 = space();
+      t11 = space();
       create_component(text3.$$.fragment);
-      t15 = space();
+      t12 = space();
       create_component(text4.$$.fragment);
-      t16 = space();
+      t13 = space();
+      create_component(text5.$$.fragment);
+      t14 = space();
       create_component(textarea.$$.fragment);
+      t15 = space();
+      pre0 = element("pre");
+      t16 = text(t16_value);
       t17 = space();
-      create_component(checkbox4.$$.fragment);
+      input0 = element("input");
       t18 = space();
+      input1 = element("input");
+      t19 = space();
       pre1 = element("pre");
-      t19 = text(t19_value);
+      t20 = text(t20_value);
+      attr(div, "class", "checkbox-container svelte-h56698");
+      attr(input0, "type", "submit");
+      input0.value = "\u041E\u043A";
+      attr(input1, "type", "reset");
+      input1.value = "\u041E\u0442\u043C\u0435\u043D\u0430";
+      attr(pre1, "id", "debug");
+      attr(pre1, "class", "svelte-h56698");
     },
     m(target, anchor) {
-      insert(target, pre0, anchor);
-      append(pre0, t0);
-      insert(target, t1, anchor);
       insert(target, form, anchor);
-      mount_component(textmasked0, form, null);
-      append(form, t2);
+      mount_component(dateinput, form, null);
+      append(form, t0);
       mount_component(text0, form, null);
-      append(form, t3);
+      append(form, t1);
       mount_component(select0, form, null);
+      append(form, t2);
+      mount_component(decimal0, form, null);
+      append(form, t3);
+      mount_component(decimal1, form, null);
       append(form, t4);
-      mount_component(textmasked1, form, null);
-      append(form, t5);
-      mount_component(textmasked2, form, null);
-      append(form, t6);
-      mount_component(textmasked3, form, null);
-      append(form, t7);
-      mount_component(checkbox0, form, null);
-      append(form, t8);
-      mount_component(checkbox1, form, null);
-      append(form, t9);
-      mount_component(checkbox2, form, null);
-      append(form, t10);
-      mount_component(checkbox3, form, null);
-      append(form, t11);
-      mount_component(select1, form, null);
-      append(form, t12);
       mount_component(text1, form, null);
-      append(form, t13);
+      append(form, t5);
+      append(form, div);
+      mount_component(checkbox0, div, null);
+      append(div, t6);
+      mount_component(checkbox1, div, null);
+      append(div, t7);
+      mount_component(checkbox2, div, null);
+      append(div, t8);
+      mount_component(checkbox3, div, null);
+      append(form, t9);
+      mount_component(select1, form, null);
+      append(form, t10);
       mount_component(text2, form, null);
-      append(form, t14);
+      append(form, t11);
       mount_component(text3, form, null);
-      append(form, t15);
+      append(form, t12);
       mount_component(text4, form, null);
-      append(form, t16);
+      append(form, t13);
+      mount_component(text5, form, null);
+      append(form, t14);
       mount_component(textarea, form, null);
+      append(form, t15);
+      append(form, pre0);
+      append(pre0, t16);
       append(form, t17);
-      mount_component(checkbox4, form, null);
-      insert(target, t18, anchor);
+      append(form, input0);
+      append(form, t18);
+      append(form, input1);
+      insert(target, t19, anchor);
       insert(target, pre1, anchor);
-      append(pre1, t19);
+      append(pre1, t20);
       current = true;
+      if (!mounted) {
+        dispose = listen(form, "submit", prevent_default(ctx[3]));
+        mounted = true;
+      }
     },
-    p(ctx2, dirty) {
-      if (!current || dirty[0] & 4)
-        set_data(t0, ctx2[2]);
-      const textmasked0_changes = {};
-      if (!updating_value && dirty[0] & 4) {
+    p(ctx2, [dirty]) {
+      const dateinput_changes = {};
+      if (!updating_value && dirty & 1) {
         updating_value = true;
-        textmasked0_changes.value = ctx2[2];
+        dateinput_changes.value = ctx2[0].regDate;
         add_flush_callback(() => updating_value = false);
       }
-      textmasked0.$set(textmasked0_changes);
+      dateinput.$set(dateinput_changes);
       const text0_changes = {};
-      if (!updating_value_1 && dirty[0] & 8) {
+      if (!updating_value_1 && dirty & 1) {
         updating_value_1 = true;
-        text0_changes.value = ctx2[3];
+        text0_changes.value = ctx2[0].fio;
         add_flush_callback(() => updating_value_1 = false);
       }
       text0.$set(text0_changes);
       const select0_changes = {};
-      if (!updating_value_2 && dirty[0] & 16) {
+      if (!updating_value_2 && dirty & 1) {
         updating_value_2 = true;
-        select0_changes.value = ctx2[4];
+        select0_changes.value = ctx2[0].gender;
         add_flush_callback(() => updating_value_2 = false);
       }
       select0.$set(select0_changes);
-      const textmasked1_changes = {};
-      if (!updating_value_3 && dirty[0] & 1) {
+      const decimal0_changes = {};
+      if (!updating_value_3 && dirty & 1) {
         updating_value_3 = true;
-        textmasked1_changes.value = ctx2[0];
+        decimal0_changes.value = ctx2[0].certScore;
         add_flush_callback(() => updating_value_3 = false);
       }
-      textmasked1.$set(textmasked1_changes);
-      const textmasked2_changes = {};
-      if (!updating_value_4 && dirty[0] & 2) {
+      decimal0.$set(decimal0_changes);
+      const decimal1_changes = {};
+      if (!updating_value_4 && dirty & 1) {
         updating_value_4 = true;
-        textmasked2_changes.value = ctx2[1];
+        decimal1_changes.value = ctx2[0].extraScore;
         add_flush_callback(() => updating_value_4 = false);
       }
-      textmasked2.$set(textmasked2_changes);
-      const textmasked3_changes = {};
-      if (!updating_value_5 && dirty[0] & 32) {
+      decimal1.$set(decimal1_changes);
+      const text1_changes = {};
+      if (!updating_value_5 && dirty & 2) {
         updating_value_5 = true;
-        textmasked3_changes.value = ctx2[5];
+        text1_changes.value = ctx2[1];
         add_flush_callback(() => updating_value_5 = false);
       }
-      textmasked3.$set(textmasked3_changes);
+      text1.$set(text1_changes);
       const checkbox0_changes = {};
-      if (!updating_value_6 && dirty[0] & 64) {
+      if (!updating_value_6 && dirty & 1) {
         updating_value_6 = true;
-        checkbox0_changes.value = ctx2[6];
+        checkbox0_changes.value = ctx2[0].hasEduCertOriginal;
         add_flush_callback(() => updating_value_6 = false);
       }
       checkbox0.$set(checkbox0_changes);
       const checkbox1_changes = {};
-      if (!updating_value_7 && dirty[0] & 128) {
+      if (!updating_value_7 && dirty & 1) {
         updating_value_7 = true;
-        checkbox1_changes.value = ctx2[7];
+        checkbox1_changes.value = ctx2[0].hasMedicalCert;
         add_flush_callback(() => updating_value_7 = false);
       }
       checkbox1.$set(checkbox1_changes);
       const checkbox2_changes = {};
-      if (!updating_value_8 && dirty[0] & 256) {
+      if (!updating_value_8 && dirty & 1) {
         updating_value_8 = true;
-        checkbox2_changes.value = ctx2[8];
+        checkbox2_changes.value = ctx2[0].hasFluoro;
         add_flush_callback(() => updating_value_8 = false);
       }
       checkbox2.$set(checkbox2_changes);
       const checkbox3_changes = {};
-      if (!updating_value_9 && dirty[0] & 512) {
+      if (!updating_value_9 && dirty & 1) {
         updating_value_9 = true;
-        checkbox3_changes.value = ctx2[9];
+        checkbox3_changes.value = ctx2[0].hasVaccine;
         add_flush_callback(() => updating_value_9 = false);
       }
       checkbox3.$set(checkbox3_changes);
       const select1_changes = {};
-      if (!updating_value_10 && dirty[0] & 1024) {
+      if (!updating_value_10 && dirty & 1) {
         updating_value_10 = true;
-        select1_changes.value = ctx2[10];
+        select1_changes.value = ctx2[0].needDorm;
         add_flush_callback(() => updating_value_10 = false);
       }
       select1.$set(select1_changes);
-      const text1_changes = {};
-      if (!updating_value_11 && dirty[0] & 8192) {
-        updating_value_11 = true;
-        text1_changes.value = ctx2[13];
-        add_flush_callback(() => updating_value_11 = false);
-      }
-      text1.$set(text1_changes);
       const text2_changes = {};
-      if (!updating_value_12 && dirty[0] & 2048) {
-        updating_value_12 = true;
-        text2_changes.value = ctx2[11];
-        add_flush_callback(() => updating_value_12 = false);
+      if (!updating_value_11 && dirty & 1) {
+        updating_value_11 = true;
+        text2_changes.value = ctx2[0].address;
+        add_flush_callback(() => updating_value_11 = false);
       }
       text2.$set(text2_changes);
       const text3_changes = {};
-      if (!updating_value_13 && dirty[0] & 4096) {
-        updating_value_13 = true;
-        text3_changes.value = ctx2[12];
-        add_flush_callback(() => updating_value_13 = false);
+      if (!updating_value_12 && dirty & 1) {
+        updating_value_12 = true;
+        text3_changes.value = ctx2[0].school;
+        add_flush_callback(() => updating_value_12 = false);
       }
       text3.$set(text3_changes);
       const text4_changes = {};
-      if (!updating_value_14 && dirty[0] & 16384) {
-        updating_value_14 = true;
-        text4_changes.value = ctx2[14];
-        add_flush_callback(() => updating_value_14 = false);
+      if (!updating_value_13 && dirty & 1) {
+        updating_value_13 = true;
+        text4_changes.value = ctx2[0].schoolYear;
+        add_flush_callback(() => updating_value_13 = false);
       }
       text4.$set(text4_changes);
+      const text5_changes = {};
+      if (!updating_value_14 && dirty & 1) {
+        updating_value_14 = true;
+        text5_changes.value = ctx2[0].tel;
+        add_flush_callback(() => updating_value_14 = false);
+      }
+      text5.$set(text5_changes);
       const textarea_changes = {};
-      if (!updating_value_15 && dirty[0] & 32768) {
+      if (!updating_value_15 && dirty & 1) {
         updating_value_15 = true;
-        textarea_changes.value = ctx2[15];
+        textarea_changes.value = ctx2[0].memo;
         add_flush_callback(() => updating_value_15 = false);
       }
       textarea.$set(textarea_changes);
-      const checkbox4_changes = {};
-      if (!updating_value_16 && dirty[0] & 65536) {
-        updating_value_16 = true;
-        checkbox4_changes.value = ctx2[16];
-        add_flush_callback(() => updating_value_16 = false);
-      }
-      checkbox4.$set(checkbox4_changes);
-      if ((!current || dirty[0] & 131071) && t19_value !== (t19_value = JSON.stringify({
-        regDate: ctx2[2],
-        fio: ctx2[3],
-        gender: ctx2[4],
-        certScore: ctx2[0],
-        extraScore: ctx2[1],
-        totalScore: ctx2[5],
-        hasEduCertOriginal: ctx2[6],
-        hasMedicalCert: ctx2[7],
-        hasFluoro: ctx2[8],
-        hasVaccine: ctx2[9],
-        needDorm: ctx2[10],
-        school: ctx2[11],
-        schoolYear: ctx2[12],
-        address: ctx2[13],
-        tel: ctx2[14],
-        memo: ctx2[15],
-        paidEduReady: ctx2[16]
-      }, null, 4) + ""))
-        set_data(t19, t19_value);
+      if ((!current || dirty & 4) && t16_value !== (t16_value = ctx2[2].join(", ") + ""))
+        set_data(t16, t16_value);
+      if ((!current || dirty & 1) && t20_value !== (t20_value = JSON.stringify(ctx2[0], null, 4) + ""))
+        set_data(t20, t20_value);
     },
     i(local) {
       if (current)
         return;
-      transition_in(textmasked0.$$.fragment, local);
+      transition_in(dateinput.$$.fragment, local);
       transition_in(text0.$$.fragment, local);
       transition_in(select0.$$.fragment, local);
-      transition_in(textmasked1.$$.fragment, local);
-      transition_in(textmasked2.$$.fragment, local);
-      transition_in(textmasked3.$$.fragment, local);
+      transition_in(decimal0.$$.fragment, local);
+      transition_in(decimal1.$$.fragment, local);
+      transition_in(text1.$$.fragment, local);
       transition_in(checkbox0.$$.fragment, local);
       transition_in(checkbox1.$$.fragment, local);
       transition_in(checkbox2.$$.fragment, local);
       transition_in(checkbox3.$$.fragment, local);
       transition_in(select1.$$.fragment, local);
-      transition_in(text1.$$.fragment, local);
       transition_in(text2.$$.fragment, local);
       transition_in(text3.$$.fragment, local);
       transition_in(text4.$$.fragment, local);
+      transition_in(text5.$$.fragment, local);
       transition_in(textarea.$$.fragment, local);
-      transition_in(checkbox4.$$.fragment, local);
       current = true;
     },
     o(local) {
-      transition_out(textmasked0.$$.fragment, local);
+      transition_out(dateinput.$$.fragment, local);
       transition_out(text0.$$.fragment, local);
       transition_out(select0.$$.fragment, local);
-      transition_out(textmasked1.$$.fragment, local);
-      transition_out(textmasked2.$$.fragment, local);
-      transition_out(textmasked3.$$.fragment, local);
+      transition_out(decimal0.$$.fragment, local);
+      transition_out(decimal1.$$.fragment, local);
+      transition_out(text1.$$.fragment, local);
       transition_out(checkbox0.$$.fragment, local);
       transition_out(checkbox1.$$.fragment, local);
       transition_out(checkbox2.$$.fragment, local);
       transition_out(checkbox3.$$.fragment, local);
       transition_out(select1.$$.fragment, local);
-      transition_out(text1.$$.fragment, local);
       transition_out(text2.$$.fragment, local);
       transition_out(text3.$$.fragment, local);
       transition_out(text4.$$.fragment, local);
+      transition_out(text5.$$.fragment, local);
       transition_out(textarea.$$.fragment, local);
-      transition_out(checkbox4.$$.fragment, local);
       current = false;
     },
     d(detaching) {
       if (detaching)
-        detach(pre0);
-      if (detaching)
-        detach(t1);
-      if (detaching)
         detach(form);
-      destroy_component(textmasked0);
+      destroy_component(dateinput);
       destroy_component(text0);
       destroy_component(select0);
-      destroy_component(textmasked1);
-      destroy_component(textmasked2);
-      destroy_component(textmasked3);
+      destroy_component(decimal0);
+      destroy_component(decimal1);
+      destroy_component(text1);
       destroy_component(checkbox0);
       destroy_component(checkbox1);
       destroy_component(checkbox2);
       destroy_component(checkbox3);
       destroy_component(select1);
-      destroy_component(text1);
       destroy_component(text2);
       destroy_component(text3);
       destroy_component(text4);
+      destroy_component(text5);
       destroy_component(textarea);
-      destroy_component(checkbox4);
       if (detaching)
-        detach(t18);
+        detach(t19);
       if (detaching)
         detach(pre1);
+      mounted = false;
+      dispose();
     }
   };
 }
-function instance6($$self, $$props, $$invalidate) {
-  let { regDate } = $$props;
-  let { fio } = $$props;
-  let { gender } = $$props;
-  let { certScore } = $$props;
-  let { extraScore } = $$props;
-  let { totalScore } = $$props;
-  let { hasEduCertOriginal } = $$props;
-  let { hasMedicalCert } = $$props;
-  let { hasFluoro } = $$props;
-  let { hasVaccine } = $$props;
-  let { needDorm } = $$props;
-  let { school } = $$props;
-  let { schoolYear } = $$props;
-  let { address } = $$props;
-  let { tel } = $$props;
-  let { memo } = $$props;
-  let { paidEduReady } = $$props;
-  function textmasked0_value_binding(value) {
-    regDate = value;
-    $$invalidate(2, regDate);
+function instance7($$self, $$props, $$invalidate) {
+  let totalScore;
+  let tags;
+  let { data = {
+    type: "abit",
+    regDate: "2.3.21",
+    fio: "\u041D\u0438\u044F\u0437\u043E\u0432\u0430 \u041C\u0430\u0440\u0438\u043D\u0430 \u0420\u043E\u043C\u0430\u043D\u043E\u0432\u043D\u0430",
+    gender: "\u0436",
+    certScore: "4,81",
+    extraScore: 0.1,
+    hasEduCertOriginal: true,
+    hasMedicalCert: true,
+    hasFluoro: true,
+    hasVaccine: true,
+    address: "\u041F\u041A \u0433. \u0411\u043E\u043B\u044C\u0448\u043E\u0439-\u041A\u0430\u043C\u0435\u043D\u044C",
+    tel: "+79841528598",
+    needDorm: "1",
+    schoolYear: "2021",
+    school: "\u041C\u0411\u041E\u0423 \u0421\u041E\u0428 \u2116 44 \u0433. \u0411-\u041A\u0430\u043C\u0435\u043D\u044C",
+    memo: "",
+    applications: [
+      {
+        eduProg: "\u0411\u0423",
+        grade: "4",
+        priority: true,
+        disabled: false
+      }
+    ],
+    _id: "86d77d0c-ea1d-47ca-95a4-ba9f828b424a"
+  } } = $$props;
+  function submit_handler(event) {
+    bubble.call(this, $$self, event);
+  }
+  function dateinput_value_binding(value) {
+    if ($$self.$$.not_equal(data.regDate, value)) {
+      data.regDate = value;
+      $$invalidate(0, data);
+    }
   }
   function text0_value_binding(value) {
-    fio = value;
-    $$invalidate(3, fio);
+    if ($$self.$$.not_equal(data.fio, value)) {
+      data.fio = value;
+      $$invalidate(0, data);
+    }
   }
   function select0_value_binding(value) {
-    gender = value;
-    $$invalidate(4, gender);
+    if ($$self.$$.not_equal(data.gender, value)) {
+      data.gender = value;
+      $$invalidate(0, data);
+    }
   }
-  function textmasked1_value_binding(value) {
-    certScore = value;
-    $$invalidate(0, certScore);
+  function decimal0_value_binding(value) {
+    if ($$self.$$.not_equal(data.certScore, value)) {
+      data.certScore = value;
+      $$invalidate(0, data);
+    }
   }
-  function textmasked2_value_binding(value) {
-    extraScore = value;
-    $$invalidate(1, extraScore);
-  }
-  function textmasked3_value_binding(value) {
-    totalScore = value;
-    $$invalidate(5, totalScore), $$invalidate(0, certScore), $$invalidate(1, extraScore);
-  }
-  function checkbox0_value_binding(value) {
-    hasEduCertOriginal = value;
-    $$invalidate(6, hasEduCertOriginal);
-  }
-  function checkbox1_value_binding(value) {
-    hasMedicalCert = value;
-    $$invalidate(7, hasMedicalCert);
-  }
-  function checkbox2_value_binding(value) {
-    hasFluoro = value;
-    $$invalidate(8, hasFluoro);
-  }
-  function checkbox3_value_binding(value) {
-    hasVaccine = value;
-    $$invalidate(9, hasVaccine);
-  }
-  function select1_value_binding(value) {
-    needDorm = value;
-    $$invalidate(10, needDorm);
+  function decimal1_value_binding(value) {
+    if ($$self.$$.not_equal(data.extraScore, value)) {
+      data.extraScore = value;
+      $$invalidate(0, data);
+    }
   }
   function text1_value_binding(value) {
-    address = value;
-    $$invalidate(13, address);
+    totalScore = value;
+    $$invalidate(1, totalScore), $$invalidate(0, data);
+  }
+  function checkbox0_value_binding(value) {
+    if ($$self.$$.not_equal(data.hasEduCertOriginal, value)) {
+      data.hasEduCertOriginal = value;
+      $$invalidate(0, data);
+    }
+  }
+  function checkbox1_value_binding(value) {
+    if ($$self.$$.not_equal(data.hasMedicalCert, value)) {
+      data.hasMedicalCert = value;
+      $$invalidate(0, data);
+    }
+  }
+  function checkbox2_value_binding(value) {
+    if ($$self.$$.not_equal(data.hasFluoro, value)) {
+      data.hasFluoro = value;
+      $$invalidate(0, data);
+    }
+  }
+  function checkbox3_value_binding(value) {
+    if ($$self.$$.not_equal(data.hasVaccine, value)) {
+      data.hasVaccine = value;
+      $$invalidate(0, data);
+    }
+  }
+  function select1_value_binding(value) {
+    if ($$self.$$.not_equal(data.needDorm, value)) {
+      data.needDorm = value;
+      $$invalidate(0, data);
+    }
   }
   function text2_value_binding(value) {
-    school = value;
-    $$invalidate(11, school);
+    if ($$self.$$.not_equal(data.address, value)) {
+      data.address = value;
+      $$invalidate(0, data);
+    }
   }
   function text3_value_binding(value) {
-    schoolYear = value;
-    $$invalidate(12, schoolYear);
+    if ($$self.$$.not_equal(data.school, value)) {
+      data.school = value;
+      $$invalidate(0, data);
+    }
   }
   function text4_value_binding(value) {
-    tel = value;
-    $$invalidate(14, tel);
+    if ($$self.$$.not_equal(data.schoolYear, value)) {
+      data.schoolYear = value;
+      $$invalidate(0, data);
+    }
+  }
+  function text5_value_binding(value) {
+    if ($$self.$$.not_equal(data.tel, value)) {
+      data.tel = value;
+      $$invalidate(0, data);
+    }
   }
   function textarea_value_binding(value) {
-    memo = value;
-    $$invalidate(15, memo);
-  }
-  function checkbox4_value_binding(value) {
-    paidEduReady = value;
-    $$invalidate(16, paidEduReady);
+    if ($$self.$$.not_equal(data.memo, value)) {
+      data.memo = value;
+      $$invalidate(0, data);
+    }
   }
   $$self.$$set = ($$props2) => {
-    if ("regDate" in $$props2)
-      $$invalidate(2, regDate = $$props2.regDate);
-    if ("fio" in $$props2)
-      $$invalidate(3, fio = $$props2.fio);
-    if ("gender" in $$props2)
-      $$invalidate(4, gender = $$props2.gender);
-    if ("certScore" in $$props2)
-      $$invalidate(0, certScore = $$props2.certScore);
-    if ("extraScore" in $$props2)
-      $$invalidate(1, extraScore = $$props2.extraScore);
-    if ("totalScore" in $$props2)
-      $$invalidate(5, totalScore = $$props2.totalScore);
-    if ("hasEduCertOriginal" in $$props2)
-      $$invalidate(6, hasEduCertOriginal = $$props2.hasEduCertOriginal);
-    if ("hasMedicalCert" in $$props2)
-      $$invalidate(7, hasMedicalCert = $$props2.hasMedicalCert);
-    if ("hasFluoro" in $$props2)
-      $$invalidate(8, hasFluoro = $$props2.hasFluoro);
-    if ("hasVaccine" in $$props2)
-      $$invalidate(9, hasVaccine = $$props2.hasVaccine);
-    if ("needDorm" in $$props2)
-      $$invalidate(10, needDorm = $$props2.needDorm);
-    if ("school" in $$props2)
-      $$invalidate(11, school = $$props2.school);
-    if ("schoolYear" in $$props2)
-      $$invalidate(12, schoolYear = $$props2.schoolYear);
-    if ("address" in $$props2)
-      $$invalidate(13, address = $$props2.address);
-    if ("tel" in $$props2)
-      $$invalidate(14, tel = $$props2.tel);
-    if ("memo" in $$props2)
-      $$invalidate(15, memo = $$props2.memo);
-    if ("paidEduReady" in $$props2)
-      $$invalidate(16, paidEduReady = $$props2.paidEduReady);
+    if ("data" in $$props2)
+      $$invalidate(0, data = $$props2.data);
   };
   $$self.$$.update = () => {
-    if ($$self.$$.dirty[0] & 3) {
-      $:
-        $$invalidate(5, totalScore = certScore + extraScore);
+    if ($$self.$$.dirty & 1) {
+      $: {
+        $$invalidate(2, tags = Array.from(data.memo.matchAll(/#([a-zA-Z0-9_a-яА-ЯёЁ]+)/g), (tag) => tag[1]));
+        $$invalidate(0, data.totalScore = Number.isFinite(data.certScore) && Number.isFinite(data.extraScore) ? parseFloat((data.certScore + data.extraScore).toFixed(5)) : void 0, data);
+        $$invalidate(1, totalScore = String(data.totalScore).replace(".", ","));
+      }
     }
   };
   return [
-    certScore,
-    extraScore,
-    regDate,
-    fio,
-    gender,
+    data,
     totalScore,
-    hasEduCertOriginal,
-    hasMedicalCert,
-    hasFluoro,
-    hasVaccine,
-    needDorm,
-    school,
-    schoolYear,
-    address,
-    tel,
-    memo,
-    paidEduReady,
-    textmasked0_value_binding,
+    tags,
+    submit_handler,
+    dateinput_value_binding,
     text0_value_binding,
     select0_value_binding,
-    textmasked1_value_binding,
-    textmasked2_value_binding,
-    textmasked3_value_binding,
+    decimal0_value_binding,
+    decimal1_value_binding,
+    text1_value_binding,
     checkbox0_value_binding,
     checkbox1_value_binding,
     checkbox2_value_binding,
     checkbox3_value_binding,
     select1_value_binding,
-    text1_value_binding,
     text2_value_binding,
     text3_value_binding,
     text4_value_binding,
-    textarea_value_binding,
-    checkbox4_value_binding
+    text5_value_binding,
+    textarea_value_binding
   ];
 }
 var Comp = class extends SvelteComponent {
   constructor(options) {
     super();
-    init(this, options, instance6, create_fragment6, safe_not_equal, {
-      regDate: 2,
-      fio: 3,
-      gender: 4,
-      certScore: 0,
-      extraScore: 1,
-      totalScore: 5,
-      hasEduCertOriginal: 6,
-      hasMedicalCert: 7,
-      hasFluoro: 8,
-      hasVaccine: 9,
-      needDorm: 10,
-      school: 11,
-      schoolYear: 12,
-      address: 13,
-      tel: 14,
-      memo: 15,
-      paidEduReady: 16
-    }, null, [-1, -1]);
+    init(this, options, instance7, create_fragment7, safe_not_equal, { data: 0 }, add_css2);
+  }
+  get data() {
+    return this.$$.ctx[0];
+  }
+  set data(data) {
+    this.$$set({ data });
+    flush();
   }
 };
 var comp_default = Comp;
 export {
   comp_default as default
 };
+//# sourceMappingURL=comp.js.map

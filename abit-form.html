@@ -5,6 +5,12 @@
     <title>ДВГГТК. Абитуриенты</title><!-- https://css-tricks.com/emoji-as-a-favicon/ -->
     <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2280%22&gt;☕&lt;/text&gt;&lt;/svg&gt;">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+      .field {
+        padding: 0.3em;
+      }
+      
+    </style>
   </head>
   <body>
     <header>
@@ -18,25 +24,18 @@
       </nav>
     </header>
     <main>
-      <ul>
-        <li><a href="edu-prog-form.html">edu-prog-form.html</a></li>
-        <li><a href="edu-prog-view.html">edu-prog-view.html</a></li>
-        <li><a href="edu-progs.html">edu-progs.html</a></li>
-        <li><a href="abit-view.html">abit-view.html</a></li>
-        <li><a href="abit.html">abit.html</a></li>
-        <li><a href="abit-form.html">abit-form.html</a></li>
-        <li><a href="backup.html">backup.html</a></li>
-      </ul>
+      <h1>Абитуриенты</h1>
+      <p>It works.</p>
+      <hr>
       <div id="svelte"></div>
       <script type="module">
-        import Component from "./js/svelte/sample.js";
-        
-        const target = document.getElementById('svelte');
-        const data = {name: 'from html'}
-        const cmp = new Component({
-          target,
-          props: {data}
+        import App from './js/svelte/comp.js';
+        const svelte = document.getElementById('svelte');
+        const app = new App({
+          target: svelte
         });
+        
+        document.body.addEventListener('submit', (event) => console.log(event));
       </script>
     </main>
     <footer style="min-height: 3em; background-color: lightgrey;"></footer>
