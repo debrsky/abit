@@ -12,8 +12,13 @@ export default function svelte() {
         minify: false,
         format: 'esm',
         define: {global: 'window'},
-        sourcemap: 'external',
-        plugins: [commonjs(), sveltePlugin()]
+        sourcemap: 'linked',
+        plugins: [
+          commonjs(),
+          sveltePlugin({
+            compilerOptions: {generate: 'dom', css: true}
+          })
+        ]
       })
     )
     .pipe(gulp.dest('./public/js/svelte'));

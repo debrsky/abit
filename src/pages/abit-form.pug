@@ -1,0 +1,25 @@
+extends ../pug/layout
+
+//- block preload
+//-   link(rel="preload" href="fonts/TwemojiMozilla.ttf" as="font")
+
+block style
+  style.
+    .field {
+      padding: 0.3em;
+    }
+
+block content
+  h1 Абитуриенты
+  p It works.
+  hr
+
+  #svelte
+  script(type="module").
+    import App from './js/svelte/comp.js';
+    const svelte = document.getElementById('svelte');
+    const app = new App({
+      target: svelte
+    });
+
+    document.body.addEventListener('submit', (event) => console.log(event));
