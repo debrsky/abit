@@ -1,32 +1,88 @@
+import A11yDialog from 'a11y-dialog';
 import {createAbitViewElem} from './abit-view.js';
-import PouchDB from 'pouchdb';
-const db = new PouchDB('my_database');
+import AbitForm from './svelte/comp.svelte';
+
+import {db, subscribe, unsubscribe} from './db/index.js';
+
+let items = [];
+let docs = [];
 
 const outputElem = document.getElementById('abit-list');
 const progressElem = document.getElementById('progress');
 
-outputElem.addEventListener('dblclick', (event) => {
+const editDoc = async (id) => {
+  const doc = docs.find((doc) => doc._id === id);
+  console.assert(doc);
+
+  const result = await openEditDialog(doc);
+  console.log(result);
+
+  if (!result.ok) return;
+
+  const docNew = {...result.doc};
+
+  if (result.cmd === 'duplicate') {
+    delete docNew._id;
+    delete docNew._rev;
+  }
+
+  if (!docNew._id) {
+    const {ok, id, rev} = await db.post(docNew);
+    console.assert(ok);
+    docNew._rev = rev;
+    docNew._id = id;
+  } else {
+    const {ok, id, rev} = await db.put(docNew);
+    console.assert(ok);
+    console.assert(doc._id === id);
+    docNew._rev = rev;
+  }
+};
+
+outputElem.addEventListener('dblclick', async (event) => {
   const target = event.target.closest('.item');
-  console.log(target);
-  target.classList.toggle('dark');
+  const id = target.dataset.id;
+  await editDoc(id);
 });
 
-outputElem.addEventListener('click', (event) => {
-  const target = event.target;
-  console.log(target);
+document.documentElement.addEventListener('keydown', async (event) => {
+  if (event.code === 'Insert') {
+    // await openEditForm(null);
+  }
 });
 
-let items = [];
+const dbChangeHandler = (change) => {
+  const {id, doc} = change;
+
+  const docIdx = docs.findIndex((doc) => doc._id === id);
+
+  if (docIdx === -1) {
+    docs.unshift(doc);
+    const elem = createAbitViewElem(doc);
+    outputElem.prepend(elem);
+    elem.scrollIntoView({block: 'center'});
+    return;
+  }
+
+  docs[docIdx] = doc;
+
+  const docElem = outputElem.querySelector(`[data-id="${id}"]`);
+  console.assert(docElem);
+  docElem.replaceWith(createAbitViewElem(doc));
+};
+
+subscribe(dbChangeHandler);
 
 (async () => {
   console.log('query');
   console.time('0');
+
   const dbDocs = await db.query('abits', {
     include_docs: true,
     attachments: true
   });
 
-  console.log(dbDocs);
+  docs = dbDocs.rows.map((row) => row.doc);
 
   console.timeEnd('0');
 
@@ -61,4 +117,46 @@ let items = [];
   console.timeEnd('1');
 })();
 
-console.log('It works.');
+const dialogElem = document.getElementById('edit-dialog');
+const abitForm = new AbitForm({
+  target: dialogElem.querySelector('.dialog-content-form')
+});
+
+const dialog = new A11yDialog(dialogElem);
+
+function openEditDialog(doc) {
+  let dialogRes = {};
+
+  abitForm.data = {...doc};
+  abitForm.close = (res = {}) => {
+    dialogRes = res;
+    dialog.hide();
+  };
+
+  const dbDocChangeHandler = (change) => {
+    const {id} = change;
+    if (id !== doc._id) return;
+
+    abitForm.data = {...change.doc};
+  };
+
+  subscribe(dbDocChangeHandler);
+
+  const executor = (resolve, reject) => {
+    dialogElem.addEventListener(
+      'hide',
+      (event) => {
+        resolve({
+          ok: dialogRes.ok,
+          cmd: dialogRes.cmd,
+          doc: {...abitForm.data}
+        });
+      },
+      {once: true}
+    );
+
+    dialog.show();
+  };
+
+  return new Promise(executor).finally(() => unsubscribe(dbDocChangeHandler));
+}

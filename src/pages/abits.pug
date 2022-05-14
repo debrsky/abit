@@ -21,4 +21,11 @@ block content
   #abit-list
 
 block assets
+  #edit-dialog.dialog-container(aria-labelledby="dialog-title-id", aria-hidden="true")
+    .dialog-overlay(data-a11y-dialog-hide)
+    .dialog-content(role="document")
+      button.dialog-close-button(type="button", data-a11y-dialog-hide, aria-label="Close dialog") &times;
+      h2#dialog-title-id.h2 Правка абитуриента
+      .dialog-content-form
+
   script(src="js/abits.js")

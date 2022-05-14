@@ -4,15 +4,16 @@
   import Text from './fields/text.svelte';
   import Decimal from './fields/decimal.svelte';
   import DateInput from './fields/date.svelte';
-  import TextMasked from './fields/text-masked.svelte';
   import Textarea from './fields/textarea.svelte';
   import Select from './fields/select.svelte';
   import Checkbox from './fields/checkbox.svelte';
 
+  let certScore;
+  let extraScore;
   let totalScore;
   let tags;
 
-  let name = 'Svelte';
+  export let close = () => {};
 
   export let data = {
     type: 'abit',
@@ -45,20 +46,43 @@
   $: {
     tags = Array.from(
       // [\p{Alpha}\p{M}\p{Nd}\p{Pc}\p{Join_C}] // https://learn.javascript.ru/regexp-character-sets-and-ranges
-      data.memo.matchAll(/#([a-zA-Z0-9_a-яА-ЯёЁ]+)/g),
+      data?.memo.matchAll(/#([a-zA-Z0-9_a-яА-ЯёЁ]+)/g) || [],
       (tag) => tag[1]
     );
+  }
 
-    data.totalScore =
-      Number.isFinite(data.certScore) && Number.isFinite(data.extraScore)
-        ? parseFloat((data.certScore + data.extraScore).toFixed(5))
-        : undefined;
+  $: {
+    certScore = parseNumber(data.certScore);
+    extraScore = parseNumber(data.extraScore);
 
-    totalScore = String(data.totalScore).replace('.', ',');
+    data.totalScore = parseFloat(
+      (
+        (Number.isFinite(certScore) ? certScore : 0) +
+        (Number.isFinite(extraScore) ? extraScore : 0)
+      ).toFixed(6)
+    );
+
+    totalScore = Number.isFinite(data.totalScore)
+      ? data.totalScore.toString().replace('.', ',')
+      : 0;
+  }
+
+  function parseNumber(n) {
+    if (Number.isFinite(n)) return n;
+
+    let r;
+    try {
+      r = parseFloat(n.toString().replace(',', '.'));
+    } catch (err) {
+      return n;
+    }
+    if (Number.isFinite(r)) return r;
+
+    return n;
   }
 </script>
 
-<form on:submit|preventDefault>
+<form on:submit|preventDefault={() => close({ok: true})}>
   <DateInput title={'Дата регистрации'} bind:value={data.regDate} required />
 
   <Text title={'ФИО'} bind:value={data.fio} size={50} />
@@ -104,9 +128,25 @@
   <Textarea title={'Примечание'} bind:value={data.memo} size={50} />
   <pre>{tags.join(', ')}</pre>
 
-  <input type="submit" value="Ок" />
-  <input type="reset" value="Отмена" />
+  <button class="button button--primary" type="submit"
+    >✔️ Сохранить и закрыть</button
+  >
+  <button
+    class="button button--secondary"
+    type="button"
+    on:click={() => {
+      close({ok: true, cmd: 'duplicate'});
+    }}>📑 Дублировать</button
+  >
+  <button
+    class="button button--secondary"
+    type="button"
+    on:click={() => {
+      close({ok: false});
+    }}>❌ Закрыть без сохранения</button
+  >
 </form>
+
 <pre id="debug">{JSON.stringify(data, null, 4)}</pre>
 
 <style>
@@ -118,5 +158,6 @@
   }
   #debug:target {
     display: block;
+    font-size: xx-small;
   }
 </style>
