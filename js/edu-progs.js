@@ -9613,13 +9613,30 @@
   // src/js/db/index.js
   var DB_NAME = "my_database";
   var db = new index_browser_es_default(DB_NAME);
-  var remoteDB = new index_browser_es_default(`http://localhost:5984/${DB_NAME}`);
-  db.sync(remoteDB, { live: true, retry: true }).on("denied", function(err) {
-    console.log("denied", err);
-  }).on("complete", function(info) {
-    console.log("complete", info);
-  }).on("error", function(err) {
-    console.log("error", err);
+  var dbChanges = {
+    handlers: /* @__PURE__ */ new Set(),
+    subscribe(handler) {
+      this.handlers.add(handler);
+    },
+    unsubscribe(handler) {
+      return this.handlers.delete(handler);
+    },
+    handle(change) {
+      for (const handler of this.handlers) {
+        handler(change);
+      }
+    }
+  };
+  db.changes({
+    filter: function(doc) {
+      return true;
+    },
+    since: "now",
+    live: true,
+    include_docs: true,
+    conflicts: true
+  }).on("change", (change) => dbChanges.handle(change)).on("error", function(err) {
+    console.log(err);
   });
 
   // src/js/edu-progs.js

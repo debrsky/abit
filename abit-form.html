@@ -2,7 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8">
-    <title>ДВГГТК. Абитуриенты</title><!-- https://css-tricks.com/emoji-as-a-favicon/ -->
+    <title>Абитуриенты</title><!-- https://css-tricks.com/emoji-as-a-favicon/ -->
     <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2280%22&gt;☕&lt;/text&gt;&lt;/svg&gt;">
     <link rel="stylesheet" href="css/style.css">
     <style>
@@ -27,17 +27,14 @@
       <h1>Абитуриенты</h1>
       <p>It works.</p>
       <hr>
-      <div id="svelte"></div>
-      <script type="module">
-        import App from './js/svelte/comp.js';
-        const svelte = document.getElementById('svelte');
-        const app = new App({
-          target: svelte
-        });
-        
-        document.body.addEventListener('submit', (event) => console.log(event));
-      </script>
+      <div id="svelte">
+        <script>
+          document.body.addEventListener('submit', (event) => console.log(event));
+          
+        </script>
+      </div>
     </main>
     <footer style="min-height: 3em; background-color: lightgrey;"></footer>
+    <script src="js/abit-form.js"></script>
   </body>
 </html>

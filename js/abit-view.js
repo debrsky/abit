@@ -88,7 +88,7 @@
       (function(Number2, data2, parseFloat2) {
         ;
         pug_debug_line = 1;
-        pug_html = pug_html + "<article" + (' class="abit-view"' + pug_attr("data-id", data2._id, true, false)) + ">";
+        pug_html = pug_html + "<article" + (' class="item abit-view"' + pug_attr("data-id", data2._id, true, false)) + ">";
         ;
         pug_debug_line = 2;
         pug_html = pug_html + '<div class="container" style="display: flex;">';
