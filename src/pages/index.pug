@@ -18,15 +18,3 @@ block content
       ]
     each link in links
       +item(link)
-
-  #svelte
-
-  script(type="module").
-    import Component from "./js/svelte/sample.js";
-
-    const target = document.getElementById('svelte');
-    const data = {name: 'from html'}
-    const cmp = new Component({
-      target,
-      props: {data}
-    });
