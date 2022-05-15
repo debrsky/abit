@@ -19,13 +19,29 @@
     </style>
   </head>
   <body>
-    <header>
-      <nav class="nav">
+    <header class="header">
+      <nav class="nav" aria-label="Главное меню">
         <ul class="nav__list">
           <li class="nav__item nav__item--home"><a class="nav__link" href="./">База данных</a></li>
           <li class="nav__item"><a class="nav__link" href="abits.html">Абитуриенты</a></li>
-          <li class="nav__item"><a class="nav__link" href="edu-progs.html">Образовательные программы</a></li>
-          <li class="nav__item"><a class="nav__link" href="backup.html">Backup</a></li>
+          <li class="nav__item nav-dropdown">
+            <button class="nav-dropdown__title nav__link nav__link--dropdown-root" type="button" aria-expanded="false" aria-controls="dropdown-content">Отчеты</button>
+            <ul class="nav__list nav-dropdown__menu" id="dromdown-content">
+              <li class="nav__item"><a class="nav__link" href="#">Потребность в общежитии</a></li>
+              <li class="nav__item"><a class="nav__link" href="#">Cupcakes</a></li>
+              <li class="nav__item"><a class="nav__link" href="#">Chokolate</a></li>
+              <li class="nav__item"><a class="nav__link" href="backup.html">Backup</a></li>
+            </ul>
+          </li>
+          <li class="nav__item nav-dropdown">
+            <button class="nav-dropdown__title nav__link nav__link--dropdown-root" type="button" aria-expanded="false" aria-controls="dropdown-content">Сервис</button>
+            <ul class="nav__list nav-dropdown__menu" id="dromdown-content">
+              <li class="nav__item"><a class="nav__link" href="#">Donuts</a></li>
+              <li class="nav__item"><a class="nav__link" href="#">Cupcakes</a></li>
+              <li class="nav__item"><a class="nav__link" href="edu-progs.html">Образовательные программы</a></li>
+              <li class="nav__item"><a class="nav__link" href="backup.html">Резервное копирование</a></li>
+            </ul>
+          </li>
         </ul>
       </nav>
     </header>
@@ -35,7 +51,7 @@
     </main>
     <footer style="min-height: 3em; background-color: lightgrey;"></footer>
     <div class="dialog-container" id="edit-dialog" aria-labelledby="dialog-title-id" aria-hidden="true">
-      <div class="dialog-overlay" data-a11y-dialog-hide></div>
+      <div class="dialog-overlay" data-a11y-dialog-nohide></div>
       <div class="dialog-content" role="document">
         <button class="dialog-close-button" type="button" data-a11y-dialog-hide aria-label="Close dialog">&times;</button>
         <h2 class="h2" id="dialog-title-id">Правка абитуриента</h2>
