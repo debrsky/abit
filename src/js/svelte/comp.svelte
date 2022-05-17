@@ -2,7 +2,7 @@
 
 <script>
   import Text from './fields/text.svelte';
-  import Decimal from './fields/decimal.svelte';
+  import Numeric from './fields/numeric.svelte';
   import DateInput from './fields/date.svelte';
   import Textarea from './fields/textarea.svelte';
   import Select from './fields/select.svelte';
@@ -91,12 +91,12 @@
     bind:value={data.gender}
     options={{м: 'мужской', ж: 'женский'}}
   />
-  <Decimal
+  <Numeric
     title={'Средний балл аттестата'}
     bind:value={data.certScore}
     size={5}
   />
-  <Decimal
+  <Numeric
     title={'Дополнительные баллы'}
     bind:value={data.extraScore}
     size={5}

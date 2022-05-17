@@ -1,38 +1,92 @@
+<svelte:options accessors={true} />
+
 <script>
-  export let speciality = {
-    name: '38.02.01 Экономика и бухгалтерский учет',
-    code: 'БУ',
-    qualification: 'бухгалтер',
+  import Numeric from '../fields/numeric.svelte';
+
+  export let save = () => {};
+  export let doc = {type: 'spec', specialities: []};
+
+  let speciality = {
+    name: '',
+    code: '',
+    qualification: '',
     fullTime: {
       level9: {
-        duration: '2 года 10 месяцев',
-        freePlaces: 25,
-        paidPlaces: 50
+        duration: 0,
+        freePlaces: 0,
+        paidPlaces: 0
       },
       level11: {
-        duration: '1 год 10 месяцев',
-        freePlaces: 25,
-        paidPlaces: 50
+        duration: 0,
+        freePlaces: 0,
+        paidPlaces: 0
       }
     },
     absentia: {
       level11: {
-        duration: '2 года 10 месяцев',
-        freePlaces: 25,
-        paidPlaces: 50
+        duration: 0,
+        freePlaces: 0,
+        paidPlaces: 0
       }
     }
   };
 
-  const specialities = [];
-  specialities.push(JSON.parse(JSON.stringify(speciality)));
-  specialities.push(JSON.parse(JSON.stringify(speciality)));
-  specialities.push(JSON.parse(JSON.stringify(speciality)));
-  specialities.push(JSON.parse(JSON.stringify(speciality)));
-  specialities.push(JSON.parse(JSON.stringify(speciality)));
+  const addNewSpec = () => {
+    const spec = JSON.parse(JSON.stringify(speciality));
+    doc.specialities = [...doc.specialities, spec];
+  };
+  const removeSpec = (specIdx) => {
+    doc.specialities = [
+      ...doc.specialities.filter((spec, idx) => idx !== specIdx)
+    ];
+  };
+
+  const getEduProgs = (spec) => {
+    const eduProgs = [];
+    if (spec?.fullTime?.level9?.freePlaces) eduProgs.push(`${spec.code}9`);
+    if (spec?.fullTime?.level9?.paidPlaces) eduProgs.push(`${spec.code}9к`);
+    if (spec?.fullTime?.level11?.freePlaces) eduProgs.push(`${spec.code}`);
+    if (spec?.fullTime?.level11?.paidPlaces) eduProgs.push(`${spec.code}к`);
+    if (spec?.absentia?.level11?.freePlaces) eduProgs.push(`${spec.code}з`);
+    if (spec?.absentia?.level11?.paidPlaces) eduProgs.push(`${spec.code}зк`);
+    return eduProgs;
+  };
+
+  const specExport = () => {
+    const a = document.createElement('a');
+    const blob = new Blob([JSON.stringify(doc.specialities, null, 4)], {
+      type: 'application/json'
+    });
+    a.download = 'specialities.json';
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    a.remove();
+  };
+
+  const specImport = (e) => {
+    if (e.target.files.length === 0) return;
+
+    const file = e.target.files[0];
+
+    const reader = new FileReader();
+    reader.onload = function () {
+      doc.specialities = JSON.parse(reader.result);
+    };
+
+    reader.onerror = function () {
+      console.log(reader.error);
+    };
+
+    reader.onloadend = function () {
+      e.target.value = null;
+    };
+
+    reader.readAsText(file);
+  };
 </script>
 
-<article>
+<article data-id={doc._id} data-rev={doc._rev}>
   <table>
     <thead>
       <tr>
@@ -40,21 +94,39 @@
         <th class="col-spec">Специальность</th>
         <th class="col-edu-form">Форма обучения</th>
         <th class="col-base-edu-level">Базовое образование</th>
-        <th class="col-duration">Продолжительность обучения</th>
+        <th class="col-duration">Срок обучения, лет</th>
         <th class="col-free-places">Бесплатно, кол-во мест</th>
         <th class="col-paid-places">Платно, кол-во мест</th>
       </tr>
     </thead>
     <tbody>
-      {#each specialities as spec}
+      {#each doc.specialities as spec, idx}
         <tr>
-          <td class="counter last" rowspan="3" />
+          <td class="last" rowspan="3">
+            <div
+              class="counter"
+              style="display: flex; flex-direction: column; align-items: center;"
+            >
+              <button
+                type="button"
+                on:click={() => {
+                  removeSpec(idx);
+                }}
+                style="width: 3ch;"
+                >X
+              </button>
+            </div>
+          </td>
           <td class="last" rowspan="3">
             <div style="display: flex; flex-direction: column; width: 100%;">
               <label style="display: flex; flex-wrap: wrap; width: 100%;">
                 <span>Наименование</span>
-                <textarea bind:value={spec.name} style="width: 100%" />
-                <!-- <input type="text" bind:value={spec.name} style="width: 100%;" /> -->
+                <!-- <textarea bind:value={spec.name} style="width: 100%" /> -->
+                <input
+                  type="text"
+                  bind:value={spec.name}
+                  style="width: 100%;"
+                />
               </label>
               <div style="display: flex; gap: 1ch; text-align: start;">
                 <label>
@@ -69,51 +141,85 @@
                   style="flex-grow: 1; display: flex; flex-direction: column;"
                 >
                   <span>Квалификация</span>
-                  <textarea
+                  <!-- <textarea
                     bind:value={spec.qualification}
                     style="width: 100%"
+                  /> -->
+                  <input
+                    type="text"
+                    bind:value={spec.qualification}
+                    style="width: 100%;"
                   />
-                  <!-- <input
-                  type="text"
-                  bind:value={spec.qualification}
-                  style="width: 100%;"
-                /> -->
                 </label>
               </div>
+              <!-- <div>{getEduProgs(spec).join(', ')}</div> -->
             </div>
           </td>
           <td rowspan="2">очная</td>
           <td>9 классов</td>
-          <td>{spec.fullTime.level9.duration}</td>
-          <td>{spec.fullTime.level9.freePlaces}</td>
-          <td>{spec.fullTime.level9.paidPlaces}</td>
+          <td>
+            <Numeric bind:value={spec.fullTime.level9.duration} size={5} />
+          </td>
+          <td>
+            <Numeric
+              bind:value={spec.fullTime.level9.freePlaces}
+              title={null}
+              size={5}
+            />
+          </td>
+          <td>
+            <Numeric
+              bind:value={spec.fullTime.level9.paidPlaces}
+              title={null}
+              size={5}
+            />
+          </td>
         </tr>
         <tr>
           <td>11 классов</td>
-          <td>{spec.fullTime.level11.duration}</td>
-          <td>{spec.fullTime.level11.freePlaces}</td>
-          <td>{spec.fullTime.level11.paidPlaces}</td>
+          <td>
+            <Numeric bind:value={spec.fullTime.level11.duration} size={5} />
+          </td>
+          <td>
+            <Numeric bind:value={spec.fullTime.level11.freePlaces} size={5} />
+          </td>
+          <td>
+            <Numeric bind:value={spec.fullTime.level11.paidPlaces} size={5} />
+          </td>
         </tr>
         <tr>
           <td class="last">заочная</td>
           <td class="last">11 классов</td>
-          <td class="last">{spec.absentia.level11.duration}</td>
           <td class="last">
-            <input
-              type="text"
-              size="5"
-              bind:value={spec.absentia.level11.freePlaces}
-            />
+            <Numeric bind:value={spec.absentia.level11.duration} size={5} />
           </td>
-          <td
-            class="last"
-            contenteditable="true"
-            bind:textContent={spec.absentia.level11.paidPlaces}
-          />
+          <td class="last">
+            <Numeric bind:value={spec.absentia.level11.freePlaces} size={5} />
+          </td>
+          <td class="last">
+            <Numeric bind:value={spec.absentia.level11.paidPlaces} size={5} />
+          </td>
         </tr>
       {/each}
     </tbody>
   </table>
+  <div style="margin-top: 1em;">
+    <button type="button" on:click={() => addNewSpec()}>
+      Добавить специальность
+    </button>
+  </div>
+  <div style="margin-top: 1em;">
+    <button type="button" on:click={() => save(doc)}>Сохранить</button>
+    <button type="button" on:click={() => specExport(doc)}>Экспорт</button>
+    <div style="margin-top: 1em;">
+      <span>Импорт</span>
+      <input
+        type="file"
+        accept="application/json"
+        on:change={(e) => specImport(e)}
+      />
+    </div>
+  </div>
 </article>
 
 <style>
@@ -129,8 +235,9 @@
     border-bottom: 1px solid black;
   }
 
-  textarea {
+  input {
     font-family: inherit;
+    font-size: inherit;
   }
 
   article,
@@ -139,7 +246,7 @@
   }
 
   label {
-    padding: 0.25em 0;
+    padding: 0.1em 0;
     width: min-content;
   }
 
@@ -156,7 +263,7 @@
     font-weight: normal;
     border-top: 1px solid lightgrey;
     border-bottom: 1px solid lightgrey;
-    padding: 0.25em;
+    padding: 0.1em 0.25em;
     text-align: center;
   }
 
@@ -171,7 +278,7 @@
   }
 
   .col-duration {
-    width: 20ch;
+    width: 10ch;
   }
   .col-base-edu-level {
     width: 10ch;

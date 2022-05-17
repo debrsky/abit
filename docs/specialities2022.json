@@ -1,0 +1,170 @@
+[
+    {
+        "name": "Право и организация социального обеспечения",
+        "code": "ПСО",
+        "qualification": "юрист",
+        "fullTime": {
+            "level9": {
+                "duration": 3,
+                "freePlaces": 0,
+                "paidPlaces": 20
+            },
+            "level11": {
+                "duration": 2,
+                "freePlaces": 25,
+                "paidPlaces": 20
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 3,
+                "freePlaces": 0,
+                "paidPlaces": 20
+            }
+        }
+    },
+    {
+        "name": "Земельно-имущественные отношения",
+        "code": "ЗИО",
+        "qualification": "специалист по земельно-имущественным отношениям",
+        "fullTime": {
+            "level9": {
+                "duration": 3,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            },
+            "level11": {
+                "duration": 2,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 3,
+                "freePlaces": 0,
+                "paidPlaces": 15
+            }
+        }
+    },
+    {
+        "name": "Социальная работа",
+        "code": "СР",
+        "qualification": "специалист по социальной работе",
+        "fullTime": {
+            "level9": {
+                "duration": 3,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            },
+            "level11": {
+                "duration": 2,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 3,
+                "freePlaces": 0,
+                "paidPlaces": 15
+            }
+        }
+    },
+    {
+        "name": "Строительство и эксплуатация зданий и сооружений",
+        "code": "СЭЗИС",
+        "qualification": "техник",
+        "fullTime": {
+            "level9": {
+                "duration": 4,
+                "freePlaces": 50,
+                "paidPlaces": 5
+            },
+            "level11": {
+                "duration": 3,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 4,
+                "freePlaces": 0,
+                "paidPlaces": 15
+            }
+        }
+    },
+    {
+        "name": "Сварочное производство",
+        "code": "СП",
+        "qualification": "техник",
+        "fullTime": {
+            "level9": {
+                "duration": 4,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            },
+            "level11": {
+                "duration": 3,
+                "freePlaces": 0,
+                "paidPlaces": 0
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 4,
+                "freePlaces": 0,
+                "paidPlaces": 0
+            }
+        }
+    },
+    {
+        "name": "Пожарная безопасность",
+        "code": "ПБ",
+        "qualification": "техник",
+        "fullTime": {
+            "level9": {
+                "duration": 4,
+                "freePlaces": 50,
+                "paidPlaces": 10
+            },
+            "level11": {
+                "duration": 3,
+                "freePlaces": 50,
+                "paidPlaces": 5
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 0,
+                "freePlaces": 0,
+                "paidPlaces": 0
+            }
+        }
+    },
+    {
+        "name": "Физическая культура",
+        "code": "ФК",
+        "qualification": "Педагог по физической культуре и спорту",
+        "fullTime": {
+            "level9": {
+                "duration": 4,
+                "freePlaces": 30,
+                "paidPlaces": 10
+            },
+            "level11": {
+                "duration": 0,
+                "freePlaces": 0,
+                "paidPlaces": 0
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 0,
+                "freePlaces": 0,
+                "paidPlaces": 0
+            }
+        }
+    }
+]
