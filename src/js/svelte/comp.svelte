@@ -1,12 +1,14 @@
 <svelte:options accessors={true} />
 
 <script>
-  import Text from './fields/text.svelte';
-  import Numeric from './fields/numeric.svelte';
-  import DateInput from './fields/date.svelte';
-  import Textarea from './fields/textarea.svelte';
-  import Select from './fields/select.svelte';
-  import Checkbox from './fields/checkbox.svelte';
+  import {
+    Text,
+    Textarea,
+    Numeric,
+    DateInput,
+    Checkbox,
+    Select
+  } from './fields/index.js';
 
   let certScore;
   let extraScore;
