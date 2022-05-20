@@ -5,12 +5,6 @@
     <title>Абитуриенты</title><!-- https://css-tricks.com/emoji-as-a-favicon/ -->
     <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2280%22&gt;☕&lt;/text&gt;&lt;/svg&gt;">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-      .field {
-        padding: 0.3em;
-      }
-      
-    </style>
   </head>
   <body>
     <header class="header">
@@ -40,17 +34,10 @@
       </nav>
     </header>
     <main>
-      <h1>Абитуриенты</h1>
-      <p>It works.</p>
-      <hr>
-      <div id="svelte">
-        <script>
-          document.body.addEventListener('submit', (event) => console.log(event));
-          
-        </script>
-      </div>
+      <h2 class="h2">Специальности</h2>
+      <div id="speciality-table"></div>
     </main>
     <footer style="min-height: 3em; background-color: lightgrey;"></footer>
-    <script src="js/abit-form.js"></script>
+    <script src="js/speciality.js"></script>
   </body>
 </html>

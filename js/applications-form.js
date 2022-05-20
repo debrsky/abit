@@ -5,14 +5,7 @@
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
-    get: (a2, b) => (typeof require !== "undefined" ? require : a2)[b]
-  }) : x)(function(x) {
-    if (typeof require !== "undefined")
-      return require.apply(this, arguments);
-    throw new Error('Dynamic require of "' + x + '" is not supported');
-  });
-  var __commonJS = (cb, mod) => function __require2() {
+  var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
   var __copyProps = (to, from, except, desc) => {
@@ -48,7 +41,7 @@
         return Array.isArray(val) ? [] : {};
       }
       function cloneUnlessOtherwiseSpecified(value, options) {
-        return options.clone !== false && options.isMergeableObject(value) ? deepmerge3(emptyTarget(value), value, options) : value;
+        return options.clone !== false && options.isMergeableObject(value) ? deepmerge2(emptyTarget(value), value, options) : value;
       }
       function defaultArrayMerge(target, source, options) {
         return target.concat(source).map(function(element2) {
@@ -57,10 +50,10 @@
       }
       function getMergeFunction(key, options) {
         if (!options.customMerge) {
-          return deepmerge3;
+          return deepmerge2;
         }
         var customMerge = options.customMerge(key);
-        return typeof customMerge === "function" ? customMerge : deepmerge3;
+        return typeof customMerge === "function" ? customMerge : deepmerge2;
       }
       function getEnumerableOwnPropertySymbols(target) {
         return Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(target).filter(function(symbol) {
@@ -99,7 +92,7 @@
         });
         return destination;
       }
-      function deepmerge3(target, source, options) {
+      function deepmerge2(target, source, options) {
         options = options || {};
         options.arrayMerge = options.arrayMerge || defaultArrayMerge;
         options.isMergeableObject = options.isMergeableObject || isMergeableObject;
@@ -115,15 +108,15 @@
           return mergeObject(target, source, options);
         }
       }
-      deepmerge3.all = function deepmergeAll(array, options) {
+      deepmerge2.all = function deepmergeAll(array, options) {
         if (!Array.isArray(array)) {
           throw new Error("first argument should be an array");
         }
         return array.reduce(function(prev, next) {
-          return deepmerge3(prev, next, options);
+          return deepmerge2(prev, next, options);
         }, {});
       };
-      var deepmerge_1 = deepmerge3;
+      var deepmerge_1 = deepmerge2;
       module.exports = deepmerge_1;
     }
   });
@@ -1351,525 +1344,6 @@
     }
   });
 
-  // node_modules/a11y-dialog/dist/a11y-dialog.esm.js
-  var focusableSelectors = [
-    'a[href]:not([tabindex^="-"])',
-    'area[href]:not([tabindex^="-"])',
-    'input:not([type="hidden"]):not([type="radio"]):not([disabled]):not([tabindex^="-"])',
-    'input[type="radio"]:not([disabled]):not([tabindex^="-"])',
-    'select:not([disabled]):not([tabindex^="-"])',
-    'textarea:not([disabled]):not([tabindex^="-"])',
-    'button:not([disabled]):not([tabindex^="-"])',
-    'iframe:not([tabindex^="-"])',
-    'audio[controls]:not([tabindex^="-"])',
-    'video[controls]:not([tabindex^="-"])',
-    '[contenteditable]:not([tabindex^="-"])',
-    '[tabindex]:not([tabindex^="-"])'
-  ];
-  var TAB_KEY = 9;
-  var ESCAPE_KEY = 27;
-  function A11yDialog(element2) {
-    this._show = this.show.bind(this);
-    this._hide = this.hide.bind(this);
-    this._maintainFocus = this._maintainFocus.bind(this);
-    this._bindKeypress = this._bindKeypress.bind(this);
-    this.$el = element2;
-    this.shown = false;
-    this._id = this.$el.getAttribute("data-a11y-dialog") || this.$el.id;
-    this._previouslyFocused = null;
-    this._listeners = {};
-    this.create();
-  }
-  A11yDialog.prototype.create = function() {
-    this.$el.setAttribute("aria-hidden", true);
-    this.$el.setAttribute("aria-modal", true);
-    this.$el.setAttribute("tabindex", -1);
-    if (!this.$el.hasAttribute("role")) {
-      this.$el.setAttribute("role", "dialog");
-    }
-    this._openers = $$('[data-a11y-dialog-show="' + this._id + '"]');
-    this._openers.forEach(function(opener) {
-      opener.addEventListener("click", this._show);
-    }.bind(this));
-    this._closers = $$("[data-a11y-dialog-hide]", this.$el).concat($$('[data-a11y-dialog-hide="' + this._id + '"]'));
-    this._closers.forEach(function(closer) {
-      closer.addEventListener("click", this._hide);
-    }.bind(this));
-    this._fire("create");
-    return this;
-  };
-  A11yDialog.prototype.show = function(event) {
-    if (this.shown) {
-      return this;
-    }
-    this._previouslyFocused = document.activeElement;
-    this.$el.removeAttribute("aria-hidden");
-    this.shown = true;
-    moveFocusToDialog(this.$el);
-    document.body.addEventListener("focus", this._maintainFocus, true);
-    document.addEventListener("keydown", this._bindKeypress);
-    this._fire("show", event);
-    return this;
-  };
-  A11yDialog.prototype.hide = function(event) {
-    if (!this.shown) {
-      return this;
-    }
-    this.shown = false;
-    this.$el.setAttribute("aria-hidden", "true");
-    if (this._previouslyFocused && this._previouslyFocused.focus) {
-      this._previouslyFocused.focus();
-    }
-    document.body.removeEventListener("focus", this._maintainFocus, true);
-    document.removeEventListener("keydown", this._bindKeypress);
-    this._fire("hide", event);
-    return this;
-  };
-  A11yDialog.prototype.destroy = function() {
-    this.hide();
-    this._openers.forEach(function(opener) {
-      opener.removeEventListener("click", this._show);
-    }.bind(this));
-    this._closers.forEach(function(closer) {
-      closer.removeEventListener("click", this._hide);
-    }.bind(this));
-    this._fire("destroy");
-    this._listeners = {};
-    return this;
-  };
-  A11yDialog.prototype.on = function(type, handler) {
-    if (typeof this._listeners[type] === "undefined") {
-      this._listeners[type] = [];
-    }
-    this._listeners[type].push(handler);
-    return this;
-  };
-  A11yDialog.prototype.off = function(type, handler) {
-    var index = (this._listeners[type] || []).indexOf(handler);
-    if (index > -1) {
-      this._listeners[type].splice(index, 1);
-    }
-    return this;
-  };
-  A11yDialog.prototype._fire = function(type, event) {
-    var listeners = this._listeners[type] || [];
-    var domEvent = new CustomEvent(type, { detail: event });
-    this.$el.dispatchEvent(domEvent);
-    listeners.forEach(function(listener) {
-      listener(this.$el, event);
-    }.bind(this));
-  };
-  A11yDialog.prototype._bindKeypress = function(event) {
-    if (!this.$el.contains(document.activeElement))
-      return;
-    if (this.shown && event.which === ESCAPE_KEY && this.$el.getAttribute("role") !== "alertdialog") {
-      event.preventDefault();
-      this.hide(event);
-    }
-    if (this.shown && event.which === TAB_KEY) {
-      trapTabKey(this.$el, event);
-    }
-  };
-  A11yDialog.prototype._maintainFocus = function(event) {
-    if (this.shown && !event.target.closest('[aria-modal="true"]') && !event.target.closest("[data-a11y-dialog-ignore-focus-trap]")) {
-      moveFocusToDialog(this.$el);
-    }
-  };
-  function toArray(collection) {
-    return Array.prototype.slice.call(collection);
-  }
-  function $$(selector, context) {
-    return toArray((context || document).querySelectorAll(selector));
-  }
-  function moveFocusToDialog(node) {
-    var focused = node.querySelector("[autofocus]") || node;
-    focused.focus();
-  }
-  function getFocusableChildren(node) {
-    return $$(focusableSelectors.join(","), node).filter(function(child) {
-      return !!(child.offsetWidth || child.offsetHeight || child.getClientRects().length);
-    });
-  }
-  function trapTabKey(node, event) {
-    var focusableChildren = getFocusableChildren(node);
-    var focusedItemIndex = focusableChildren.indexOf(document.activeElement);
-    if (event.shiftKey && focusedItemIndex === 0) {
-      focusableChildren[focusableChildren.length - 1].focus();
-      event.preventDefault();
-    } else if (!event.shiftKey && focusedItemIndex === focusableChildren.length - 1) {
-      focusableChildren[0].focus();
-      event.preventDefault();
-    }
-  }
-  function instantiateDialogs() {
-    $$("[data-a11y-dialog]").forEach(function(node) {
-      new A11yDialog(node);
-    });
-  }
-  if (typeof document !== "undefined") {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", instantiateDialogs);
-    } else {
-      if (window.requestAnimationFrame) {
-        window.requestAnimationFrame(instantiateDialogs);
-      } else {
-        window.setTimeout(instantiateDialogs, 16);
-      }
-    }
-  }
-
-  // src/pug/includes/abit-view.pug
-  function pug_attr(t, e, n, r) {
-    if (e === false || e == null || !e && (t === "class" || t === "style"))
-      return "";
-    if (e === true)
-      return " " + (r ? t : t + '="' + t + '"');
-    var f = typeof e;
-    return f !== "object" && f !== "function" || typeof e.toJSON != "function" || (e = e.toJSON()), typeof e == "string" || (e = JSON.stringify(e), n || e.indexOf('"') === -1) ? (n && (e = pug_escape(e)), " " + t + '="' + e + '"') : " " + t + "='" + e.replace(/'/g, "&#39;") + "'";
-  }
-  function pug_classes(s, r) {
-    return Array.isArray(s) ? pug_classes_array(s, r) : s && typeof s == "object" ? pug_classes_object(s) : s || "";
-  }
-  function pug_classes_array(r, a2) {
-    for (var s, e = "", u = "", c = Array.isArray(a2), g = 0; g < r.length; g++)
-      (s = pug_classes(r[g])) && (c && a2[g] && (s = pug_escape(s)), e = e + u + s, u = " ");
-    return e;
-  }
-  function pug_classes_object(r) {
-    var a2 = "", n = "";
-    for (var o in r)
-      o && r[o] && pug_has_own_property.call(r, o) && (a2 = a2 + n + o, n = " ");
-    return a2;
-  }
-  function pug_escape(e) {
-    var a2 = "" + e, t = pug_match_html.exec(a2);
-    if (!t)
-      return e;
-    var r, c, n, s = "";
-    for (r = t.index, c = 0; r < a2.length; r++) {
-      switch (a2.charCodeAt(r)) {
-        case 34:
-          n = "&quot;";
-          break;
-        case 38:
-          n = "&amp;";
-          break;
-        case 60:
-          n = "&lt;";
-          break;
-        case 62:
-          n = "&gt;";
-          break;
-        default:
-          continue;
-      }
-      c !== r && (s += a2.substring(c, r)), c = r + 1, s += n;
-    }
-    return c !== r ? s + a2.substring(c, r) : s;
-  }
-  var pug_has_own_property = Object.prototype.hasOwnProperty;
-  var pug_match_html = /["&<>]/;
-  function pug_rethrow(e, n, r, t) {
-    if (!(e instanceof Error))
-      throw e;
-    if (!(typeof window == "undefined" && n || t))
-      throw e.message += " on line " + r, e;
-    var o, a2, i, s;
-    try {
-      t = t || __require("fs").readFileSync(n, { encoding: "utf8" }), o = 3, a2 = t.split("\n"), i = Math.max(r - o, 0), s = Math.min(a2.length, r + o);
-    } catch (t2) {
-      return e.message += " - could not read from " + n + " (" + t2.message + ")", void pug_rethrow(e, null, r);
-    }
-    o = a2.slice(i, s).map(function(e2, n2) {
-      var t2 = n2 + i + 1;
-      return (t2 == r ? "  > " : "    ") + t2 + "| " + e2;
-    }).join("\n"), e.path = n;
-    try {
-      e.message = (n || "Pug") + ":" + r + "\n" + o + "\n\n" + e.message;
-    } catch (e2) {
-    }
-    throw e;
-  }
-  function template(locals) {
-    var pug_html = "", pug_mixins = {}, pug_interp;
-    var pug_debug_filename, pug_debug_line;
-    try {
-      ;
-      var locals_for_with = locals || {};
-      (function(Number3, data2, parseFloat2) {
-        ;
-        pug_debug_line = 1;
-        pug_html = pug_html + "<article" + (' class="item abit-view"' + pug_attr("data-id", data2._id, true, false)) + ">";
-        ;
-        pug_debug_line = 2;
-        pug_html = pug_html + '<div class="container" style="display: flex;">';
-        ;
-        pug_debug_line = 3;
-        pug_html = pug_html + '<div class="value abit-view__reg-date">';
-        ;
-        pug_debug_line = 3;
-        pug_html = pug_html + pug_escape((pug_interp = data2.regDate) == null ? "" : pug_interp) + "</div>";
-        ;
-        pug_debug_line = 5;
-        pug_html = pug_html + '<div class="value abit-view__gender">';
-        ;
-        pug_debug_line = 6;
-        if (data2.gender === "\u043C") {
-          ;
-          pug_debug_line = 7;
-          pug_html = pug_html + '<div class="emoji">';
-          ;
-          pug_debug_line = 7;
-          pug_html = pug_html + "\u2642\uFE0F</div>";
-        }
-        ;
-        pug_debug_line = 8;
-        if (data2.gender === "\u0436") {
-          ;
-          pug_debug_line = 9;
-          pug_html = pug_html + '<div class="emoji">';
-          ;
-          pug_debug_line = 9;
-          pug_html = pug_html + "\u2640\uFE0F</div>";
-        }
-        pug_html = pug_html + "</div>";
-        ;
-        pug_debug_line = 11;
-        pug_html = pug_html + '<div class="value abit-view__fio">';
-        ;
-        pug_debug_line = 11;
-        pug_html = pug_html + pug_escape((pug_interp = data2.fio) == null ? "" : pug_interp) + "</div>";
-        ;
-        pug_debug_line = 13;
-        pug_html = pug_html + '<div class="value abit-view__applications-list">';
-        ;
-        pug_debug_line = 14;
-        ;
-        (function() {
-          var $$obj = data2.applications;
-          if (typeof $$obj.length == "number") {
-            for (var pug_index0 = 0, $$l = $$obj.length; pug_index0 < $$l; pug_index0++) {
-              var app = $$obj[pug_index0];
-              ;
-              pug_debug_line = 15;
-              const classes = {
-                "abit-view__application--priority": app.priority,
-                "abit-view__application--disabled": app.disabled
-              };
-              pug_debug_line = 20;
-              pug_html = pug_html + "<span" + pug_attr("class", pug_classes(["abit-view__application", classes], [false, true]), false, false) + ">";
-              ;
-              pug_debug_line = 21;
-              pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp);
-              ;
-              pug_debug_line = 22;
-              pug_html = pug_html + '<span class="abit-view__application-grade">';
-              ;
-              pug_debug_line = 22;
-              pug_html = pug_html + pug_escape((pug_interp = app.grade) == null ? "" : pug_interp) + "</span></span>";
-            }
-          } else {
-            var $$l = 0;
-            for (var pug_index0 in $$obj) {
-              $$l++;
-              var app = $$obj[pug_index0];
-              ;
-              pug_debug_line = 15;
-              const classes = {
-                "abit-view__application--priority": app.priority,
-                "abit-view__application--disabled": app.disabled
-              };
-              pug_debug_line = 20;
-              pug_html = pug_html + "<span" + pug_attr("class", pug_classes(["abit-view__application", classes], [false, true]), false, false) + ">";
-              ;
-              pug_debug_line = 21;
-              pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp);
-              ;
-              pug_debug_line = 22;
-              pug_html = pug_html + '<span class="abit-view__application-grade">';
-              ;
-              pug_debug_line = 22;
-              pug_html = pug_html + pug_escape((pug_interp = app.grade) == null ? "" : pug_interp) + "</span></span>";
-            }
-          }
-        }).call(this);
-        pug_html = pug_html + "</div>";
-        ;
-        pug_debug_line = 24;
-        const certScore = parseFloat2((data2.certScore || 0).toString().replace(",", "."));
-        const extraScore = parseFloat2((data2.extraScore || 0).toString().replace(",", "."));
-        const totalScore = parseFloat2((certScore + extraScore).toFixed(2));
-        ;
-        pug_debug_line = 29;
-        pug_html = pug_html + '<div class="value abit-view__score-list">';
-        ;
-        pug_debug_line = 30;
-        if (extraScore > 0 && certScore > 0) {
-          ;
-          pug_debug_line = 31;
-          pug_html = pug_html + '<span class="abit-view__cert-score">';
-          ;
-          pug_debug_line = 31;
-          pug_html = pug_html + pug_escape((pug_interp = certScore.toString().replace(".", ",")) == null ? "" : pug_interp) + "</span>";
-          ;
-          pug_debug_line = 32;
-          pug_html = pug_html + "+";
-          ;
-          pug_debug_line = 33;
-          pug_html = pug_html + '<span class="abit-view__extra-score">';
-          ;
-          pug_debug_line = 33;
-          pug_html = pug_html + pug_escape((pug_interp = extraScore.toString().replace(".", ",")) == null ? "" : pug_interp) + "</span>";
-          ;
-          pug_debug_line = 34;
-          pug_html = pug_html + "=";
-        }
-        ;
-        pug_debug_line = 36;
-        if (totalScore) {
-          ;
-          pug_debug_line = 37;
-          pug_html = pug_html + '<span class="abit-view__total-score">';
-          ;
-          pug_debug_line = 37;
-          pug_html = pug_html + pug_escape((pug_interp = totalScore.toString().replace(".", ",")) == null ? "" : pug_interp) + "</span>";
-        }
-        pug_html = pug_html + "</div>";
-        ;
-        pug_debug_line = 39;
-        pug_html = pug_html + '<div class="value abit-view__has-medical-cert">';
-        ;
-        pug_debug_line = 40;
-        if (data2.hasMedicalCert) {
-          ;
-          pug_debug_line = 41;
-          pug_html = pug_html + '<span class="emoji">';
-          ;
-          pug_debug_line = 41;
-          pug_html = pug_html + "\u2695\uFE0F</span>";
-        }
-        pug_html = pug_html + "</div>";
-        ;
-        pug_debug_line = 42;
-        pug_html = pug_html + '<div class="value abit-view__has-fluoro">';
-        ;
-        pug_debug_line = 43;
-        if (data2.hasFluoro) {
-          ;
-          pug_debug_line = 44;
-          pug_html = pug_html + '<span class="emoji">';
-          ;
-          pug_debug_line = 44;
-          pug_html = pug_html + pug_escape((pug_interp = "\u{1FAC1}") == null ? "" : pug_interp) + "</span>";
-        }
-        pug_html = pug_html + "</div>";
-        ;
-        pug_debug_line = 45;
-        pug_html = pug_html + '<div class="value abit-view__has-vaccine">';
-        ;
-        pug_debug_line = 46;
-        if (data2.hasVaccine) {
-          ;
-          pug_debug_line = 47;
-          pug_html = pug_html + '<span class="emoji">';
-          ;
-          pug_debug_line = 47;
-          pug_html = pug_html + "\u{1F489}</span>";
-        }
-        pug_html = pug_html + "</div>";
-        ;
-        pug_debug_line = 48;
-        pug_html = pug_html + '<div class="value abit-view__has-edu-cert-original">';
-        ;
-        pug_debug_line = 49;
-        if (data2.hasEduCertOriginal) {
-          ;
-          pug_debug_line = 50;
-          pug_html = pug_html + '<span class="emoji">';
-          ;
-          pug_debug_line = 50;
-          pug_html = pug_html + "\u2714\uFE0F</span>";
-        }
-        pug_html = pug_html + "</div></div>";
-        ;
-        pug_debug_line = 52;
-        pug_html = pug_html + '<div class="container" style="display: flex;">';
-        ;
-        pug_debug_line = 53;
-        pug_html = pug_html + '<div class="value abit-view__need-dorm">';
-        ;
-        pug_debug_line = 54;
-        if (Number3(data2.needDorm) === 1) {
-          ;
-          pug_debug_line = 55;
-          pug_html = pug_html + '<span class="emoji" style="font-size: 0.5em">';
-          ;
-          pug_debug_line = 55;
-          pug_html = pug_html + "\u{1F3E8}</span>";
-        }
-        ;
-        pug_debug_line = 56;
-        if (Number3(data2.needDorm) === 2) {
-          ;
-          pug_debug_line = 57;
-          pug_html = pug_html + '<span class="emoji">';
-          ;
-          pug_debug_line = 57;
-          pug_html = pug_html + "\u{1F3E8}</span>";
-        }
-        pug_html = pug_html + "</div>";
-        ;
-        pug_debug_line = 59;
-        pug_html = pug_html + '<div class="value abit-view__address">';
-        ;
-        pug_debug_line = 59;
-        pug_html = pug_html + pug_escape((pug_interp = data2.address) == null ? "" : pug_interp) + "</div>";
-        ;
-        pug_debug_line = 60;
-        pug_html = pug_html + '<div class="value abit-view__tel">';
-        ;
-        pug_debug_line = 60;
-        pug_html = pug_html + pug_escape((pug_interp = data2.tel) == null ? "" : pug_interp) + "</div></div>";
-        ;
-        pug_debug_line = 62;
-        pug_html = pug_html + '<div class="container" style="display: flex;">';
-        ;
-        pug_debug_line = 63;
-        pug_html = pug_html + '<div class="value abit-view__school-year">';
-        ;
-        pug_debug_line = 63;
-        pug_html = pug_html + pug_escape((pug_interp = data2.schoolYear) == null ? "" : pug_interp) + "</div>";
-        ;
-        pug_debug_line = 64;
-        pug_html = pug_html + '<div class="value abit-view__school">';
-        ;
-        pug_debug_line = 64;
-        pug_html = pug_html + pug_escape((pug_interp = data2.school) == null ? "" : pug_interp) + "</div></div>";
-        ;
-        pug_debug_line = 66;
-        pug_html = pug_html + '<div class="value abit-view--memo">';
-        ;
-        pug_debug_line = 66;
-        pug_html = pug_html + pug_escape((pug_interp = data2.memo) == null ? "" : pug_interp) + "</div></article>";
-      }).call(this, "Number" in locals_for_with ? locals_for_with.Number : typeof Number !== "undefined" ? Number : void 0, "data" in locals_for_with ? locals_for_with.data : typeof data !== "undefined" ? data : void 0, "parseFloat" in locals_for_with ? locals_for_with.parseFloat : typeof parseFloat !== "undefined" ? parseFloat : void 0);
-      ;
-    } catch (err) {
-      pug_rethrow(err, pug_debug_filename, pug_debug_line);
-    }
-    ;
-    return pug_html;
-  }
-  var abit_view_default = template;
-
-  // src/js/abit-view.js
-  function createAbitViewElem(data2) {
-    const div = document.createElement("div");
-    div.innerHTML = abit_view_default({ data: data2 });
-    const elem = div.firstElementChild;
-    div.remove();
-    return elem;
-  }
-
   // node_modules/svelte/internal/index.mjs
   function noop() {
   }
@@ -1937,24 +1411,15 @@
   function element(name) {
     return document.createElement(name);
   }
-  function text(data2) {
-    return document.createTextNode(data2);
+  function text(data) {
+    return document.createTextNode(data);
   }
   function space() {
     return text(" ");
   }
-  function empty() {
-    return text("");
-  }
   function listen(node, event, handler, options) {
     node.addEventListener(event, handler, options);
     return () => node.removeEventListener(event, handler, options);
-  }
-  function prevent_default(fn) {
-    return function(event) {
-      event.preventDefault();
-      return fn.call(this, event);
-    };
   }
   function attr(node, attribute, value) {
     if (value == null)
@@ -1968,10 +1433,10 @@
   function children(element2) {
     return Array.from(element2.childNodes);
   }
-  function set_data(text2, data2) {
-    data2 = "" + data2;
-    if (text2.wholeText !== data2)
-      text2.data = data2;
+  function set_data(text2, data) {
+    data = "" + data;
+    if (text2.wholeText !== data)
+      text2.data = data;
   }
   function set_input_value(input, value) {
     input.value = value == null ? "" : value;
@@ -1982,20 +1447,6 @@
     } else {
       node.style.setProperty(key, value, important ? "important" : "");
     }
-  }
-  function select_option(select, value) {
-    for (let i = 0; i < select.options.length; i += 1) {
-      const option = select.options[i];
-      if (option.__value === value) {
-        option.selected = true;
-        return;
-      }
-    }
-    select.selectedIndex = -1;
-  }
-  function select_value(select) {
-    const selected_option = select.querySelector(":checked") || select.options[0];
-    return selected_option && selected_option.__value;
   }
   var current_component;
   function set_current_component(component) {
@@ -2051,14 +1502,14 @@
     seen_callbacks.clear();
     set_current_component(saved_component);
   }
-  function update($$2) {
-    if ($$2.fragment !== null) {
-      $$2.update();
-      run_all($$2.before_update);
-      const dirty = $$2.dirty;
-      $$2.dirty = [-1];
-      $$2.fragment && $$2.fragment.p($$2.ctx, dirty);
-      $$2.after_update.forEach(add_render_callback);
+  function update($$) {
+    if ($$.fragment !== null) {
+      $$.update();
+      run_all($$.before_update);
+      const dirty = $$.dirty;
+      $$.dirty = [-1];
+      $$.fragment && $$.fragment.p($$.ctx, dirty);
+      $$.after_update.forEach(add_render_callback);
     }
   }
   var outroing = /* @__PURE__ */ new Set();
@@ -2099,16 +1550,12 @@
     }
   }
   var globals = typeof window !== "undefined" ? window : typeof globalThis !== "undefined" ? globalThis : window;
-  function destroy_block(block, lookup) {
-    block.d(1);
-    lookup.delete(block.key);
-  }
   function outro_and_destroy_block(block, lookup) {
     transition_out(block, 1, 1, () => {
       lookup.delete(block.key);
     });
   }
-  function update_keyed_each(old_blocks, dirty, get_key, dynamic, ctx, list, lookup, node, destroy, create_each_block3, next, get_context) {
+  function update_keyed_each(old_blocks, dirty, get_key, dynamic, ctx, list, lookup, node, destroy, create_each_block2, next, get_context) {
     let o = old_blocks.length;
     let n = list.length;
     let i = o;
@@ -2124,7 +1571,7 @@
       const key = get_key(child_ctx);
       let block = lookup.get(key);
       if (!block) {
-        block = create_each_block3(key, child_ctx);
+        block = create_each_block2(key, child_ctx);
         block.c();
       } else if (dynamic) {
         block.p(child_ctx, dirty);
@@ -2202,12 +1649,12 @@
     after_update.forEach(add_render_callback);
   }
   function destroy_component(component, detaching) {
-    const $$2 = component.$$;
-    if ($$2.fragment !== null) {
-      run_all($$2.on_destroy);
-      $$2.fragment && $$2.fragment.d(detaching);
-      $$2.on_destroy = $$2.fragment = null;
-      $$2.ctx = [];
+    const $$ = component.$$;
+    if ($$.fragment !== null) {
+      run_all($$.on_destroy);
+      $$.fragment && $$.fragment.d(detaching);
+      $$.on_destroy = $$.fragment = null;
+      $$.ctx = [];
     }
   }
   function make_dirty(component, i) {
@@ -2218,10 +1665,10 @@
     }
     component.$$.dirty[i / 31 | 0] |= 1 << i % 31;
   }
-  function init(component, options, instance9, create_fragment9, not_equal, props, append_styles2, dirty = [-1]) {
+  function init(component, options, instance4, create_fragment4, not_equal, props, append_styles2, dirty = [-1]) {
     const parent_component = current_component;
     set_current_component(component);
-    const $$2 = component.$$ = {
+    const $$ = component.$$ = {
       fragment: null,
       ctx: null,
       props,
@@ -2239,30 +1686,30 @@
       skip_bound: false,
       root: options.target || parent_component.$$.root
     };
-    append_styles2 && append_styles2($$2.root);
+    append_styles2 && append_styles2($$.root);
     let ready = false;
-    $$2.ctx = instance9 ? instance9(component, options.props || {}, (i, ret, ...rest) => {
+    $$.ctx = instance4 ? instance4(component, options.props || {}, (i, ret, ...rest) => {
       const value = rest.length ? rest[0] : ret;
-      if ($$2.ctx && not_equal($$2.ctx[i], $$2.ctx[i] = value)) {
-        if (!$$2.skip_bound && $$2.bound[i])
-          $$2.bound[i](value);
+      if ($$.ctx && not_equal($$.ctx[i], $$.ctx[i] = value)) {
+        if (!$$.skip_bound && $$.bound[i])
+          $$.bound[i](value);
         if (ready)
           make_dirty(component, i);
       }
       return ret;
     }) : [];
-    $$2.update();
+    $$.update();
     ready = true;
-    run_all($$2.before_update);
-    $$2.fragment = create_fragment9 ? create_fragment9($$2.ctx) : false;
+    run_all($$.before_update);
+    $$.fragment = create_fragment4 ? create_fragment4($$.ctx) : false;
     if (options.target) {
       if (options.hydrate) {
         start_hydrating();
         const nodes = children(options.target);
-        $$2.fragment && $$2.fragment.l(nodes);
+        $$.fragment && $$.fragment.l(nodes);
         nodes.forEach(detach);
       } else {
-        $$2.fragment && $$2.fragment.c();
+        $$.fragment && $$.fragment.c();
       }
       if (options.intro)
         transition_in(component.$$.fragment);
@@ -2337,8 +1784,8 @@
     }
   };
 
-  // src/js/svelte/comp.svelte
-  var import_deepmerge2 = __toESM(require_cjs(), 1);
+  // src/js/svelte/applications.svelte
+  var import_deepmerge = __toESM(require_cjs(), 1);
 
   // src/js/svelte/fields/components/checkbox.svelte
   function add_css(target) {
@@ -2677,552 +2124,11 @@
   };
   var number_default = Number2;
 
-  // src/js/svelte/fields/components/text.svelte
-  function create_else_block2(ctx) {
-    let input;
-    let input_style_value;
-    let mounted;
-    let dispose;
-    return {
-      c() {
-        input = element("input");
-        attr(input, "class", "field__value");
-        attr(input, "type", "text");
-        attr(input, "style", input_style_value = ctx[2] ? `width: ${ctx[2]}ch;` : false);
-      },
-      m(target, anchor) {
-        insert(target, input, anchor);
-        set_input_value(input, ctx[0]);
-        if (!mounted) {
-          dispose = listen(input, "input", ctx[4]);
-          mounted = true;
-        }
-      },
-      p(ctx2, dirty) {
-        if (dirty & 4 && input_style_value !== (input_style_value = ctx2[2] ? `width: ${ctx2[2]}ch;` : false)) {
-          attr(input, "style", input_style_value);
-        }
-        if (dirty & 1 && input.value !== ctx2[0]) {
-          set_input_value(input, ctx2[0]);
-        }
-      },
-      d(detaching) {
-        if (detaching)
-          detach(input);
-        mounted = false;
-        dispose();
-      }
-    };
-  }
-  function create_if_block3(ctx) {
-    let label;
-    let span;
-    let t0;
-    let t1;
-    let input;
-    let input_style_value;
-    let mounted;
-    let dispose;
-    return {
-      c() {
-        label = element("label");
-        span = element("span");
-        t0 = text(ctx[1]);
-        t1 = space();
-        input = element("input");
-        attr(span, "class", "field__title");
-        attr(input, "class", "field__value");
-        attr(input, "type", "text");
-        attr(input, "style", input_style_value = ctx[2] ? `width: ${ctx[2]}ch;` : false);
-      },
-      m(target, anchor) {
-        insert(target, label, anchor);
-        append(label, span);
-        append(span, t0);
-        append(label, t1);
-        append(label, input);
-        set_input_value(input, ctx[0]);
-        if (!mounted) {
-          dispose = listen(input, "input", ctx[3]);
-          mounted = true;
-        }
-      },
-      p(ctx2, dirty) {
-        if (dirty & 2)
-          set_data(t0, ctx2[1]);
-        if (dirty & 4 && input_style_value !== (input_style_value = ctx2[2] ? `width: ${ctx2[2]}ch;` : false)) {
-          attr(input, "style", input_style_value);
-        }
-        if (dirty & 1 && input.value !== ctx2[0]) {
-          set_input_value(input, ctx2[0]);
-        }
-      },
-      d(detaching) {
-        if (detaching)
-          detach(label);
-        mounted = false;
-        dispose();
-      }
-    };
-  }
-  function create_fragment3(ctx) {
-    let div;
-    function select_block_type(ctx2, dirty) {
-      if (ctx2[1])
-        return create_if_block3;
-      return create_else_block2;
-    }
-    let current_block_type = select_block_type(ctx, -1);
-    let if_block = current_block_type(ctx);
-    return {
-      c() {
-        div = element("div");
-        if_block.c();
-        attr(div, "class", "field");
-      },
-      m(target, anchor) {
-        insert(target, div, anchor);
-        if_block.m(div, null);
-      },
-      p(ctx2, [dirty]) {
-        if (current_block_type === (current_block_type = select_block_type(ctx2, dirty)) && if_block) {
-          if_block.p(ctx2, dirty);
-        } else {
-          if_block.d(1);
-          if_block = current_block_type(ctx2);
-          if (if_block) {
-            if_block.c();
-            if_block.m(div, null);
-          }
-        }
-      },
-      i: noop,
-      o: noop,
-      d(detaching) {
-        if (detaching)
-          detach(div);
-        if_block.d();
-      }
-    };
-  }
-  function instance3($$self, $$props, $$invalidate) {
-    let { title } = $$props;
-    let { value } = $$props;
-    let { size = 20 } = $$props;
-    function input_input_handler() {
-      value = this.value;
-      $$invalidate(0, value);
-    }
-    function input_input_handler_1() {
-      value = this.value;
-      $$invalidate(0, value);
-    }
-    $$self.$$set = ($$props2) => {
-      if ("title" in $$props2)
-        $$invalidate(1, title = $$props2.title);
-      if ("value" in $$props2)
-        $$invalidate(0, value = $$props2.value);
-      if ("size" in $$props2)
-        $$invalidate(2, size = $$props2.size);
-    };
-    return [value, title, size, input_input_handler, input_input_handler_1];
-  }
-  var Text = class extends SvelteComponent {
-    constructor(options) {
-      super();
-      init(this, options, instance3, create_fragment3, safe_not_equal, { title: 1, value: 0, size: 2 });
-    }
-  };
-  var text_default = Text;
-
-  // src/js/svelte/fields/components/textarea.svelte
-  function create_fragment4(ctx) {
-    let div;
-    let label;
-    let span;
-    let t0;
-    let t1;
-    let textarea;
-    let mounted;
-    let dispose;
-    return {
-      c() {
-        div = element("div");
-        label = element("label");
-        span = element("span");
-        t0 = text(ctx[1]);
-        t1 = space();
-        textarea = element("textarea");
-        attr(span, "class", "field__title");
-        attr(textarea, "cols", ctx[2]);
-        attr(div, "class", "field");
-      },
-      m(target, anchor) {
-        insert(target, div, anchor);
-        append(div, label);
-        append(label, span);
-        append(span, t0);
-        append(label, t1);
-        append(label, textarea);
-        set_input_value(textarea, ctx[0]);
-        if (!mounted) {
-          dispose = listen(textarea, "input", ctx[3]);
-          mounted = true;
-        }
-      },
-      p(ctx2, [dirty]) {
-        if (dirty & 2)
-          set_data(t0, ctx2[1]);
-        if (dirty & 4) {
-          attr(textarea, "cols", ctx2[2]);
-        }
-        if (dirty & 1) {
-          set_input_value(textarea, ctx2[0]);
-        }
-      },
-      i: noop,
-      o: noop,
-      d(detaching) {
-        if (detaching)
-          detach(div);
-        mounted = false;
-        dispose();
-      }
-    };
-  }
-  function instance4($$self, $$props, $$invalidate) {
-    let { title = "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } = $$props;
-    let { value } = $$props;
-    let { size = 20 } = $$props;
-    function textarea_input_handler() {
-      value = this.value;
-      $$invalidate(0, value);
-    }
-    $$self.$$set = ($$props2) => {
-      if ("title" in $$props2)
-        $$invalidate(1, title = $$props2.title);
-      if ("value" in $$props2)
-        $$invalidate(0, value = $$props2.value);
-      if ("size" in $$props2)
-        $$invalidate(2, size = $$props2.size);
-    };
-    return [value, title, size, textarea_input_handler];
-  }
-  var Textarea = class extends SvelteComponent {
-    constructor(options) {
-      super();
-      init(this, options, instance4, create_fragment4, safe_not_equal, { title: 1, value: 0, size: 2 });
-    }
-  };
-  var textarea_default = Textarea;
-
-  // src/js/svelte/fields/components/date.svelte
-  function create_fragment5(ctx) {
-    let div;
-    let label;
-    let span;
-    let t0;
-    let t1;
-    let input;
-    let mounted;
-    let dispose;
-    return {
-      c() {
-        div = element("div");
-        label = element("label");
-        span = element("span");
-        t0 = text(ctx[1]);
-        t1 = space();
-        input = element("input");
-        attr(span, "class", "field__title");
-        attr(input, "class", "field__value");
-        attr(input, "type", "date");
-        input.required = ctx[2];
-        attr(div, "class", "field");
-      },
-      m(target, anchor) {
-        insert(target, div, anchor);
-        append(div, label);
-        append(label, span);
-        append(span, t0);
-        append(label, t1);
-        append(label, input);
-        set_input_value(input, ctx[0]);
-        if (!mounted) {
-          dispose = listen(input, "input", ctx[3]);
-          mounted = true;
-        }
-      },
-      p(ctx2, [dirty]) {
-        if (dirty & 2)
-          set_data(t0, ctx2[1]);
-        if (dirty & 4) {
-          input.required = ctx2[2];
-        }
-        if (dirty & 1) {
-          set_input_value(input, ctx2[0]);
-        }
-      },
-      i: noop,
-      o: noop,
-      d(detaching) {
-        if (detaching)
-          detach(div);
-        mounted = false;
-        dispose();
-      }
-    };
-  }
-  var re = /^\s*(\d{1,2})[.,/-](\d{1,2})[.,/-](\d{2}|\d{4})\s*$/;
-  function instance5($$self, $$props, $$invalidate) {
-    let { title = "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } = $$props;
-    let { required } = $$props;
-    let { value } = $$props;
-    const setValue = (v) => {
-      const match2 = v?.match?.(re);
-      if (match2) {
-        let [, dd, mm, yyyy] = match2;
-        if (yyyy.length == 2)
-          yyyy = `20${yyyy}`;
-        const valueStr = `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
-        if (!Number.isNaN(Date.parse(valueStr))) {
-          $$invalidate(0, value = valueStr);
-        }
-      }
-    };
-    function input_input_handler() {
-      value = this.value;
-      $$invalidate(0, value);
-    }
-    $$self.$$set = ($$props2) => {
-      if ("title" in $$props2)
-        $$invalidate(1, title = $$props2.title);
-      if ("required" in $$props2)
-        $$invalidate(2, required = $$props2.required);
-      if ("value" in $$props2)
-        $$invalidate(0, value = $$props2.value);
-    };
-    $$self.$$.update = () => {
-      if ($$self.$$.dirty & 1) {
-        $:
-          setValue(value);
-      }
-    };
-    return [value, title, required, input_input_handler];
-  }
-  var Date_1 = class extends SvelteComponent {
-    constructor(options) {
-      super();
-      init(this, options, instance5, create_fragment5, safe_not_equal, { title: 1, required: 2, value: 0 });
-    }
-  };
-  var date_default = Date_1;
-
-  // src/js/svelte/fields/components/select.svelte
-  function get_each_context(ctx, list, i) {
-    const child_ctx = ctx.slice();
-    child_ctx[0] = list[i][0];
-    child_ctx[4] = list[i][1];
-    return child_ctx;
-  }
-  function create_if_block4(ctx) {
-    let option;
-    let option_value_value;
-    return {
-      c() {
-        option = element("option");
-        option.__value = option_value_value = null;
-        option.value = option.__value;
-      },
-      m(target, anchor) {
-        insert(target, option, anchor);
-      },
-      d(detaching) {
-        if (detaching)
-          detach(option);
-      }
-    };
-  }
-  function create_each_block(key_1, ctx) {
-    let option;
-    let t_value = ctx[4] + "";
-    let t;
-    let option_value_value;
-    return {
-      key: key_1,
-      first: null,
-      c() {
-        option = element("option");
-        t = text(t_value);
-        option.__value = option_value_value = ctx[0];
-        option.value = option.__value;
-        this.first = option;
-      },
-      m(target, anchor) {
-        insert(target, option, anchor);
-        append(option, t);
-      },
-      p(new_ctx, dirty) {
-        ctx = new_ctx;
-        if (dirty & 2 && t_value !== (t_value = ctx[4] + ""))
-          set_data(t, t_value);
-        if (dirty & 2 && option_value_value !== (option_value_value = ctx[0])) {
-          option.__value = option_value_value;
-          option.value = option.__value;
-        }
-      },
-      d(detaching) {
-        if (detaching)
-          detach(option);
-      }
-    };
-  }
-  function create_fragment6(ctx) {
-    let div;
-    let label;
-    let span;
-    let t0;
-    let t1;
-    let select;
-    let if_block_anchor;
-    let each_blocks = [];
-    let each_1_lookup = /* @__PURE__ */ new Map();
-    let select_style_value;
-    let mounted;
-    let dispose;
-    let if_block = ctx[2] && create_if_block4(ctx);
-    let each_value = Object.entries(ctx[1]);
-    const get_key = (ctx2) => ctx2[0];
-    for (let i = 0; i < each_value.length; i += 1) {
-      let child_ctx = get_each_context(ctx, each_value, i);
-      let key = get_key(child_ctx);
-      each_1_lookup.set(key, each_blocks[i] = create_each_block(key, child_ctx));
-    }
-    return {
-      c() {
-        div = element("div");
-        label = element("label");
-        span = element("span");
-        t0 = text(ctx[4]);
-        t1 = space();
-        select = element("select");
-        if (if_block)
-          if_block.c();
-        if_block_anchor = empty();
-        for (let i = 0; i < each_blocks.length; i += 1) {
-          each_blocks[i].c();
-        }
-        attr(span, "class", "field__title");
-        attr(select, "class", "field__value");
-        attr(select, "style", select_style_value = ctx[3] ? `width: ${ctx[3]}ch;` : "");
-        if (ctx[0] === void 0)
-          add_render_callback(() => ctx[5].call(select));
-        attr(div, "class", "field");
-      },
-      m(target, anchor) {
-        insert(target, div, anchor);
-        append(div, label);
-        append(label, span);
-        append(span, t0);
-        append(label, t1);
-        append(label, select);
-        if (if_block)
-          if_block.m(select, null);
-        append(select, if_block_anchor);
-        for (let i = 0; i < each_blocks.length; i += 1) {
-          each_blocks[i].m(select, null);
-        }
-        select_option(select, ctx[0]);
-        if (!mounted) {
-          dispose = listen(select, "change", ctx[5]);
-          mounted = true;
-        }
-      },
-      p(ctx2, [dirty]) {
-        if (dirty & 16)
-          set_data(t0, ctx2[4]);
-        if (ctx2[2]) {
-          if (if_block) {
-          } else {
-            if_block = create_if_block4(ctx2);
-            if_block.c();
-            if_block.m(select, if_block_anchor);
-          }
-        } else if (if_block) {
-          if_block.d(1);
-          if_block = null;
-        }
-        if (dirty & 2) {
-          each_value = Object.entries(ctx2[1]);
-          each_blocks = update_keyed_each(each_blocks, dirty, get_key, 1, ctx2, each_value, each_1_lookup, select, destroy_block, create_each_block, null, get_each_context);
-        }
-        if (dirty & 8 && select_style_value !== (select_style_value = ctx2[3] ? `width: ${ctx2[3]}ch;` : "")) {
-          attr(select, "style", select_style_value);
-        }
-        if (dirty & 3) {
-          select_option(select, ctx2[0]);
-        }
-      },
-      i: noop,
-      o: noop,
-      d(detaching) {
-        if (detaching)
-          detach(div);
-        if (if_block)
-          if_block.d();
-        for (let i = 0; i < each_blocks.length; i += 1) {
-          each_blocks[i].d();
-        }
-        mounted = false;
-        dispose();
-      }
-    };
-  }
-  function instance6($$self, $$props, $$invalidate) {
-    let { title = "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } = $$props;
-    let { options = [] } = $$props;
-    let { hasEmptyOption = false } = $$props;
-    let { size } = $$props;
-    let { value } = $$props;
-    function select_change_handler() {
-      value = select_value(this);
-      $$invalidate(0, value);
-      $$invalidate(1, options);
-    }
-    $$self.$$set = ($$props2) => {
-      if ("title" in $$props2)
-        $$invalidate(4, title = $$props2.title);
-      if ("options" in $$props2)
-        $$invalidate(1, options = $$props2.options);
-      if ("hasEmptyOption" in $$props2)
-        $$invalidate(2, hasEmptyOption = $$props2.hasEmptyOption);
-      if ("size" in $$props2)
-        $$invalidate(3, size = $$props2.size);
-      if ("value" in $$props2)
-        $$invalidate(0, value = $$props2.value);
-    };
-    return [value, options, hasEmptyOption, size, title, select_change_handler];
-  }
-  var Select = class extends SvelteComponent {
-    constructor(options) {
-      super();
-      init(this, options, instance6, create_fragment6, safe_not_equal, {
-        title: 4,
-        options: 1,
-        hasEmptyOption: 2,
-        size: 3,
-        value: 0
-      });
-    }
-  };
-  var select_default = Select;
-
   // src/js/svelte/applications.svelte
-  var import_deepmerge = __toESM(require_cjs(), 1);
   function add_css2(target) {
     append_styles(target, "svelte-1xd4wor", "article.svelte-1xd4wor.svelte-1xd4wor{border:1px solid black;width:fit-content;padding:0.25em;display:flex;gap:1ch}.edu-prog-button.svelte-1xd4wor.svelte-1xd4wor{cursor:pointer}.edu-prog-button.svelte-1xd4wor.svelte-1xd4wor:active{transform:scale(0.9)}table.applications.svelte-1xd4wor.svelte-1xd4wor{border-collapse:collapse}table.applications.svelte-1xd4wor th.svelte-1xd4wor{font-size:x-small;padding:0 0.5ch}.cell.svelte-1xd4wor.svelte-1xd4wor{display:flex;place-content:center;place-items:center}table.applications.svelte-1xd4wor td.svelte-1xd4wor,table.applications.svelte-1xd4wor th.svelte-1xd4wor{border-top:1px solid darkgrey;border-bottom:1px solid darkgrey}table.svelte-1xd4wor th.svelte-1xd4wor{background-color:lightgrey}");
   }
-  function get_each_context2(ctx, list, i) {
+  function get_each_context(ctx, list, i) {
     const child_ctx = ctx.slice();
     child_ctx[18] = list[i];
     child_ctx[19] = list;
@@ -3240,7 +2146,7 @@
     child_ctx[23] = list[i];
     return child_ctx;
   }
-  function create_if_block5(ctx) {
+  function create_if_block3(ctx) {
     let button;
     let t_value = ctx[23].code + "";
     let t;
@@ -3288,7 +2194,7 @@
   function create_each_block_2(ctx) {
     let td;
     let div;
-    let if_block = ctx[23] && create_if_block5(ctx);
+    let if_block = ctx[23] && create_if_block3(ctx);
     return {
       c() {
         td = element("td");
@@ -3308,7 +2214,7 @@
           if (if_block) {
             if_block.p(ctx2, dirty);
           } else {
-            if_block = create_if_block5(ctx2);
+            if_block = create_if_block3(ctx2);
             if_block.c();
             if_block.m(div, null);
           }
@@ -3375,7 +2281,7 @@
       }
     };
   }
-  function create_each_block2(key_1, ctx) {
+  function create_each_block(key_1, ctx) {
     let tr;
     let td0;
     let div0;
@@ -3557,7 +2463,7 @@
       }
     };
   }
-  function create_fragment7(ctx) {
+  function create_fragment3(ctx) {
     let article;
     let section0;
     let table0;
@@ -3581,9 +2487,9 @@
     let each_value = ctx[0];
     const get_key = (ctx2) => ctx2[18].eduProg;
     for (let i = 0; i < each_value.length; i += 1) {
-      let child_ctx = get_each_context2(ctx, each_value, i);
+      let child_ctx = get_each_context(ctx, each_value, i);
       let key = get_key(child_ctx);
-      each1_lookup.set(key, each_blocks[i] = create_each_block2(key, child_ctx));
+      each1_lookup.set(key, each_blocks[i] = create_each_block(key, child_ctx));
     }
     return {
       c() {
@@ -3660,7 +2566,7 @@
         if (dirty & 9) {
           each_value = ctx2[0];
           group_outros();
-          each_blocks = update_keyed_each(each_blocks, dirty, get_key, 1, ctx2, each_value, each1_lookup, tbody1, outro_and_destroy_block, create_each_block2, null, get_each_context2);
+          each_blocks = update_keyed_each(each_blocks, dirty, get_key, 1, ctx2, each_value, each1_lookup, tbody1, outro_and_destroy_block, create_each_block, null, get_each_context);
           check_outros();
         }
       },
@@ -3697,14 +2603,14 @@
   var finSource = null;
   var baseEduLevel = null;
   var eduForm = null;
-  function instance7($$self, $$props, $$invalidate) {
+  function instance3($$self, $$props, $$invalidate) {
     const defaultApplication = {
       eduProg: null,
       grade: null,
       prioriry: null,
       disabled: false
     };
-    let { applications = [
+    let { applications: applications2 = [
       {
         eduProg: "\u0417\u0418\u041E",
         grade: 5,
@@ -3718,7 +2624,7 @@
         disabled: false
       }
     ] } = $$props;
-    let { eduProgs: eduProgs2 = [] } = $$props;
+    let { eduProgs = [] } = $$props;
     let matrix = [];
     let baseEduLevelSet;
     let eduFormSet;
@@ -3726,7 +2632,7 @@
     let finSourceSet;
     function addApplication(application) {
       const app = (0, import_deepmerge.default)(defaultApplication, application);
-      $$invalidate(0, applications = [app, ...applications].sort((a2, b) => {
+      $$invalidate(0, applications2 = [app, ...applications2].sort((a2, b) => {
         if (a2.eduProg < b.eduProg)
           return -1;
         if (a2.eduProg > b.eduProg)
@@ -3735,10 +2641,10 @@
       }));
     }
     function removeApplication(application) {
-      $$invalidate(0, applications = applications.filter((app) => application.eduProg !== app.eduProg));
+      $$invalidate(0, applications2 = applications2.filter((app) => application.eduProg !== app.eduProg));
     }
     function findEduProg(specCode, eduForm2, baseEduLevel2, finSource2) {
-      return eduProgs2.find((eduProg) => eduProg.specCode === specCode && eduProg.eduForm === eduForm2 && eduProg.baseEduLevel === baseEduLevel2 && eduProg.finSource === finSource2);
+      return eduProgs.find((eduProg) => eduProg.specCode === specCode && eduProg.eduForm === eduForm2 && eduProg.baseEduLevel === baseEduLevel2 && eduProg.finSource === finSource2);
     }
     const func = (eduProg, app) => app.eduProg === eduProg.code;
     const click_handler = (eduProg) => addApplication({ eduProg: eduProg.code });
@@ -3746,53 +2652,53 @@
     function numeric_value_binding(value, application) {
       if ($$self.$$.not_equal(application.grade, value)) {
         application.grade = value;
-        $$invalidate(0, applications);
+        $$invalidate(0, applications2);
       }
     }
     const func_1 = (idx, checked) => {
       if (checked) {
-        applications.forEach((app, i) => {
+        applications2.forEach((app, i) => {
           if (i !== idx)
             app.priority = false;
         });
-        $$invalidate(0, applications);
+        $$invalidate(0, applications2);
         return;
       }
-      if (!applications.some((app) => app.priority)) {
-        $$invalidate(0, applications[0].priority = true, applications);
-        $$invalidate(0, applications);
+      if (!applications2.some((app) => app.priority)) {
+        $$invalidate(0, applications2[0].priority = true, applications2);
+        $$invalidate(0, applications2);
       }
     };
     function checkbox0_value_binding(value, application) {
       if ($$self.$$.not_equal(application.priority, value)) {
         application.priority = value;
-        $$invalidate(0, applications);
+        $$invalidate(0, applications2);
       }
     }
     function checkbox1_value_binding(value, application) {
       if ($$self.$$.not_equal(application.disabled, value)) {
         application.disabled = value;
-        $$invalidate(0, applications);
+        $$invalidate(0, applications2);
       }
     }
     $$self.$$set = ($$props2) => {
       if ("applications" in $$props2)
-        $$invalidate(0, applications = $$props2.applications);
+        $$invalidate(0, applications2 = $$props2.applications);
       if ("eduProgs" in $$props2)
-        $$invalidate(4, eduProgs2 = $$props2.eduProgs);
+        $$invalidate(4, eduProgs = $$props2.eduProgs);
     };
     $$self.$$.update = () => {
       if ($$self.$$.dirty & 1) {
         $: {
-          if (applications.length > 0 && !applications.some((app) => app.priority)) {
-            $$invalidate(0, applications[0].priority = true, applications);
-            $$invalidate(0, applications);
+          if (applications2.length > 0 && !applications2.some((app) => app.priority)) {
+            $$invalidate(0, applications2[0].priority = true, applications2);
+            $$invalidate(0, applications2);
           }
         }
       }
       if ($$self.$$.dirty & 17) {
         $: {
-          $$invalidate(1, matrix = Array.from(new Set(eduProgs2.map((eduProg) => eduProg.specCode))).map((specCode) => {
+          $$invalidate(1, matrix = Array.from(new Set(eduProgs.map((eduProg) => eduProg.specCode))).map((specCode) => {
             const row = [
               [FULL_TIME, L_11, FREE],
               [FULL_TIME, L_9, FREE],
@@ -3803,19 +2709,19 @@
             ].map(([eduForm2, baseEduLelel, finSource2]) => findEduProg(specCode, eduForm2, baseEduLelel, finSource2));
             return row;
           }));
-          finSourceSet = new Set(eduProgs2.map((eduProg) => eduProg.finSource));
-          baseEduLevelSet = new Set(eduProgs2.map((eduProg) => eduProg.baseEduLevel));
-          eduFormSet = new Set(eduProgs2.map((eduProg) => eduProg.eduForm));
-          specSet = new Set(eduProgs2.filter((eduProg) => eduProg.baseEduLevel === baseEduLevel && (!eduForm || eduProg.eduForm === eduForm) && (!finSource || eduProg.finSource === finSource) && !applications.some((application) => application.eduProg === eduProg.code)).map((eduProg) => eduProg.code));
+          finSourceSet = new Set(eduProgs.map((eduProg) => eduProg.finSource));
+          baseEduLevelSet = new Set(eduProgs.map((eduProg) => eduProg.baseEduLevel));
+          eduFormSet = new Set(eduProgs.map((eduProg) => eduProg.eduForm));
+          specSet = new Set(eduProgs.filter((eduProg) => eduProg.baseEduLevel === baseEduLevel && (!eduForm || eduProg.eduForm === eduForm) && (!finSource || eduProg.finSource === finSource) && !applications2.some((application) => application.eduProg === eduProg.code)).map((eduProg) => eduProg.code));
         }
       }
     };
     return [
-      applications,
+      applications2,
       matrix,
       addApplication,
       removeApplication,
-      eduProgs2,
+      eduProgs,
       func,
       click_handler,
       click_handler_1,
@@ -3828,983 +2734,24 @@
   var Applications = class extends SvelteComponent {
     constructor(options) {
       super();
-      init(this, options, instance7, create_fragment7, safe_not_equal, { applications: 0, eduProgs: 4 }, add_css2);
+      init(this, options, instance3, create_fragment3, safe_not_equal, { applications: 0, eduProgs: 4 }, add_css2);
     }
     get applications() {
       return this.$$.ctx[0];
     }
-    set applications(applications) {
-      this.$$set({ applications });
+    set applications(applications2) {
+      this.$$set({ applications: applications2 });
       flush();
     }
     get eduProgs() {
       return this.$$.ctx[4];
     }
-    set eduProgs(eduProgs2) {
-      this.$$set({ eduProgs: eduProgs2 });
+    set eduProgs(eduProgs) {
+      this.$$set({ eduProgs });
       flush();
     }
   };
   var applications_default = Applications;
-
-  // src/js/svelte/comp.svelte
-  function add_css3(target) {
-    append_styles(target, "svelte-121c971", "#debug.svelte-121c971{display:none}#debug.svelte-121c971:target{display:block;font-size:xx-small}");
-  }
-  function create_fragment8(ctx) {
-    let form;
-    let div0;
-    let dateinput;
-    let updating_value;
-    let t0;
-    let text0;
-    let updating_value_1;
-    let t1;
-    let select0;
-    let updating_value_2;
-    let t2;
-    let div1;
-    let select1;
-    let updating_value_3;
-    let t3;
-    let numeric0;
-    let updating_value_4;
-    let t4;
-    let numeric1;
-    let updating_value_5;
-    let t5;
-    let numeric2;
-    let updating_value_6;
-    let t6;
-    let div2;
-    let checkbox0;
-    let updating_value_7;
-    let t7;
-    let checkbox1;
-    let updating_value_8;
-    let t8;
-    let checkbox2;
-    let updating_value_9;
-    let t9;
-    let checkbox3;
-    let updating_value_10;
-    let t10;
-    let div3;
-    let select2;
-    let updating_value_11;
-    let t11;
-    let text1;
-    let updating_value_12;
-    let t12;
-    let text2;
-    let updating_value_13;
-    let t13;
-    let div4;
-    let text3;
-    let updating_value_14;
-    let t14;
-    let text4;
-    let updating_value_15;
-    let t15;
-    let div5;
-    let textarea;
-    let updating_value_16;
-    let t16;
-    let div6;
-    let applications;
-    let updating_applications;
-    let t17;
-    let pre0;
-    let t18_value = ctx[3].join(", ") + "";
-    let t18;
-    let t19;
-    let button0;
-    let t21;
-    let button1;
-    let t23;
-    let button2;
-    let t25;
-    let pre1;
-    let t26_value = JSON.stringify(ctx[0], null, 4) + "";
-    let t26;
-    let current;
-    let mounted;
-    let dispose;
-    function dateinput_value_binding(value) {
-      ctx[6](value);
-    }
-    let dateinput_props = {
-      title: "\u0414\u0430\u0442\u0430 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u0438",
-      required: true
-    };
-    if (ctx[0].regDate !== void 0) {
-      dateinput_props.value = ctx[0].regDate;
-    }
-    dateinput = new date_default({ props: dateinput_props });
-    binding_callbacks.push(() => bind(dateinput, "value", dateinput_value_binding));
-    function text0_value_binding(value) {
-      ctx[7](value);
-    }
-    let text0_props = { title: "\u0424\u0430\u043C\u0438\u043B\u0438\u044F \u0418\u043C\u044F \u041E\u0442\u0447\u0435\u0441\u0442\u0432\u043E", size: 50 };
-    if (ctx[0].fio !== void 0) {
-      text0_props.value = ctx[0].fio;
-    }
-    text0 = new text_default({ props: text0_props });
-    binding_callbacks.push(() => bind(text0, "value", text0_value_binding));
-    function select0_value_binding(value) {
-      ctx[8](value);
-    }
-    let select0_props = {
-      title: "\u041F\u043E\u043B",
-      options: { \u043C: "\u043C\u0443\u0436\u0441\u043A\u043E\u0439", \u0436: "\u0436\u0435\u043D\u0441\u043A\u0438\u0439" }
-    };
-    if (ctx[0].gender !== void 0) {
-      select0_props.value = ctx[0].gender;
-    }
-    select0 = new select_default({ props: select0_props });
-    binding_callbacks.push(() => bind(select0, "value", select0_value_binding));
-    function select1_value_binding(value) {
-      ctx[9](value);
-    }
-    let select1_props = {
-      title: "\u0411\u0430\u0437\u043E\u0432\u043E\u0435 \u043E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u043D\u0438\u0435",
-      hasEmptyOption: true,
-      options: {
-        "9 \u043A\u043B\u0430\u0441\u0441\u043E\u0432": "9 \u043A\u043B\u0430\u0441\u0441\u043E\u0432",
-        "11 \u043A\u043B\u0430\u0441\u0441\u043E\u0432": "11 \u043A\u043B\u0430\u0441\u0441\u043E\u0432"
-      }
-    };
-    if (ctx[0].baseEduLevel !== void 0) {
-      select1_props.value = ctx[0].baseEduLevel;
-    }
-    select1 = new select_default({ props: select1_props });
-    binding_callbacks.push(() => bind(select1, "value", select1_value_binding));
-    function numeric0_value_binding(value) {
-      ctx[10](value);
-    }
-    let numeric0_props = {
-      title: "\u0421\u0440\u0435\u0434\u043D\u0438\u0439 \u0431\u0430\u043B\u043B \u0430\u0442\u0442\u0435\u0441\u0442\u0430\u0442\u0430",
-      min: 0,
-      max: 5,
-      step: 0.01,
-      size: 10
-    };
-    if (ctx[0].certScore !== void 0) {
-      numeric0_props.value = ctx[0].certScore;
-    }
-    numeric0 = new number_default({ props: numeric0_props });
-    binding_callbacks.push(() => bind(numeric0, "value", numeric0_value_binding));
-    function numeric1_value_binding(value) {
-      ctx[11](value);
-    }
-    let numeric1_props = {
-      title: "\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0431\u0430\u043B\u043B\u044B",
-      min: 0,
-      step: 0.1,
-      size: 10
-    };
-    if (ctx[0].extraScore !== void 0) {
-      numeric1_props.value = ctx[0].extraScore;
-    }
-    numeric1 = new number_default({ props: numeric1_props });
-    binding_callbacks.push(() => bind(numeric1, "value", numeric1_value_binding));
-    function numeric2_value_binding(value) {
-      ctx[12](value);
-    }
-    let numeric2_props = {
-      title: "\u0418\u0442\u043E\u0433\u043E\u0432\u044B\u0439 \u043A\u043E\u043D\u043A\u0443\u0440\u0441\u043D\u044B\u0439 \u0431\u0430\u043B\u043B",
-      size: 10,
-      readonly: true
-    };
-    if (ctx[0].totalScore !== void 0) {
-      numeric2_props.value = ctx[0].totalScore;
-    }
-    numeric2 = new number_default({ props: numeric2_props });
-    binding_callbacks.push(() => bind(numeric2, "value", numeric2_value_binding));
-    function checkbox0_value_binding(value) {
-      ctx[13](value);
-    }
-    let checkbox0_props = { title: "\u041F\u043E\u0434\u043B\u0438\u043D\u043D\u0438\u043A \u0430\u0442\u0442\u0435\u0441\u0442\u0430\u0442\u0430" };
-    if (ctx[0].hasEduCertOriginal !== void 0) {
-      checkbox0_props.value = ctx[0].hasEduCertOriginal;
-    }
-    checkbox0 = new checkbox_default({ props: checkbox0_props });
-    binding_callbacks.push(() => bind(checkbox0, "value", checkbox0_value_binding));
-    function checkbox1_value_binding(value) {
-      ctx[14](value);
-    }
-    let checkbox1_props = { title: "\u041C\u0435\u0434\u0438\u0446\u0438\u043D\u0441\u043A\u0430\u044F \u0441\u043F\u0440\u0430\u0432\u043A\u0430" };
-    if (ctx[0].hasMedicalCert !== void 0) {
-      checkbox1_props.value = ctx[0].hasMedicalCert;
-    }
-    checkbox1 = new checkbox_default({ props: checkbox1_props });
-    binding_callbacks.push(() => bind(checkbox1, "value", checkbox1_value_binding));
-    function checkbox2_value_binding(value) {
-      ctx[15](value);
-    }
-    let checkbox2_props = { title: "\u0424\u043B\u044E\u043E\u0440\u043E\u0433\u0440\u0430\u0444\u0438\u044F" };
-    if (ctx[0].hasFluoro !== void 0) {
-      checkbox2_props.value = ctx[0].hasFluoro;
-    }
-    checkbox2 = new checkbox_default({ props: checkbox2_props });
-    binding_callbacks.push(() => bind(checkbox2, "value", checkbox2_value_binding));
-    function checkbox3_value_binding(value) {
-      ctx[16](value);
-    }
-    let checkbox3_props = { title: "\u041F\u0440\u0438\u0432\u0438\u0432\u043A\u0438" };
-    if (ctx[0].hasVaccine !== void 0) {
-      checkbox3_props.value = ctx[0].hasVaccine;
-    }
-    checkbox3 = new checkbox_default({ props: checkbox3_props });
-    binding_callbacks.push(() => bind(checkbox3, "value", checkbox3_value_binding));
-    function select2_value_binding(value) {
-      ctx[17](value);
-    }
-    let select2_props = {
-      title: "\u041E\u0431\u0449\u0435\u0436\u0438\u0442\u0438\u0435",
-      options: {
-        "0": "\u043D\u0435 \u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F",
-        "1": "\u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F",
-        "2": "\u043F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442\u043D\u043E\u0435"
-      }
-    };
-    if (ctx[0].needDorm !== void 0) {
-      select2_props.value = ctx[0].needDorm;
-    }
-    select2 = new select_default({ props: select2_props });
-    binding_callbacks.push(() => bind(select2, "value", select2_value_binding));
-    function text1_value_binding(value) {
-      ctx[18](value);
-    }
-    let text1_props = { title: "\u0410\u0434\u0440\u0435\u0441", size: 50 };
-    if (ctx[0].address !== void 0) {
-      text1_props.value = ctx[0].address;
-    }
-    text1 = new text_default({ props: text1_props });
-    binding_callbacks.push(() => bind(text1, "value", text1_value_binding));
-    function text2_value_binding(value) {
-      ctx[19](value);
-    }
-    let text2_props = { title: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D", size: 15 };
-    if (ctx[0].tel !== void 0) {
-      text2_props.value = ctx[0].tel;
-    }
-    text2 = new text_default({ props: text2_props });
-    binding_callbacks.push(() => bind(text2, "value", text2_value_binding));
-    function text3_value_binding(value) {
-      ctx[20](value);
-    }
-    let text3_props = { title: "\u0428\u043A\u043E\u043B\u0430", size: 70 };
-    if (ctx[0].school !== void 0) {
-      text3_props.value = ctx[0].school;
-    }
-    text3 = new text_default({ props: text3_props });
-    binding_callbacks.push(() => bind(text3, "value", text3_value_binding));
-    function text4_value_binding(value) {
-      ctx[21](value);
-    }
-    let text4_props = { title: "\u0413\u043E\u0434 \u043E\u043A\u043E\u043D\u0447\u0430\u043D\u0438\u044F \u0448\u043A\u043E\u043B\u044B", size: 10 };
-    if (ctx[0].schoolYear !== void 0) {
-      text4_props.value = ctx[0].schoolYear;
-    }
-    text4 = new text_default({ props: text4_props });
-    binding_callbacks.push(() => bind(text4, "value", text4_value_binding));
-    function textarea_value_binding(value) {
-      ctx[22](value);
-    }
-    let textarea_props = { title: "\u041F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435", size: 97 };
-    if (ctx[0].memo !== void 0) {
-      textarea_props.value = ctx[0].memo;
-    }
-    textarea = new textarea_default({ props: textarea_props });
-    binding_callbacks.push(() => bind(textarea, "value", textarea_value_binding));
-    function applications_applications_binding(value) {
-      ctx[23](value);
-    }
-    let applications_props = { eduProgs: ctx[1] };
-    if (ctx[0].applications !== void 0) {
-      applications_props.applications = ctx[0].applications;
-    }
-    applications = new applications_default({ props: applications_props });
-    binding_callbacks.push(() => bind(applications, "applications", applications_applications_binding));
-    return {
-      c() {
-        form = element("form");
-        div0 = element("div");
-        create_component(dateinput.$$.fragment);
-        t0 = space();
-        create_component(text0.$$.fragment);
-        t1 = space();
-        create_component(select0.$$.fragment);
-        t2 = space();
-        div1 = element("div");
-        create_component(select1.$$.fragment);
-        t3 = space();
-        create_component(numeric0.$$.fragment);
-        t4 = space();
-        create_component(numeric1.$$.fragment);
-        t5 = space();
-        create_component(numeric2.$$.fragment);
-        t6 = space();
-        div2 = element("div");
-        create_component(checkbox0.$$.fragment);
-        t7 = space();
-        create_component(checkbox1.$$.fragment);
-        t8 = space();
-        create_component(checkbox2.$$.fragment);
-        t9 = space();
-        create_component(checkbox3.$$.fragment);
-        t10 = space();
-        div3 = element("div");
-        create_component(select2.$$.fragment);
-        t11 = space();
-        create_component(text1.$$.fragment);
-        t12 = space();
-        create_component(text2.$$.fragment);
-        t13 = space();
-        div4 = element("div");
-        create_component(text3.$$.fragment);
-        t14 = space();
-        create_component(text4.$$.fragment);
-        t15 = space();
-        div5 = element("div");
-        create_component(textarea.$$.fragment);
-        t16 = space();
-        div6 = element("div");
-        create_component(applications.$$.fragment);
-        t17 = space();
-        pre0 = element("pre");
-        t18 = text(t18_value);
-        t19 = space();
-        button0 = element("button");
-        button0.textContent = "\u2714\uFE0F \u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u0438 \u0437\u0430\u043A\u0440\u044B\u0442\u044C";
-        t21 = space();
-        button1 = element("button");
-        button1.textContent = "\u{1F4D1} \u0414\u0443\u0431\u043B\u0438\u0440\u043E\u0432\u0430\u0442\u044C";
-        t23 = space();
-        button2 = element("button");
-        button2.textContent = "\u274C \u0417\u0430\u043A\u0440\u044B\u0442\u044C \u0431\u0435\u0437 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F";
-        t25 = space();
-        pre1 = element("pre");
-        t26 = text(t26_value);
-        attr(div0, "class", "field-container");
-        attr(div1, "class", "field-container");
-        attr(div2, "class", "field-container");
-        attr(div3, "class", "field-container");
-        attr(div4, "class", "field-container");
-        attr(div5, "class", "field-container");
-        attr(div6, "class", "field-container");
-        attr(button0, "class", "button button--primary");
-        attr(button0, "type", "submit");
-        attr(button1, "class", "button button--secondary");
-        attr(button1, "type", "button");
-        attr(button2, "class", "button button--secondary");
-        attr(button2, "type", "button");
-        attr(pre1, "id", "debug");
-        attr(pre1, "class", "svelte-121c971");
-      },
-      m(target, anchor) {
-        insert(target, form, anchor);
-        append(form, div0);
-        mount_component(dateinput, div0, null);
-        append(div0, t0);
-        mount_component(text0, div0, null);
-        append(div0, t1);
-        mount_component(select0, div0, null);
-        append(form, t2);
-        append(form, div1);
-        mount_component(select1, div1, null);
-        append(div1, t3);
-        mount_component(numeric0, div1, null);
-        append(div1, t4);
-        mount_component(numeric1, div1, null);
-        append(div1, t5);
-        mount_component(numeric2, div1, null);
-        append(form, t6);
-        append(form, div2);
-        mount_component(checkbox0, div2, null);
-        append(div2, t7);
-        mount_component(checkbox1, div2, null);
-        append(div2, t8);
-        mount_component(checkbox2, div2, null);
-        append(div2, t9);
-        mount_component(checkbox3, div2, null);
-        append(form, t10);
-        append(form, div3);
-        mount_component(select2, div3, null);
-        append(div3, t11);
-        mount_component(text1, div3, null);
-        append(div3, t12);
-        mount_component(text2, div3, null);
-        append(form, t13);
-        append(form, div4);
-        mount_component(text3, div4, null);
-        append(div4, t14);
-        mount_component(text4, div4, null);
-        append(form, t15);
-        append(form, div5);
-        mount_component(textarea, div5, null);
-        append(form, t16);
-        append(form, div6);
-        mount_component(applications, div6, null);
-        append(form, t17);
-        append(form, pre0);
-        append(pre0, t18);
-        append(form, t19);
-        append(form, button0);
-        append(form, t21);
-        append(form, button1);
-        append(form, t23);
-        append(form, button2);
-        insert(target, t25, anchor);
-        insert(target, pre1, anchor);
-        append(pre1, t26);
-        current = true;
-        if (!mounted) {
-          dispose = [
-            listen(button1, "click", ctx[24]),
-            listen(button2, "click", ctx[25]),
-            listen(form, "submit", prevent_default(ctx[26]))
-          ];
-          mounted = true;
-        }
-      },
-      p(ctx2, [dirty]) {
-        const dateinput_changes = {};
-        if (!updating_value && dirty & 1) {
-          updating_value = true;
-          dateinput_changes.value = ctx2[0].regDate;
-          add_flush_callback(() => updating_value = false);
-        }
-        dateinput.$set(dateinput_changes);
-        const text0_changes = {};
-        if (!updating_value_1 && dirty & 1) {
-          updating_value_1 = true;
-          text0_changes.value = ctx2[0].fio;
-          add_flush_callback(() => updating_value_1 = false);
-        }
-        text0.$set(text0_changes);
-        const select0_changes = {};
-        if (!updating_value_2 && dirty & 1) {
-          updating_value_2 = true;
-          select0_changes.value = ctx2[0].gender;
-          add_flush_callback(() => updating_value_2 = false);
-        }
-        select0.$set(select0_changes);
-        const select1_changes = {};
-        if (!updating_value_3 && dirty & 1) {
-          updating_value_3 = true;
-          select1_changes.value = ctx2[0].baseEduLevel;
-          add_flush_callback(() => updating_value_3 = false);
-        }
-        select1.$set(select1_changes);
-        const numeric0_changes = {};
-        if (!updating_value_4 && dirty & 1) {
-          updating_value_4 = true;
-          numeric0_changes.value = ctx2[0].certScore;
-          add_flush_callback(() => updating_value_4 = false);
-        }
-        numeric0.$set(numeric0_changes);
-        const numeric1_changes = {};
-        if (!updating_value_5 && dirty & 1) {
-          updating_value_5 = true;
-          numeric1_changes.value = ctx2[0].extraScore;
-          add_flush_callback(() => updating_value_5 = false);
-        }
-        numeric1.$set(numeric1_changes);
-        const numeric2_changes = {};
-        if (!updating_value_6 && dirty & 1) {
-          updating_value_6 = true;
-          numeric2_changes.value = ctx2[0].totalScore;
-          add_flush_callback(() => updating_value_6 = false);
-        }
-        numeric2.$set(numeric2_changes);
-        const checkbox0_changes = {};
-        if (!updating_value_7 && dirty & 1) {
-          updating_value_7 = true;
-          checkbox0_changes.value = ctx2[0].hasEduCertOriginal;
-          add_flush_callback(() => updating_value_7 = false);
-        }
-        checkbox0.$set(checkbox0_changes);
-        const checkbox1_changes = {};
-        if (!updating_value_8 && dirty & 1) {
-          updating_value_8 = true;
-          checkbox1_changes.value = ctx2[0].hasMedicalCert;
-          add_flush_callback(() => updating_value_8 = false);
-        }
-        checkbox1.$set(checkbox1_changes);
-        const checkbox2_changes = {};
-        if (!updating_value_9 && dirty & 1) {
-          updating_value_9 = true;
-          checkbox2_changes.value = ctx2[0].hasFluoro;
-          add_flush_callback(() => updating_value_9 = false);
-        }
-        checkbox2.$set(checkbox2_changes);
-        const checkbox3_changes = {};
-        if (!updating_value_10 && dirty & 1) {
-          updating_value_10 = true;
-          checkbox3_changes.value = ctx2[0].hasVaccine;
-          add_flush_callback(() => updating_value_10 = false);
-        }
-        checkbox3.$set(checkbox3_changes);
-        const select2_changes = {};
-        if (!updating_value_11 && dirty & 1) {
-          updating_value_11 = true;
-          select2_changes.value = ctx2[0].needDorm;
-          add_flush_callback(() => updating_value_11 = false);
-        }
-        select2.$set(select2_changes);
-        const text1_changes = {};
-        if (!updating_value_12 && dirty & 1) {
-          updating_value_12 = true;
-          text1_changes.value = ctx2[0].address;
-          add_flush_callback(() => updating_value_12 = false);
-        }
-        text1.$set(text1_changes);
-        const text2_changes = {};
-        if (!updating_value_13 && dirty & 1) {
-          updating_value_13 = true;
-          text2_changes.value = ctx2[0].tel;
-          add_flush_callback(() => updating_value_13 = false);
-        }
-        text2.$set(text2_changes);
-        const text3_changes = {};
-        if (!updating_value_14 && dirty & 1) {
-          updating_value_14 = true;
-          text3_changes.value = ctx2[0].school;
-          add_flush_callback(() => updating_value_14 = false);
-        }
-        text3.$set(text3_changes);
-        const text4_changes = {};
-        if (!updating_value_15 && dirty & 1) {
-          updating_value_15 = true;
-          text4_changes.value = ctx2[0].schoolYear;
-          add_flush_callback(() => updating_value_15 = false);
-        }
-        text4.$set(text4_changes);
-        const textarea_changes = {};
-        if (!updating_value_16 && dirty & 1) {
-          updating_value_16 = true;
-          textarea_changes.value = ctx2[0].memo;
-          add_flush_callback(() => updating_value_16 = false);
-        }
-        textarea.$set(textarea_changes);
-        const applications_changes = {};
-        if (dirty & 2)
-          applications_changes.eduProgs = ctx2[1];
-        if (!updating_applications && dirty & 1) {
-          updating_applications = true;
-          applications_changes.applications = ctx2[0].applications;
-          add_flush_callback(() => updating_applications = false);
-        }
-        applications.$set(applications_changes);
-        if ((!current || dirty & 8) && t18_value !== (t18_value = ctx2[3].join(", ") + ""))
-          set_data(t18, t18_value);
-        if ((!current || dirty & 1) && t26_value !== (t26_value = JSON.stringify(ctx2[0], null, 4) + ""))
-          set_data(t26, t26_value);
-      },
-      i(local) {
-        if (current)
-          return;
-        transition_in(dateinput.$$.fragment, local);
-        transition_in(text0.$$.fragment, local);
-        transition_in(select0.$$.fragment, local);
-        transition_in(select1.$$.fragment, local);
-        transition_in(numeric0.$$.fragment, local);
-        transition_in(numeric1.$$.fragment, local);
-        transition_in(numeric2.$$.fragment, local);
-        transition_in(checkbox0.$$.fragment, local);
-        transition_in(checkbox1.$$.fragment, local);
-        transition_in(checkbox2.$$.fragment, local);
-        transition_in(checkbox3.$$.fragment, local);
-        transition_in(select2.$$.fragment, local);
-        transition_in(text1.$$.fragment, local);
-        transition_in(text2.$$.fragment, local);
-        transition_in(text3.$$.fragment, local);
-        transition_in(text4.$$.fragment, local);
-        transition_in(textarea.$$.fragment, local);
-        transition_in(applications.$$.fragment, local);
-        current = true;
-      },
-      o(local) {
-        transition_out(dateinput.$$.fragment, local);
-        transition_out(text0.$$.fragment, local);
-        transition_out(select0.$$.fragment, local);
-        transition_out(select1.$$.fragment, local);
-        transition_out(numeric0.$$.fragment, local);
-        transition_out(numeric1.$$.fragment, local);
-        transition_out(numeric2.$$.fragment, local);
-        transition_out(checkbox0.$$.fragment, local);
-        transition_out(checkbox1.$$.fragment, local);
-        transition_out(checkbox2.$$.fragment, local);
-        transition_out(checkbox3.$$.fragment, local);
-        transition_out(select2.$$.fragment, local);
-        transition_out(text1.$$.fragment, local);
-        transition_out(text2.$$.fragment, local);
-        transition_out(text3.$$.fragment, local);
-        transition_out(text4.$$.fragment, local);
-        transition_out(textarea.$$.fragment, local);
-        transition_out(applications.$$.fragment, local);
-        current = false;
-      },
-      d(detaching) {
-        if (detaching)
-          detach(form);
-        destroy_component(dateinput);
-        destroy_component(text0);
-        destroy_component(select0);
-        destroy_component(select1);
-        destroy_component(numeric0);
-        destroy_component(numeric1);
-        destroy_component(numeric2);
-        destroy_component(checkbox0);
-        destroy_component(checkbox1);
-        destroy_component(checkbox2);
-        destroy_component(checkbox3);
-        destroy_component(select2);
-        destroy_component(text1);
-        destroy_component(text2);
-        destroy_component(text3);
-        destroy_component(text4);
-        destroy_component(textarea);
-        destroy_component(applications);
-        if (detaching)
-          detach(t25);
-        if (detaching)
-          detach(pre1);
-        mounted = false;
-        run_all(dispose);
-      }
-    };
-  }
-  function parseNumber(n) {
-    if (Number.isFinite(n))
-      return n;
-    let r;
-    try {
-      r = parseFloat(n.toString().replace(",", "."));
-    } catch (err) {
-      return n;
-    }
-    if (Number.isFinite(r))
-      return r;
-    return n;
-  }
-  function instance8($$self, $$props, $$invalidate) {
-    let certScore;
-    let extraScore;
-    let totalScore;
-    let tags;
-    let { eduProgs: eduProgs2 = [] } = $$props;
-    let { close = () => {
-    } } = $$props;
-    let { data: data2 = {
-      type: "abit",
-      regDate: "2.3.21",
-      fio: "\u041D\u0438\u044F\u0437\u043E\u0432\u0430 \u041C\u0430\u0440\u0438\u043D\u0430 \u0420\u043E\u043C\u0430\u043D\u043E\u0432\u043D\u0430",
-      gender: "\u0436",
-      baseEduLevel: null,
-      certScore: "4,81",
-      extraScore: 0.1,
-      hasEduCertOriginal: true,
-      hasMedicalCert: true,
-      hasFluoro: true,
-      hasVaccine: true,
-      address: "\u041F\u041A \u0433. \u0411\u043E\u043B\u044C\u0448\u043E\u0439-\u041A\u0430\u043C\u0435\u043D\u044C",
-      tel: "+79841528598",
-      needDorm: "1",
-      schoolYear: "2021",
-      school: "\u041C\u0411\u041E\u0423 \u0421\u041E\u0428 \u2116 44 \u0433. \u0411-\u041A\u0430\u043C\u0435\u043D\u044C",
-      memo: "",
-      applications: [
-        {
-          eduProg: "\u0411\u0423",
-          grade: "4",
-          priority: true,
-          disabled: false
-        },
-        {
-          eduProg: "\u0411\u0423\u0437\u043A",
-          grade: "4",
-          priority: true,
-          disabled: false
-        }
-      ],
-      apps: { baseEduLevel: null },
-      birthDate: null,
-      isFullAge: false,
-      passport: {
-        serialNumber: null,
-        issuedBy: null,
-        issuedAt: null,
-        addressReg: null,
-        addressActual: null
-      },
-      counterpart: {
-        fio: null,
-        tel: null,
-        passport: {
-          serialNumber: null,
-          issuedBy: null,
-          issuedAt: null,
-          addressReg: null,
-          addressActual: null
-        }
-      }
-    } } = $$props;
-    const defaultData = {
-      type: "abit",
-      regDate: null,
-      fio: null,
-      gender: null,
-      baseEduLevel: null,
-      certScore: null,
-      extraScore: null,
-      hasEduCertOriginal: null,
-      hasMedicalCert: null,
-      hasFluoro: null,
-      hasVaccine: null,
-      address: null,
-      tel: null,
-      needDorm: null,
-      schoolYear: null,
-      school: null,
-      memo: null,
-      applications: [],
-      apps: { baseEduLevel: null },
-      birthDate: null,
-      isFullAge: null,
-      passport: {
-        serialNumber: null,
-        issuedBy: null,
-        issuedAt: null,
-        addressReg: null,
-        addressActual: null
-      },
-      counterpart: {
-        fio: null,
-        tel: null,
-        passport: {
-          serialNumber: null,
-          issuedBy: null,
-          issuedAt: null,
-          addressReg: null,
-          addressActual: null
-        }
-      }
-    };
-    const setDataValue = (v) => {
-      return (0, import_deepmerge2.default)(defaultData, v);
-    };
-    const setScoreValues = (certScore2, extraScore2) => {
-      $$invalidate(0, data2.certScore = parseNumber(certScore2), data2);
-      $$invalidate(0, data2.extraScore = parseNumber(extraScore2), data2);
-    };
-    function dateinput_value_binding(value) {
-      if ($$self.$$.not_equal(data2.regDate, value)) {
-        data2.regDate = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function text0_value_binding(value) {
-      if ($$self.$$.not_equal(data2.fio, value)) {
-        data2.fio = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function select0_value_binding(value) {
-      if ($$self.$$.not_equal(data2.gender, value)) {
-        data2.gender = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function select1_value_binding(value) {
-      if ($$self.$$.not_equal(data2.baseEduLevel, value)) {
-        data2.baseEduLevel = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function numeric0_value_binding(value) {
-      if ($$self.$$.not_equal(data2.certScore, value)) {
-        data2.certScore = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function numeric1_value_binding(value) {
-      if ($$self.$$.not_equal(data2.extraScore, value)) {
-        data2.extraScore = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function numeric2_value_binding(value) {
-      if ($$self.$$.not_equal(data2.totalScore, value)) {
-        data2.totalScore = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function checkbox0_value_binding(value) {
-      if ($$self.$$.not_equal(data2.hasEduCertOriginal, value)) {
-        data2.hasEduCertOriginal = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function checkbox1_value_binding(value) {
-      if ($$self.$$.not_equal(data2.hasMedicalCert, value)) {
-        data2.hasMedicalCert = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function checkbox2_value_binding(value) {
-      if ($$self.$$.not_equal(data2.hasFluoro, value)) {
-        data2.hasFluoro = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function checkbox3_value_binding(value) {
-      if ($$self.$$.not_equal(data2.hasVaccine, value)) {
-        data2.hasVaccine = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function select2_value_binding(value) {
-      if ($$self.$$.not_equal(data2.needDorm, value)) {
-        data2.needDorm = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function text1_value_binding(value) {
-      if ($$self.$$.not_equal(data2.address, value)) {
-        data2.address = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function text2_value_binding(value) {
-      if ($$self.$$.not_equal(data2.tel, value)) {
-        data2.tel = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function text3_value_binding(value) {
-      if ($$self.$$.not_equal(data2.school, value)) {
-        data2.school = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function text4_value_binding(value) {
-      if ($$self.$$.not_equal(data2.schoolYear, value)) {
-        data2.schoolYear = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function textarea_value_binding(value) {
-      if ($$self.$$.not_equal(data2.memo, value)) {
-        data2.memo = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    function applications_applications_binding(value) {
-      if ($$self.$$.not_equal(data2.applications, value)) {
-        data2.applications = value;
-        $$invalidate(0, data2), $$invalidate(4, certScore), $$invalidate(5, extraScore);
-      }
-    }
-    const click_handler = () => {
-      close({ ok: true, cmd: "duplicate" });
-    };
-    const click_handler_1 = () => {
-      close({ ok: false });
-    };
-    const submit_handler = () => close({ ok: true });
-    $$self.$$set = ($$props2) => {
-      if ("eduProgs" in $$props2)
-        $$invalidate(1, eduProgs2 = $$props2.eduProgs);
-      if ("close" in $$props2)
-        $$invalidate(2, close = $$props2.close);
-      if ("data" in $$props2)
-        $$invalidate(0, data2 = $$props2.data);
-    };
-    $$self.$$.update = () => {
-      if ($$self.$$.dirty & 1) {
-        $: {
-          $$invalidate(0, data2 = setDataValue(data2));
-        }
-      }
-      if ($$self.$$.dirty & 49) {
-        $: {
-          $$invalidate(4, certScore = parseNumber(data2.certScore));
-          $$invalidate(5, extraScore = parseNumber(data2.extraScore));
-          $$invalidate(0, data2.totalScore = parseFloat(((Number.isFinite(certScore) ? certScore : 0) + (Number.isFinite(extraScore) ? extraScore : 0)).toFixed(6)), data2);
-        }
-      }
-      if ($$self.$$.dirty & 1) {
-        $: {
-          $$invalidate(3, tags = Array.from(data2?.memo.matchAll(/#([a-zA-Z0-9_a-яА-ЯёЁ]+)/g) || [], (tag) => tag[1]));
-        }
-      }
-      if ($$self.$$.dirty & 1) {
-        $: {
-          setScoreValues(data2.certScore, data2.extraScore);
-        }
-      }
-    };
-    return [
-      data2,
-      eduProgs2,
-      close,
-      tags,
-      certScore,
-      extraScore,
-      dateinput_value_binding,
-      text0_value_binding,
-      select0_value_binding,
-      select1_value_binding,
-      numeric0_value_binding,
-      numeric1_value_binding,
-      numeric2_value_binding,
-      checkbox0_value_binding,
-      checkbox1_value_binding,
-      checkbox2_value_binding,
-      checkbox3_value_binding,
-      select2_value_binding,
-      text1_value_binding,
-      text2_value_binding,
-      text3_value_binding,
-      text4_value_binding,
-      textarea_value_binding,
-      applications_applications_binding,
-      click_handler,
-      click_handler_1,
-      submit_handler
-    ];
-  }
-  var Comp = class extends SvelteComponent {
-    constructor(options) {
-      super();
-      init(this, options, instance8, create_fragment8, safe_not_equal, { eduProgs: 1, close: 2, data: 0 }, add_css3);
-    }
-    get eduProgs() {
-      return this.$$.ctx[1];
-    }
-    set eduProgs(eduProgs2) {
-      this.$$set({ eduProgs: eduProgs2 });
-      flush();
-    }
-    get close() {
-      return this.$$.ctx[2];
-    }
-    set close(close) {
-      this.$$set({ close });
-      flush();
-    }
-    get data() {
-      return this.$$.ctx[0];
-    }
-    set data(data2) {
-      this.$$set({ data: data2 });
-      flush();
-    }
-  };
-  var comp_default = Comp;
 
   // node_modules/pouchdb/lib/index-browser.es.js
   var import_immediate = __toESM(require_lib());
@@ -5157,8 +3104,8 @@
         collapseResultsAndFinish();
       }
     }
-    function gotResult(docIndex, id, docs2) {
-      perDocResults[docIndex] = { id, docs: docs2 };
+    function gotResult(docIndex, id, docs) {
+      perDocResults[docIndex] = { id, docs };
       checkDone();
     }
     var allRequests = [];
@@ -5408,9 +3355,9 @@
   }
   function generateErrorFromResponse(err) {
     if (typeof err !== "object") {
-      var data2 = err;
+      var data = err;
       err = UNKNOWN_ERROR;
-      err.data = data2;
+      err.data = data;
     }
     if ("error" in err && err.error === "conflict") {
       err.name = "conflict";
@@ -5702,9 +3649,9 @@
     buffer.appendBinary(string);
     callback();
   }
-  function binaryMd5(data2, callback) {
-    var inputIsString = typeof data2 === "string";
-    var len = inputIsString ? data2.length : data2.size;
+  function binaryMd5(data, callback) {
+    var inputIsString = typeof data === "string";
+    var len = inputIsString ? data.length : data.size;
     var chunkSize = Math.min(MD5_CHUNK_SIZE, len);
     var chunks = Math.ceil(len / chunkSize);
     var currentChunk = 0;
@@ -5724,9 +3671,9 @@
       var end = start + chunkSize;
       currentChunk++;
       if (currentChunk < chunks) {
-        append2(buffer, data2, start, end, next);
+        append2(buffer, data, start, end, next);
       } else {
-        append2(buffer, data2, start, end, done);
+        append2(buffer, data, start, end, done);
       }
     }
     loadNextChunk();
@@ -6271,9 +4218,9 @@
       }
     };
   }
-  function cleanDocs(docs2) {
-    for (var i = 0; i < docs2.length; i++) {
-      var doc = docs2[i];
+  function cleanDocs(docs) {
+    for (var i = 0; i < docs.length; i++) {
+      var doc = docs[i];
       if (doc._deleted) {
         delete doc._attachments;
       } else if (doc._attachments) {
@@ -6779,9 +4726,9 @@
             rev: doc._rev,
             binary: opts.binary,
             ctx
-          }, function(err2, data2) {
+          }, function(err2, data) {
             var att = doc._attachments[key2];
-            att.data = data2;
+            att.data = data;
             delete att.stub;
             delete att.length;
             if (!--count) {
@@ -7585,7 +5532,7 @@
     key = normalizeKey(key);
     return collationIndex(key) + SEP + indexify(key) + zero;
   }
-  function parseNumber2(str, i) {
+  function parseNumber(str, i) {
     var originalIdx = i;
     var num;
     var zero = str[i] === "1";
@@ -7669,7 +5616,7 @@
           i++;
           break;
         case "3":
-          var parsedNum = parseNumber2(str, i);
+          var parsedNum = parseNumber(str, i);
           stack.push(parsedNum.num);
           i += parsedNum.length;
           break;
@@ -7891,8 +5838,8 @@
     return docFieldValue.length === userValue;
   }
   function regexMatch(docFieldValue, userValue) {
-    var re2 = new RegExp(userValue);
-    return re2.test(docFieldValue);
+    var re = new RegExp(userValue);
+    return re.test(docFieldValue);
   }
   function typeMatch(docFieldValue, userValue) {
     switch (userValue) {
@@ -8237,9 +6184,9 @@
     }
     return result;
   }
-  function parseBase64(data2) {
+  function parseBase64(data) {
     try {
-      return thisAtob(data2);
+      return thisAtob(data);
     } catch (e) {
       var err = createError(BAD_ARG, "Attachment is not a valid base64 string");
       return { error: err };
@@ -8414,17 +6361,17 @@
         idsToDocs.set(id, [[currentDoc, resultsIdx]]);
       }
     });
-    idsToDocs.forEach(function(docs2, id) {
+    idsToDocs.forEach(function(docs, id) {
       var numDone = 0;
       function docWritten() {
-        if (++numDone < docs2.length) {
+        if (++numDone < docs.length) {
           nextDoc();
         } else {
           checkAllDocsDone();
         }
       }
       function nextDoc() {
-        var value = docs2[numDone];
+        var value = docs[numDone];
         var currentDoc = value[0];
         var resultsIdx = value[1];
         if (fetchedDocs.has(id)) {
@@ -8561,8 +6508,8 @@
           var body = attObj.body;
           var type = attObj.content_type;
           return new Promise(function(resolve) {
-            readBlobData(body, type, asBlob, function(data2) {
-              row.doc._attachments[att] = $inject_Object_assign(pick(attObj, ["digest", "content_type"]), { data: data2 });
+            readBlobData(body, type, asBlob, function(data) {
+              row.doc._attachments[att] = $inject_Object_assign(pick(attObj, ["digest", "content_type"]), { data });
               resolve();
             });
           });
@@ -8867,11 +6814,11 @@
       attachments.forEach(function(key) {
         var att = docInfo.data._attachments[key];
         if (!att.stub) {
-          var data2 = att.data;
+          var data = att.data;
           delete att.data;
           att.revpos = parseInt(winningRev$$1, 10);
           var digest = att.digest;
-          saveAttachment(digest, data2, attachmentSaved);
+          saveAttachment(digest, data, attachmentSaved);
         } else {
           numDone++;
           collectResults();
@@ -8906,7 +6853,7 @@
         add(attsToAdd[i2]);
       }
     }
-    function saveAttachment(digest, data2, callback2) {
+    function saveAttachment(digest, data, callback2) {
       var getKeyReq = attachStore.count(digest);
       getKeyReq.onsuccess = function(e) {
         var count = e.target.result;
@@ -8915,7 +6862,7 @@
         }
         var newAtt = {
           digest,
-          body: data2
+          body: data
         };
         var putReq = attachStore.put(newAtt);
         putReq.onsuccess = callback2;
@@ -9488,9 +7435,9 @@
                 docStore.delete(cursor2.primaryKey);
                 cursor2.continue();
               } else {
-                var data2 = seqCursor.value;
-                if (data2._doc_id_rev === docIdRev) {
-                  localStore.put(data2);
+                var data = seqCursor.value;
+                if (data._doc_id_rev === docIdRev) {
+                  localStore.put(data);
                 }
                 seqStore.delete(seqCursor.primaryKey);
                 seqCursor.continue();
@@ -10412,10 +8359,10 @@
             return new Promise(function(resolve) {
               blobToBase64(blob, resolve);
             });
-          }).then(function(data2) {
+          }).then(function(data) {
             delete att.stub;
             delete att.length;
-            att.data = data2;
+            att.data = data;
           });
         }
         var promiseFactories = filenames.map(function(filename) {
@@ -12302,9 +10249,9 @@
       if (currentBatch.docs.length === 0) {
         return;
       }
-      var docs2 = currentBatch.docs;
+      var docs = currentBatch.docs;
       var bulkOpts = { timeout: opts.timeout };
-      return target.bulkDocs({ docs: docs2, new_edits: false }, bulkOpts).then(function(res) {
+      return target.bulkDocs({ docs, new_edits: false }, bulkOpts).then(function(res) {
         if (returnValue.cancelled) {
           completeReplication();
           throw new Error("cancelled");
@@ -12317,8 +10264,8 @@
         });
         var errorsNo = Object.keys(errorsById).length;
         result.doc_write_failures += errorsNo;
-        result.docs_written += docs2.length - errorsNo;
-        docs2.forEach(function(doc) {
+        result.docs_written += docs.length - errorsNo;
+        docs.forEach(function(doc) {
           var error = errorsById[doc._id];
           if (error) {
             result.errors.push(error);
@@ -12333,7 +10280,7 @@
           }
         });
       }, function(err) {
-        result.doc_write_failures += docs2.length;
+        result.doc_write_failures += docs.length;
         throw err;
       });
     }
@@ -12942,69 +10889,14 @@
   }).on("change", (change) => dbChanges.handle(change)).on("error", function(err) {
     console.log(err);
   });
-  var subscribe = (handler) => dbChanges.subscribe(handler);
-  var unsubscribe = (handler) => dbChanges.unsubscribe(handler);
 
-  // src/js/abits.js
-  var items = [];
-  var docs = [];
-  var eduProgs = [];
-  var outputElem = document.getElementById("abit-list");
-  var progressElem = document.getElementById("progress");
-  var editDoc = async (id) => {
-    const doc = docs.find((doc2) => doc2._id === id);
-    console.assert(doc);
-    const result = await openEditDialog(doc);
-    console.log(result);
-    if (!result.ok)
-      return;
-    const docNew = { ...result.doc };
-    if (result.cmd === "duplicate") {
-      delete docNew._id;
-      delete docNew._rev;
-    }
-    if (!docNew._id) {
-      const { ok, id: id2, rev } = await db.post(docNew);
-      console.assert(ok);
-      docNew._rev = rev;
-      docNew._id = id2;
-    } else {
-      const { ok, id: id2, rev } = await db.put(docNew);
-      console.assert(ok);
-      console.assert(doc._id === id2);
-      docNew._rev = rev;
-    }
-  };
-  outputElem.addEventListener("dblclick", async (event) => {
-    const target = event.target.closest(".item");
-    const id = target.dataset.id;
-    await editDoc(id);
+  // src/js/applications-form.js
+  var applications = new applications_default({
+    target: document.getElementById("applications")
   });
-  document.documentElement.addEventListener("keydown", async (event) => {
-    if (event.code === "Insert") {
-    }
-  });
-  var dbChangeHandler = (change) => {
-    const { id, doc } = change;
-    const docIdx = docs.findIndex((doc2) => doc2._id === id);
-    if (docIdx === -1) {
-      docs.unshift(doc);
-      const elem = createAbitViewElem(doc);
-      outputElem.prepend(elem);
-      elem.scrollIntoView({ block: "center" });
-      return;
-    }
-    docs[docIdx] = doc;
-    const docElem = outputElem.querySelector(`[data-id="${id}"]`);
-    console.assert(docElem);
-    docElem.replaceWith(createAbitViewElem(doc));
-  };
-  subscribe(dbChangeHandler);
   (async () => {
-    console.log("query");
-    console.time("0");
-    const ep = await db.query("eduProgs2");
-    eduProgs = ep.rows.map(({ key, value }) => ({
+    const eduProgs = await db.query("eduProgs2");
+    applications.eduProgs = eduProgs.rows.map(({ key, value }) => ({
       code: key,
       specCode: value[0],
       specName: value[1],
@@ -13012,67 +10904,7 @@
       baseEduLevel: value[3],
       finSource: value[4]
     }));
-    const dbDocs = await db.query("abits", {
-      include_docs: true,
-      attachments: true
-    });
-    docs = dbDocs.rows.map((row) => row.doc);
-    console.timeEnd("0");
-    const abits = dbDocs.rows.map((row) => row.doc);
-    console.time("1");
-    items = abits.sort((a2, b) => {
-      const a0 = a2.fio;
-      const b0 = b.fio;
-      if (a0 < b0)
-        return -1;
-      if (a0 > b0)
-        return 1;
-      return 0;
-    }).map((abit) => createAbitViewElem(abit));
-    progressElem.max = items.length - 1;
-    progressElem.value = 0;
-    const chunkSize = 150;
-    let idx = 0;
-    while (idx <= items.length) {
-      const chunk = items.slice(idx, idx + chunkSize);
-      outputElem.append(...chunk);
-      await new Promise((resolve) => setTimeout(resolve));
-      idx = idx + chunkSize;
-      progressElem.value = idx;
-    }
-    console.timeEnd("1");
   })();
-  var dialogElem = document.getElementById("edit-dialog");
-  var abitForm = new comp_default({
-    target: dialogElem.querySelector(".dialog-content-form")
-  });
-  var dialog = new A11yDialog(dialogElem);
-  function openEditDialog(doc) {
-    let dialogRes = {};
-    abitForm.eduProgs = eduProgs;
-    abitForm.data = { ...doc };
-    abitForm.close = (res = {}) => {
-      dialogRes = res;
-      dialog.hide();
-    };
-    const dbDocChangeHandler = (change) => {
-      const { id } = change;
-      if (id !== doc._id)
-        return;
-      abitForm.data = { ...change.doc };
-    };
-    subscribe(dbDocChangeHandler);
-    const executor = (resolve, reject) => {
-      dialogElem.addEventListener("hide", (event) => {
-        resolve({
-          ok: dialogRes.ok,
-          cmd: dialogRes.cmd,
-          doc: { ...abitForm.data }
-        });
-      }, { once: true });
-      dialog.show();
-    };
-    return new Promise(executor).finally(() => unsubscribe(dbDocChangeHandler));
-  }
+  console.log("applications-form");
 })();
-//# sourceMappingURL=abits.js.map
+//# sourceMappingURL=applications-form.js.map

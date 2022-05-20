@@ -9368,6 +9368,23 @@
     reader.readAsText(file);
   };
   var path = document.currentScript.src.match(/^(.+)\/[^/]+$/)[1];
+  var loadSpecialities = async () => {
+    const res = await db.query("spec", { include_docs: true });
+    const doc = res.total_rows === 0 ? { type: "spec", specialities: [] } : res.rows[0].doc;
+    {
+      const res2 = await fetch(`${path}/specialities2022.json`);
+      if (res2.ok) {
+        const specialities = await res2.json();
+        console.log(specialities);
+        doc.specialities = specialities;
+        if (doc._id) {
+          await db.put(doc).catch((err) => console.log("PUT ERROR", err, doc));
+        } else {
+          await db.post(doc).catch((err) => console.log("POST ERROR", err, doc));
+        }
+      }
+    }
+  };
   var btnLoadFakeDataHandler = async (event) => {
     output.append("\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430...");
     const res = await fetch(`${path}/fake-data.json`);
@@ -9379,6 +9396,7 @@
       await db.bulkDocs(data.abits);
       output.append(data.abits.length);
       output.append("\n\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u043D\u044B\u0445 \u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C...");
+      await loadSpecialities();
       await db.bulkDocs(data.eduProgs);
       output.append(data.eduProgs.length);
       output.append("\n\u220E");
@@ -9389,8 +9407,94 @@
   async function createDb() {
     await db.destroy();
     db = new index_browser_es_default(DB_NAME);
+    await createSpecView(db);
     await createEduProgsView(db);
+    await createEduProgs2View(db);
     await createAbitsView(db);
+  }
+  async function createSpecView(db2) {
+    const spec = {
+      _id: "_design/spec",
+      views: {
+        spec: {
+          map: function mapFun(doc) {
+            if (doc.type === "spec")
+              emit(doc);
+          }.toString()
+        }
+      }
+    };
+    return await db2.put(spec);
+  }
+  async function createEduProgs2View(db2) {
+    const eduProgs = {
+      _id: "_design/eduProgs2",
+      views: {
+        eduProgs2: {
+          map: function mapFun(doc) {
+            if (doc.type === `spec`) {
+              for (const spec of doc.specialities) {
+                const l9 = "9 \u043A\u043B\u0430\u0441\u0441\u043E\u0432";
+                const l11 = "11 \u043A\u043B\u0430\u0441\u0441\u043E\u0432";
+                const fullTime = "\u043E\u0447\u043D\u0430\u044F";
+                const absentia = "\u0437\u0430\u043E\u0447\u043D\u0430\u044F";
+                const free = "\u0431\u044E\u0434\u0436\u0435\u0442";
+                const paid = "\u0432\u043D\u0435\u0431\u044E\u0434\u0436\u0435\u0442";
+                if (spec?.fullTime?.level9?.freePlaces)
+                  emit(`${spec.code}9`, [
+                    spec.code,
+                    spec.name,
+                    fullTime,
+                    l9,
+                    free
+                  ]);
+                if (spec?.fullTime?.level9?.paidPlaces)
+                  emit(`${spec.code}9\u043A`, [
+                    spec.code,
+                    spec.name,
+                    fullTime,
+                    l9,
+                    paid
+                  ]);
+                if (spec?.fullTime?.level11?.freePlaces)
+                  emit(`${spec.code}`, [
+                    spec.code,
+                    spec.name,
+                    fullTime,
+                    l11,
+                    free
+                  ]);
+                if (spec?.fullTime?.level11?.paidPlaces)
+                  emit(`${spec.code}\u043A`, [
+                    spec.code,
+                    spec.name,
+                    fullTime,
+                    l11,
+                    paid
+                  ]);
+                if (spec?.absentia?.level11?.freePlaces)
+                  emit(`${spec.code}\u0437`, [
+                    spec.code,
+                    spec.name,
+                    absentia,
+                    l11,
+                    free
+                  ]);
+                if (spec?.absentia?.level11?.paidPlaces)
+                  emit(`${spec.code}\u0437\u043A`, [
+                    spec.code,
+                    spec.name,
+                    absentia,
+                    l11,
+                    paid
+                  ]);
+              }
+            }
+          }.toString()
+        }
+      }
+    };
+    return await db2.put(eduProgs);
   }
   async function createEduProgsView(db2) {
     const eduProgs = {
