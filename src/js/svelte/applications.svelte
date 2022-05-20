@@ -118,7 +118,7 @@
 
 <article>
   <section>
-    <table>
+    <table class="edu-progs">
       <thead>
         <tr>
           <th colspan="3"> бюджет </th>
@@ -232,6 +232,10 @@
     padding: 0.25em;
     display: flex;
     gap: 1ch;
+  }
+
+  table.edu-progs th {
+    font-size: x-small;
   }
 
   .edu-prog-button {

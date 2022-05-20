@@ -1,7 +1,7 @@
 <svelte:options accessors={true} />
 
 <script>
-  import {Numeric} from '../fields/index.js';
+  import {Numeric, Text} from '../fields/index.js';
 
   export let save = () => {};
   export let doc = {type: 'spec', specialities: []};
@@ -124,49 +124,24 @@
             >
               <div class="counter" />
               <button
+                class="button button--remove"
                 type="button"
                 on:click={() => {
                   removeSpec(idx);
                 }}
-                style="width: 3ch;"
-                >X
-              </button>
+              />
             </div>
           </td>
           <td class="last" rowspan="3">
             <div style="display: flex; flex-direction: column; width: 100%;">
-              <label style="display: flex; flex-wrap: wrap; width: 100%;">
-                <span>Наименование</span>
-                <!-- <textarea bind:value={spec.name} style="width: 100%" /> -->
-                <input
-                  type="text"
-                  bind:value={spec.name}
-                  style="width: 100%;"
+              <Text title="Наименование" bind:value={spec.name} size={49} />
+              <div class="field-container">
+                <Text title="Код" bind:value={spec.code} size={12} />
+                <Text
+                  title="Квалификация"
+                  bind:value={spec.qualification}
+                  size={35}
                 />
-              </label>
-              <div style="display: flex; gap: 1ch; text-align: start;">
-                <label>
-                  <span>Код</span>
-                  <input
-                    type="text"
-                    bind:value={spec.code}
-                    style="width: 10ch;"
-                  />
-                </label>
-                <label
-                  style="flex-grow: 1; display: flex; flex-direction: column;"
-                >
-                  <span>Квалификация</span>
-                  <!-- <textarea
-                    bind:value={spec.qualification}
-                    style="width: 100%"
-                  /> -->
-                  <input
-                    type="text"
-                    bind:value={spec.qualification}
-                    style="width: 100%;"
-                  />
-                </label>
               </div>
               <!-- <div>{getEduProgs(spec).join(', ')}</div> -->
             </div>
@@ -280,16 +255,6 @@
   article,
   table {
     width: 100%;
-  }
-
-  label {
-    padding: 0.1em 0;
-    width: min-content;
-  }
-
-  label span {
-    font-size: x-small;
-    margin-right: 0.5ch;
   }
 
   table {

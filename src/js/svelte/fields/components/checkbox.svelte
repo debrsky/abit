@@ -1,7 +1,7 @@
 <script>
   export let title;
   export let value;
-  export let change = () => {};
+  export let change = () => {}; // TODO https://svelte.dev/examples/dom-event-forwarding
 </script>
 
 <div class="field field--checkbox">
