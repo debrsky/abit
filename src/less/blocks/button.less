@@ -1,5 +1,6 @@
 .button {
   min-height: 2em;
+  min-width: 2em;
   transition: transform 0.1s ease-out;
 }
 
@@ -18,7 +19,8 @@
 }
 
 .button--remove {
-  all: unset;
+  background: none;
+  border-style: none;
   cursor: pointer;
 }
 .button--remove::before {

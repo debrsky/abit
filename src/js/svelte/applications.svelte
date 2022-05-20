@@ -14,6 +14,7 @@
   const defaultApplication = {
     eduProg: null,
     grade: null,
+    prioriry: null,
     disabled: false
   };
 
@@ -21,6 +22,13 @@
     {
       eduProg: 'ЗИО',
       grade: 5,
+      priority: false,
+      disabled: false
+    },
+    {
+      eduProg: 'СЭЗИС',
+      grade: 5,
+      priority: null,
       disabled: false
     }
   ];
@@ -36,6 +44,7 @@
   let eduFormSet;
   let specSet;
   let finSourceSet;
+
   $: {
     matrix = Array.from(
       new Set(eduProgs.map((eduProg) => eduProg.specCode))
@@ -73,6 +82,14 @@
     );
   }
 
+  $: {
+    if (applications.length > 0 && !applications.some((app) => app.priority)) {
+      applications[0].priority = true;
+
+      applications = applications; // trigger rendering
+    }
+  }
+
   function addApplication(application) {
     const app = deepmerge(defaultApplication, application);
     applications = [app, ...applications].sort((a, b) => {
@@ -80,6 +97,12 @@
       if (a.eduProg > b.eduProg) return 1;
       return 0;
     });
+  }
+
+  function removeApplication(application) {
+    applications = applications.filter(
+      (app) => application.eduProg !== app.eduProg
+    );
   }
 
   function findEduProg(specCode, eduForm, baseEduLevel, finSource) {
@@ -94,7 +117,7 @@
 </script>
 
 <article>
-  <div>
+  <section>
     <table>
       <thead>
         <tr>
@@ -127,57 +150,79 @@
         {/each}
       </tbody>
     </table>
-  </div>
+  </section>
 
-  <table class="applications">
-    <thead>
-      <tr>
-        <th />
-        <th>Образовательная<br />программа</th>
-        <th>Оценка по<br />профильному<br />предмету</th>
-        <th>Спрятать?</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each applications as application}
+  <section style="order: -1;">
+    <table class="applications">
+      <thead>
         <tr>
-          <td>
-            <div class="cell">
-              <button
-                class="button button--remove"
-                type="button"
-                on:click={() => {
-                  applications = applications.filter(
-                    (app) => application !== app
-                  );
-                }}
-              />
-            </div>
-          </td>
-          <td>
-            <div class="cell">
-              {application.eduProg}
-            </div>
-          </td>
-          <td>
-            <div class="cell">
-              <Numeric
-                bind:value={application.grade}
-                size={5}
-                min={0}
-                max={5}
-              />
-            </div>
-          </td>
-          <td>
-            <div class="cell">
-              <Checkbox bind:value={application.disabled} />
-            </div>
-          </td>
+          <th />
+          <th>Образовательная<br />программа</th>
+          <th>Оценка по<br />профильному<br />предмету</th>
+          <th>Приоритет</th>
+          <th>Спрятать?</th>
         </tr>
-      {/each}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {#each applications as application, idx (application.eduProg)}
+          <tr>
+            <td>
+              <div class="cell">
+                <button
+                  class="button button--remove"
+                  type="button"
+                  on:click={() => removeApplication(application)}
+                />
+              </div>
+            </td>
+            <td>
+              <div class="cell">
+                {application.eduProg}
+              </div>
+            </td>
+            <td>
+              <div class="cell">
+                <Numeric
+                  bind:value={application.grade}
+                  size={5}
+                  min={0}
+                  max={5}
+                />
+              </div>
+            </td>
+            <td>
+              <div class="cell">
+                <Checkbox
+                  bind:value={application.priority}
+                  change={(checked) => {
+                    if (checked) {
+                      applications.forEach((app, i) => {
+                        if (i !== idx) app.priority = false;
+                      });
+
+                      applications = applications; // trigger rendering
+                      return;
+                    }
+
+                    if (!applications.some((app) => app.priority)) {
+                      applications[0].priority = true;
+
+                      applications = applications; // trigger rendering
+                    }
+                  }}
+                />
+              </div>
+            </td>
+            <td>
+              <div class="cell">
+                <Checkbox bind:value={application.disabled} />
+              </div>
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </section>
 </article>
 
 <style>
@@ -185,6 +230,8 @@
     border: 1px solid black;
     width: fit-content;
     padding: 0.25em;
+    display: flex;
+    gap: 1ch;
   }
 
   .edu-prog-button {

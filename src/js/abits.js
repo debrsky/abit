@@ -6,6 +6,7 @@ import {db, subscribe, unsubscribe} from './db/index.js';
 
 let items = [];
 let docs = [];
+let eduProgs = [];
 
 const outputElem = document.getElementById('abit-list');
 const progressElem = document.getElementById('progress');
@@ -75,7 +76,18 @@ subscribe(dbChangeHandler);
 
 (async () => {
   console.log('query');
+
   console.time('0');
+
+  const ep = await db.query('eduProgs2');
+  eduProgs = ep.rows.map(({key, value}) => ({
+    code: key,
+    specCode: value[0],
+    specName: value[1],
+    eduForm: value[2],
+    baseEduLevel: value[3],
+    finSource: value[4]
+  }));
 
   const dbDocs = await db.query('abits', {
     include_docs: true,
@@ -127,6 +139,7 @@ const dialog = new A11yDialog(dialogElem);
 function openEditDialog(doc) {
   let dialogRes = {};
 
+  abitForm.eduProgs = eduProgs;
   abitForm.data = {...doc};
   abitForm.close = (res = {}) => {
     dialogRes = res;

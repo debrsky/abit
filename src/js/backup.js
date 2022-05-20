@@ -25,6 +25,28 @@ const selectFileHandler = (event) => {
 
 const path = document.currentScript.src.match(/^(.+)\/[^/]+$/)[1];
 
+const loadSpecialities = async () => {
+  const res = await db.query('spec', {include_docs: true});
+
+  const doc =
+    res.total_rows === 0 ? {type: 'spec', specialities: []} : res.rows[0].doc;
+
+  {
+    const res = await fetch(`${path}/specialities2022.json`);
+
+    if (res.ok) {
+      const specialities = await res.json();
+      console.log(specialities);
+      doc.specialities = specialities;
+      if (doc._id) {
+        await db.put(doc).catch((err) => console.log('PUT ERROR', err, doc));
+      } else {
+        await db.post(doc).catch((err) => console.log('POST ERROR', err, doc));
+      }
+    }
+  }
+};
+
 const btnLoadFakeDataHandler = async (event) => {
   output.append('Загрузка...');
   const res = await fetch(`${path}/fake-data.json`);
@@ -39,6 +61,8 @@ const btnLoadFakeDataHandler = async (event) => {
     output.append(data.abits.length);
 
     output.append('\nДобавление образовательных программ...');
+    await loadSpecialities();
+
     await db.bulkDocs(data.eduProgs);
     output.append(data.eduProgs.length);
 

@@ -10,17 +10,18 @@
     Checkbox,
     Select
   } from './fields/index.js';
+  import Applications from './applications.svelte';
 
   let certScore;
   let extraScore;
   let totalScore;
   let tags;
 
+  export let eduProgs = [];
+
   export let close = () => {};
 
-  export let data = {};
-
-  const defaultData = {
+  export let data = {
     type: 'abit',
     regDate: '2.3.21',
     fio: 'Ниязова Марина Романовна',
@@ -44,6 +45,12 @@
         grade: '4',
         priority: true,
         disabled: false
+      },
+      {
+        eduProg: 'БУзк',
+        grade: '4',
+        priority: true,
+        disabled: false
       }
     ],
     apps: {
@@ -51,6 +58,50 @@
     },
     birthDate: null,
     isFullAge: false,
+    passport: {
+      serialNumber: null,
+      issuedBy: null,
+      issuedAt: null,
+      addressReg: null,
+      addressActual: null
+    },
+    counterpart: {
+      fio: null,
+      tel: null,
+      passport: {
+        serialNumber: null,
+        issuedBy: null,
+        issuedAt: null,
+        addressReg: null,
+        addressActual: null
+      }
+    }
+  };
+
+  const defaultData = {
+    type: 'abit',
+    regDate: null,
+    fio: null,
+    gender: null,
+    baseEduLevel: null,
+    certScore: null,
+    extraScore: null,
+    hasEduCertOriginal: null,
+    hasMedicalCert: null,
+    hasFluoro: null,
+    hasVaccine: null,
+    address: null,
+    tel: null,
+    needDorm: null,
+    schoolYear: null,
+    school: null,
+    memo: null,
+    applications: [],
+    apps: {
+      baseEduLevel: null
+    },
+    birthDate: null,
+    isFullAge: null,
     passport: {
       serialNumber: null,
       issuedBy: null,
@@ -191,6 +242,10 @@
   </div>
   <div class="field-container">
     <Textarea title={'Примечание'} bind:value={data.memo} size={97} />
+  </div>
+
+  <div class="field-container">
+    <Applications bind:applications={data.applications} {eduProgs} />
   </div>
   <pre>{tags.join(', ')}</pre>
 

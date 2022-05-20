@@ -1,0 +1,194 @@
+[
+    {
+        "name": "Право и организация социального обеспечения",
+        "code": "ПСО",
+        "qualification": "юрист",
+        "fullTime": {
+            "level9": {
+                "duration": 3,
+                "freePlaces": null,
+                "paidPlaces": 20
+            },
+            "level11": {
+                "duration": 2,
+                "freePlaces": 25,
+                "paidPlaces": 20
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 3,
+                "freePlaces": null,
+                "paidPlaces": 20
+            }
+        }
+    },
+    {
+        "name": "Земельно-имущественные отношения",
+        "code": "ЗИО",
+        "qualification": "специалист по земельно-имущественным отношениям",
+        "fullTime": {
+            "level9": {
+                "duration": 3,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            },
+            "level11": {
+                "duration": 2,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 3,
+                "freePlaces": null,
+                "paidPlaces": 15
+            }
+        }
+    },
+    {
+        "name": "Социальная работа",
+        "code": "СР",
+        "qualification": "специалист по социальной работе",
+        "fullTime": {
+            "level9": {
+                "duration": 3,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            },
+            "level11": {
+                "duration": 2,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 3,
+                "freePlaces": null,
+                "paidPlaces": 15
+            }
+        }
+    },
+    {
+        "name": "Строительство и эксплуатация зданий и сооружений",
+        "code": "СЭЗИС",
+        "qualification": "техник",
+        "fullTime": {
+            "level9": {
+                "duration": 4,
+                "freePlaces": 50,
+                "paidPlaces": 5
+            },
+            "level11": {
+                "duration": 3,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 4,
+                "freePlaces": null,
+                "paidPlaces": 15
+            }
+        }
+    },
+    {
+        "name": "Сварочное производство",
+        "code": "СП",
+        "qualification": "техник",
+        "fullTime": {
+            "level9": {
+                "duration": 4,
+                "freePlaces": 25,
+                "paidPlaces": 5
+            },
+            "level11": {
+                "duration": 3,
+                "freePlaces": null,
+                "paidPlaces": null
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": 4,
+                "freePlaces": null,
+                "paidPlaces": null
+            }
+        }
+    },
+    {
+        "name": "Пожарная безопасность",
+        "code": "ПБ",
+        "qualification": "техник",
+        "fullTime": {
+            "level9": {
+                "duration": 4,
+                "freePlaces": 50,
+                "paidPlaces": 10
+            },
+            "level11": {
+                "duration": 3,
+                "freePlaces": 50,
+                "paidPlaces": 5
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": null
+            }
+        }
+    },
+    {
+        "name": "Физическая культура",
+        "code": "ФК",
+        "qualification": "Педагог по физической культуре и спорту",
+        "fullTime": {
+            "level9": {
+                "duration": 4,
+                "freePlaces": 30,
+                "paidPlaces": 10
+            },
+            "level11": {
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": null
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": null
+            }
+        }
+    },
+    {
+        "name": "Экономика и бухгалтерский учет",
+        "code": "БУ",
+        "qualification": "Бухгалтер",
+        "fullTime": {
+            "level9": {
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": null
+            },
+            "level11": {
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": 20
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": 15
+            }
+        }
+    }
+]
