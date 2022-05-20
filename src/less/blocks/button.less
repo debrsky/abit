@@ -16,3 +16,14 @@
 .button--primary:active {
   transform: scale(0.95);
 }
+
+.button--remove {
+  all: unset;
+  cursor: pointer;
+}
+.button--remove::before {
+  content: '❌';
+}
+.button--remove:active {
+  transform: scale(0.95);
+}

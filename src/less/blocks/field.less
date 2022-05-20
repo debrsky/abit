@@ -1,10 +1,38 @@
 .field {
   padding: 0.25em;
-  display: inline-flex;
-  gap: 1ch;
+  background-color: whitesmoke;
   width: fit-content;
+  border-radius: 0.3em;
+}
+
+.field:focus-within {
+  background-color: antiquewhite;
+}
+
+.field label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .field__title {
+  font-size: x-small;
   width: initial;
+}
+
+.field__value {
+  font-size: inherit;
+}
+
+.field__value[type='checkbox'] {
+  cursor: pointer;
+}
+
+.field--checkbox label {
+  flex-direction: row;
+  gap: 1ch;
+}
+
+.field--checkbox .field__title {
+  font-size: inherit;
 }

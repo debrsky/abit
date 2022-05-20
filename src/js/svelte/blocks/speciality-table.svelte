@@ -1,44 +1,60 @@
 <svelte:options accessors={true} />
 
 <script>
-  import Numeric from '../fields/numeric.svelte';
+  import {Numeric} from '../fields/index.js';
 
   export let save = () => {};
   export let doc = {type: 'spec', specialities: []};
 
-  let speciality = {
+  let defaultSpeciality = {
     name: '',
     code: '',
     qualification: '',
     fullTime: {
       level9: {
-        duration: 0,
-        freePlaces: 0,
-        paidPlaces: 0
+        duration: null,
+        freePlaces: null,
+        paidPlaces: null
       },
       level11: {
-        duration: 0,
-        freePlaces: 0,
-        paidPlaces: 0
+        duration: null,
+        freePlaces: null,
+        paidPlaces: null
       }
     },
     absentia: {
       level11: {
-        duration: 0,
-        freePlaces: 0,
-        paidPlaces: 0
+        duration: null,
+        freePlaces: null,
+        paidPlaces: null
       }
     }
   };
 
   const addNewSpec = () => {
-    const spec = JSON.parse(JSON.stringify(speciality));
+    const spec = JSON.parse(JSON.stringify(defaultSpeciality));
     doc.specialities = [...doc.specialities, spec];
   };
   const removeSpec = (specIdx) => {
     doc.specialities = [
       ...doc.specialities.filter((spec, idx) => idx !== specIdx)
     ];
+  };
+  const getSubTotals = (spec) => {
+    let freePlaces =
+      (spec?.fullTime?.level9?.freePlaces || 0) +
+      (spec?.fullTime?.level11?.freePlaces || 0) +
+      (spec?.absentia?.level11?.freePlaces || 0);
+
+    let paidPlaces =
+      (spec?.fullTime?.level9?.paidPlaces || 0) +
+      (spec?.fullTime?.level11?.paidPlaces || 0) +
+      (spec?.absentia?.level11?.paidPlaces || 0);
+
+    freePlaces = Number.isFinite(freePlaces) ? freePlaces : 0;
+    paidPlaces = Number.isFinite(paidPlaces) ? paidPlaces : 0;
+
+    return {freePlaces, paidPlaces};
   };
 
   const getEduProgs = (spec) => {
@@ -102,11 +118,11 @@
     <tbody>
       {#each doc.specialities as spec, idx}
         <tr>
-          <td class="last" rowspan="3">
+          <td class="last" style="position: relative;" rowspan="3">
             <div
-              class="counter"
               style="display: flex; flex-direction: column; align-items: center;"
             >
+              <div class="counter" />
               <button
                 type="button"
                 on:click={() => {
@@ -202,6 +218,23 @@
         </tr>
       {/each}
     </tbody>
+    <thead>
+      <tr>
+        <th colspan="5" style="text-align: end;">ИТОГО</th>
+        <th>
+          {doc.specialities.reduce(
+            (acc, cur) => acc + getSubTotals(cur).freePlaces,
+            0
+          )}
+        </th>
+        <th>
+          {doc.specialities.reduce(
+            (acc, cur) => acc + getSubTotals(cur).paidPlaces,
+            0
+          )}
+        </th>
+      </tr>
+    </thead>
   </table>
   <div style="margin-top: 1em;">
     <button type="button" on:click={() => addNewSpec()}>
@@ -229,6 +262,10 @@
   tbody .counter::before {
     counter-increment: n;
     content: counter(n);
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.25em;
   }
 
   td.last {

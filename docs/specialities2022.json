@@ -6,7 +6,7 @@
         "fullTime": {
             "level9": {
                 "duration": 3,
-                "freePlaces": 0,
+                "freePlaces": null,
                 "paidPlaces": 20
             },
             "level11": {
@@ -18,7 +18,7 @@
         "absentia": {
             "level11": {
                 "duration": 3,
-                "freePlaces": 0,
+                "freePlaces": null,
                 "paidPlaces": 20
             }
         }
@@ -42,7 +42,7 @@
         "absentia": {
             "level11": {
                 "duration": 3,
-                "freePlaces": 0,
+                "freePlaces": null,
                 "paidPlaces": 15
             }
         }
@@ -66,7 +66,7 @@
         "absentia": {
             "level11": {
                 "duration": 3,
-                "freePlaces": 0,
+                "freePlaces": null,
                 "paidPlaces": 15
             }
         }
@@ -90,7 +90,7 @@
         "absentia": {
             "level11": {
                 "duration": 4,
-                "freePlaces": 0,
+                "freePlaces": null,
                 "paidPlaces": 15
             }
         }
@@ -107,15 +107,15 @@
             },
             "level11": {
                 "duration": 3,
-                "freePlaces": 0,
-                "paidPlaces": 0
+                "freePlaces": null,
+                "paidPlaces": null
             }
         },
         "absentia": {
             "level11": {
                 "duration": 4,
-                "freePlaces": 0,
-                "paidPlaces": 0
+                "freePlaces": null,
+                "paidPlaces": null
             }
         }
     },
@@ -137,9 +137,9 @@
         },
         "absentia": {
             "level11": {
-                "duration": 0,
-                "freePlaces": 0,
-                "paidPlaces": 0
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": null
             }
         }
     },
@@ -154,16 +154,40 @@
                 "paidPlaces": 10
             },
             "level11": {
-                "duration": 0,
-                "freePlaces": 0,
-                "paidPlaces": 0
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": null
             }
         },
         "absentia": {
             "level11": {
-                "duration": 0,
-                "freePlaces": 0,
-                "paidPlaces": 0
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": null
+            }
+        }
+    },
+    {
+        "name": "Экономика и бухгалтерский учет",
+        "code": "БУ",
+        "qualification": "Бухгалтер",
+        "fullTime": {
+            "level9": {
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": null
+            },
+            "level11": {
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": 20
+            }
+        },
+        "absentia": {
+            "level11": {
+                "duration": null,
+                "freePlaces": null,
+                "paidPlaces": 15
             }
         }
     }

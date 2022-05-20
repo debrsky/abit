@@ -1,12 +1,14 @@
 <script>
-  export let title = 'Наименование';
+  export let title;
   export let value;
 </script>
 
-<div class="field">
+<div class="field field--checkbox">
   <label>
-    <input type="checkbox" bind:checked={value} />
-    <span>{title}</span>
+    <input class="field__value" type="checkbox" bind:checked={value} />
+    {#if title}
+      <span class="field__title">{title}</span>
+    {/if}
   </label>
 </div>
 

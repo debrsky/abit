@@ -6,7 +6,7 @@
   const re = /^\s*(\d{1,2})[.,/-](\d{1,2})[.,/-](\d{2}|\d{4})\s*$/;
 
   const setValue = (v) => {
-    const match = v.match(re);
+    const match = v?.match?.(re);
     if (match) {
       let [, dd, mm, yyyy] = match;
       if (yyyy.length == 2) yyyy = `20${yyyy}`;
@@ -17,14 +17,14 @@
     }
   };
 
-  setValue(value);
+  // setValue(value);
 
   $: setValue(value);
 </script>
 
 <div class="field">
   <label>
-    <span>{title}</span>
-    <input type="date" bind:value {required} />
+    <span class="field__title">{title}</span>
+    <input class="field__value" type="date" bind:value {required} />
   </label>
 </div>

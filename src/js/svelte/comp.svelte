@@ -1,6 +1,7 @@
 <svelte:options accessors={true} />
 
 <script>
+  import deepmerge from 'deepmerge';
   import {
     Text,
     Textarea,
@@ -17,11 +18,14 @@
 
   export let close = () => {};
 
-  export let data = {
+  export let data = {};
+
+  const defaultData = {
     type: 'abit',
     regDate: '2.3.21',
     fio: 'Ниязова Марина Романовна',
     gender: 'ж',
+    baseEduLevel: null,
     certScore: '4,81',
     extraScore: 0.1,
     hasEduCertOriginal: true,
@@ -42,8 +46,38 @@
         disabled: false
       }
     ],
-    _id: '86d77d0c-ea1d-47ca-95a4-ba9f828b424a'
+    apps: {
+      baseEduLevel: null
+    },
+    birthDate: null,
+    isFullAge: false,
+    passport: {
+      serialNumber: null,
+      issuedBy: null,
+      issuedAt: null,
+      addressReg: null,
+      addressActual: null
+    },
+    counterpart: {
+      fio: null,
+      tel: null,
+      passport: {
+        serialNumber: null,
+        issuedBy: null,
+        issuedAt: null,
+        addressReg: null,
+        addressActual: null
+      }
+    }
   };
+
+  const setDataValue = (v) => {
+    return deepmerge(defaultData, v);
+  };
+
+  $: {
+    data = setDataValue(data);
+  }
 
   $: {
     tags = Array.from(
@@ -51,6 +85,15 @@
       data?.memo.matchAll(/#([a-zA-Z0-9_a-яА-ЯёЁ]+)/g) || [],
       (tag) => tag[1]
     );
+  }
+
+  const setScoreValues = (certScore, extraScore) => {
+    data.certScore = parseNumber(certScore);
+    data.extraScore = parseNumber(extraScore);
+  };
+
+  $: {
+    setScoreValues(data.certScore, data.extraScore);
   }
 
   $: {
@@ -63,10 +106,6 @@
         (Number.isFinite(extraScore) ? extraScore : 0)
       ).toFixed(6)
     );
-
-    totalScore = Number.isFinite(data.totalScore)
-      ? data.totalScore.toString().replace('.', ',')
-      : 0;
   }
 
   function parseNumber(n) {
@@ -85,31 +124,46 @@
 </script>
 
 <form on:submit|preventDefault={() => close({ok: true})}>
-  <DateInput title={'Дата регистрации'} bind:value={data.regDate} required />
+  <div class="field-container">
+    <DateInput title={'Дата регистрации'} bind:value={data.regDate} required />
 
-  <Text title={'ФИО'} bind:value={data.fio} size={50} />
-  <Select
-    title="Пол"
-    bind:value={data.gender}
-    options={{м: 'мужской', ж: 'женский'}}
-  />
-  <Numeric
-    title={'Средний балл аттестата'}
-    bind:value={data.certScore}
-    size={5}
-  />
-  <Numeric
-    title={'Дополнительные баллы'}
-    bind:value={data.extraScore}
-    size={5}
-  />
-  <Text
-    title={'Итоговый конкурсный балл'}
-    bind:value={totalScore}
-    size={5}
-    readonly={true}
-  />
-  <div class="checkbox-container">
+    <Text title={'Фамилия Имя Отчество'} bind:value={data.fio} size={50} />
+    <Select
+      title="Пол"
+      bind:value={data.gender}
+      options={{м: 'мужской', ж: 'женский'}}
+    />
+  </div>
+  <div class="field-container">
+    <Select
+      title="Базовое образование"
+      bind:value={data.baseEduLevel}
+      hasEmptyOption={true}
+      options={{'9 классов': '9 классов', '11 классов': '11 классов'}}
+    />
+    <Numeric
+      title={'Средний балл аттестата'}
+      bind:value={data.certScore}
+      min={0}
+      max={5}
+      step={0.01}
+      size={10}
+    />
+    <Numeric
+      title={'Дополнительные баллы'}
+      bind:value={data.extraScore}
+      min={0}
+      step={0.1}
+      size={10}
+    />
+    <Numeric
+      title={'Итоговый конкурсный балл'}
+      bind:value={data.totalScore}
+      size={10}
+      readonly={true}
+    />
+  </div>
+  <div class="field-container">
     <Checkbox
       title="Подлинник аттестата"
       bind:value={data.hasEduCertOriginal}
@@ -118,16 +172,26 @@
     <Checkbox title="Флюорография" bind:value={data.hasFluoro} />
     <Checkbox title="Прививки" bind:value={data.hasVaccine} />
   </div>
-  <Select
-    title="Общежитие"
-    bind:value={data.needDorm}
-    options={{'0': 'не требуется', '1': 'требуется', '2': 'приоритетное'}}
-  />
-  <Text title={'Адрес'} bind:value={data.address} size={50} />
-  <Text title={'Школа'} bind:value={data.school} size={50} />
-  <Text title={'Год окончания школы'} bind:value={data.schoolYear} size={5} />
-  <Text title={'Телефон'} bind:value={data.tel} size={50} />
-  <Textarea title={'Примечание'} bind:value={data.memo} size={50} />
+  <div class="field-container">
+    <Select
+      title="Общежитие"
+      bind:value={data.needDorm}
+      options={{'0': 'не требуется', '1': 'требуется', '2': 'приоритетное'}}
+    />
+    <Text title={'Адрес'} bind:value={data.address} size={50} />
+    <Text title={'Телефон'} bind:value={data.tel} size={15} />
+  </div>
+  <div class="field-container">
+    <Text title={'Школа'} bind:value={data.school} size={70} />
+    <Text
+      title={'Год окончания школы'}
+      bind:value={data.schoolYear}
+      size={10}
+    />
+  </div>
+  <div class="field-container">
+    <Textarea title={'Примечание'} bind:value={data.memo} size={97} />
+  </div>
   <pre>{tags.join(', ')}</pre>
 
   <button class="button button--primary" type="submit"
@@ -152,9 +216,6 @@
 <pre id="debug">{JSON.stringify(data, null, 4)}</pre>
 
 <style>
-  .checkbox-container {
-    display: flex;
-  }
   #debug {
     display: none;
   }

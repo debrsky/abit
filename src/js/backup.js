@@ -93,23 +93,59 @@ async function createEduProgs2View(db) {
               const paid = 'внебюджет';
               if (spec?.fullTime?.level9?.freePlaces)
                 // eslint-disable-next-line no-undef
-                emit(`${spec.code}9`, [spec.name, fullTime, l9, free]);
+                emit(`${spec.code}9`, [
+                  spec.code,
+                  spec.name,
+                  fullTime,
+                  l9,
+                  free
+                ]);
 
               if (spec?.fullTime?.level9?.paidPlaces)
                 // eslint-disable-next-line no-undef
-                emit(`${spec.code}9к`, [spec.name, fullTime, l9, paid]);
+                emit(`${spec.code}9к`, [
+                  spec.code,
+                  spec.name,
+                  fullTime,
+                  l9,
+                  paid
+                ]);
               if (spec?.fullTime?.level11?.freePlaces)
                 // eslint-disable-next-line no-undef
-                emit(`${spec.code}`, [spec.name, fullTime, l11, free]);
+                emit(`${spec.code}`, [
+                  spec.code,
+                  spec.name,
+                  fullTime,
+                  l11,
+                  free
+                ]);
               if (spec?.fullTime?.level11?.paidPlaces)
                 // eslint-disable-next-line no-undef
-                emit(`${spec.code}к`, [spec.name, fullTime, l11, paid]);
+                emit(`${spec.code}к`, [
+                  spec.code,
+                  spec.name,
+                  fullTime,
+                  l11,
+                  paid
+                ]);
               if (spec?.absentia?.level11?.freePlaces)
                 // eslint-disable-next-line no-undef
-                emit(`${spec.code}з`, [spec.name, absentia, l11, free]);
+                emit(`${spec.code}з`, [
+                  spec.code,
+                  spec.name,
+                  absentia,
+                  l11,
+                  free
+                ]);
               if (spec?.absentia?.level11?.paidPlaces)
                 // eslint-disable-next-line no-undef
-                emit(`${spec.code}зк`, [spec.name, absentia, l11, paid]);
+                emit(`${spec.code}зк`, [
+                  spec.code,
+                  spec.name,
+                  absentia,
+                  l11,
+                  paid
+                ]);
             }
           }
         }.toString()
