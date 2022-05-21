@@ -2,7 +2,7 @@
 
 <script>
   import deepmerge from 'deepmerge';
-  import {Select, Numeric, Checkbox} from './fields/index.js';
+  import {Select, Numeric, Checkbox} from '../fields/index.js';
 
   const L_9 = '9 классов';
   const L_11 = '11 классов';

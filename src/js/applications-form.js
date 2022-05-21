@@ -1,4 +1,4 @@
-import Applications from './svelte/applications.svelte';
+import Applications from './svelte/blocks/applications.svelte';
 import {db} from './db/index.js';
 
 // eslint-disable-next-line no-unused-vars

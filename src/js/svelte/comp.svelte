@@ -10,7 +10,7 @@
     Checkbox,
     Select
   } from './fields/index.js';
-  import Applications from './applications.svelte';
+  import Applications from './blocks/applications.svelte';
 
   let certScore;
   let extraScore;
