@@ -25,7 +25,6 @@ timestampElem.textContent = new Date().toLocaleString('ru', {});
   const res = await db.query(mapFn);
   const needDormList = res.rows.map((row) => row.value);
 
-  console.log(needDormList);
   const priority = needDormList.filter((abit) => abit.needDorm === 2);
   const need = needDormList.filter((abit) => abit.needDorm === 1);
 
