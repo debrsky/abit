@@ -2,14 +2,8 @@
 
 <script>
   import deepmerge from 'deepmerge';
-  import {Select, Numeric, Checkbox} from '../fields/index.js';
-
-  const L_9 = '9 классов';
-  const L_11 = '11 классов';
-  const FULL_TIME = 'очная';
-  const ABSENTIA = 'заочная';
-  const FREE = 'бюджет';
-  const PAID = 'внебюджет';
+  import {Numeric, Checkbox} from '../fields/index.js';
+  import {L_9, L_11, FULL_TIME, ABSENTIA, FREE, PAID} from '../../db/consts.js';
 
   const defaultApplication = {
     eduProg: null,
