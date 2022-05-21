@@ -9627,7 +9627,7 @@
     }
     component.$$.dirty[i / 31 | 0] |= 1 << i % 31;
   }
-  function init2(component, options, instance3, create_fragment3, not_equal, props, append_styles2, dirty = [-1]) {
+  function init2(component, options, instance4, create_fragment4, not_equal, props, append_styles2, dirty = [-1]) {
     const parent_component = current_component;
     set_current_component(component);
     const $$ = component.$$ = {
@@ -9650,7 +9650,7 @@
     };
     append_styles2 && append_styles2($$.root);
     let ready = false;
-    $$.ctx = instance3 ? instance3(component, options.props || {}, (i, ret, ...rest) => {
+    $$.ctx = instance4 ? instance4(component, options.props || {}, (i, ret, ...rest) => {
       const value = rest.length ? rest[0] : ret;
       if ($$.ctx && not_equal($$.ctx[i], $$.ctx[i] = value)) {
         if (!$$.skip_bound && $$.bound[i])
@@ -9663,7 +9663,7 @@
     $$.update();
     ready = true;
     run_all($$.before_update);
-    $$.fragment = create_fragment3 ? create_fragment3($$.ctx) : false;
+    $$.fragment = create_fragment4 ? create_fragment4($$.ctx) : false;
     if (options.target) {
       if (options.hydrate) {
         start_hydrating();
@@ -9962,9 +9962,167 @@
   };
   var number_default = Number2;
 
+  // src/js/svelte/fields/components/text.svelte
+  function create_else_block2(ctx) {
+    let input;
+    let input_style_value;
+    let mounted;
+    let dispose;
+    return {
+      c() {
+        input = element("input");
+        attr(input, "class", "field__value");
+        attr(input, "type", "text");
+        attr(input, "style", input_style_value = ctx[2] ? `width: ${ctx[2]}ch;` : false);
+      },
+      m(target, anchor) {
+        insert(target, input, anchor);
+        set_input_value(input, ctx[0]);
+        if (!mounted) {
+          dispose = listen(input, "input", ctx[4]);
+          mounted = true;
+        }
+      },
+      p(ctx2, dirty) {
+        if (dirty & 4 && input_style_value !== (input_style_value = ctx2[2] ? `width: ${ctx2[2]}ch;` : false)) {
+          attr(input, "style", input_style_value);
+        }
+        if (dirty & 1 && input.value !== ctx2[0]) {
+          set_input_value(input, ctx2[0]);
+        }
+      },
+      d(detaching) {
+        if (detaching)
+          detach(input);
+        mounted = false;
+        dispose();
+      }
+    };
+  }
+  function create_if_block2(ctx) {
+    let label;
+    let span;
+    let t0;
+    let t1;
+    let input;
+    let input_style_value;
+    let mounted;
+    let dispose;
+    return {
+      c() {
+        label = element("label");
+        span = element("span");
+        t0 = text(ctx[1]);
+        t1 = space();
+        input = element("input");
+        attr(span, "class", "field__title");
+        attr(input, "class", "field__value");
+        attr(input, "type", "text");
+        attr(input, "style", input_style_value = ctx[2] ? `width: ${ctx[2]}ch;` : false);
+      },
+      m(target, anchor) {
+        insert(target, label, anchor);
+        append(label, span);
+        append(span, t0);
+        append(label, t1);
+        append(label, input);
+        set_input_value(input, ctx[0]);
+        if (!mounted) {
+          dispose = listen(input, "input", ctx[3]);
+          mounted = true;
+        }
+      },
+      p(ctx2, dirty) {
+        if (dirty & 2)
+          set_data(t0, ctx2[1]);
+        if (dirty & 4 && input_style_value !== (input_style_value = ctx2[2] ? `width: ${ctx2[2]}ch;` : false)) {
+          attr(input, "style", input_style_value);
+        }
+        if (dirty & 1 && input.value !== ctx2[0]) {
+          set_input_value(input, ctx2[0]);
+        }
+      },
+      d(detaching) {
+        if (detaching)
+          detach(label);
+        mounted = false;
+        dispose();
+      }
+    };
+  }
+  function create_fragment2(ctx) {
+    let div;
+    function select_block_type(ctx2, dirty) {
+      if (ctx2[1])
+        return create_if_block2;
+      return create_else_block2;
+    }
+    let current_block_type = select_block_type(ctx, -1);
+    let if_block = current_block_type(ctx);
+    return {
+      c() {
+        div = element("div");
+        if_block.c();
+        attr(div, "class", "field");
+      },
+      m(target, anchor) {
+        insert(target, div, anchor);
+        if_block.m(div, null);
+      },
+      p(ctx2, [dirty]) {
+        if (current_block_type === (current_block_type = select_block_type(ctx2, dirty)) && if_block) {
+          if_block.p(ctx2, dirty);
+        } else {
+          if_block.d(1);
+          if_block = current_block_type(ctx2);
+          if (if_block) {
+            if_block.c();
+            if_block.m(div, null);
+          }
+        }
+      },
+      i: noop,
+      o: noop,
+      d(detaching) {
+        if (detaching)
+          detach(div);
+        if_block.d();
+      }
+    };
+  }
+  function instance2($$self, $$props, $$invalidate) {
+    let { title } = $$props;
+    let { value } = $$props;
+    let { size = 20 } = $$props;
+    function input_input_handler() {
+      value = this.value;
+      $$invalidate(0, value);
+    }
+    function input_input_handler_1() {
+      value = this.value;
+      $$invalidate(0, value);
+    }
+    $$self.$$set = ($$props2) => {
+      if ("title" in $$props2)
+        $$invalidate(1, title = $$props2.title);
+      if ("value" in $$props2)
+        $$invalidate(0, value = $$props2.value);
+      if ("size" in $$props2)
+        $$invalidate(2, size = $$props2.size);
+    };
+    return [value, title, size, input_input_handler, input_input_handler_1];
+  }
+  var Text = class extends SvelteComponent {
+    constructor(options) {
+      super();
+      init2(this, options, instance2, create_fragment2, safe_not_equal, { title: 1, value: 0, size: 2 });
+    }
+  };
+  var text_default = Text;
+
   // src/js/svelte/blocks/speciality-table.svelte
   function add_css(target) {
-    append_styles(target, "svelte-9w99uk", "tbody.svelte-9w99uk.svelte-9w99uk{counter-reset:n}tbody.svelte-9w99uk .counter.svelte-9w99uk::before{counter-increment:n;content:counter(n);position:absolute;top:0;left:0;padding:0.25em}td.last.svelte-9w99uk.svelte-9w99uk{border-bottom:1px solid black}input.svelte-9w99uk.svelte-9w99uk{font-family:inherit;font-size:inherit}article.svelte-9w99uk.svelte-9w99uk,table.svelte-9w99uk.svelte-9w99uk{width:100%}label.svelte-9w99uk.svelte-9w99uk{padding:0.1em 0;width:min-content}label.svelte-9w99uk span.svelte-9w99uk{font-size:x-small;margin-right:0.5ch}table.svelte-9w99uk.svelte-9w99uk{border-collapse:collapse}table.svelte-9w99uk td.svelte-9w99uk,table.svelte-9w99uk th.svelte-9w99uk{font-weight:normal;border-top:1px solid lightgrey;border-bottom:1px solid lightgrey;padding:0.1em 0.25em;text-align:center}table.svelte-9w99uk th.svelte-9w99uk{font-size:normal;background-color:lightgrey}.col-paid-places.svelte-9w99uk.svelte-9w99uk,.col-free-places.svelte-9w99uk.svelte-9w99uk{width:10ch}.col-duration.svelte-9w99uk.svelte-9w99uk{width:10ch}.col-base-edu-level.svelte-9w99uk.svelte-9w99uk{width:10ch}.col-edu-form.svelte-9w99uk.svelte-9w99uk{width:10ch}");
+    append_styles(target, "svelte-ro1q9u", "tbody.svelte-ro1q9u.svelte-ro1q9u{counter-reset:n}tbody.svelte-ro1q9u .counter.svelte-ro1q9u::before{counter-increment:n;content:counter(n);position:absolute;top:0;left:0;padding:0.25em}td.last.svelte-ro1q9u.svelte-ro1q9u{border-bottom:1px solid black}input.svelte-ro1q9u.svelte-ro1q9u{font-family:inherit;font-size:inherit}article.svelte-ro1q9u.svelte-ro1q9u,table.svelte-ro1q9u.svelte-ro1q9u{width:100%}table.svelte-ro1q9u.svelte-ro1q9u{border-collapse:collapse}table.svelte-ro1q9u td.svelte-ro1q9u,table.svelte-ro1q9u th.svelte-ro1q9u{font-weight:normal;border-top:1px solid lightgrey;border-bottom:1px solid lightgrey;padding:0.1em 0.25em;text-align:center}table.svelte-ro1q9u th.svelte-ro1q9u{font-size:normal;background-color:lightgrey}.col-paid-places.svelte-ro1q9u.svelte-ro1q9u,.col-free-places.svelte-ro1q9u.svelte-ro1q9u{width:10ch}.col-duration.svelte-ro1q9u.svelte-ro1q9u{width:10ch}.col-base-edu-level.svelte-ro1q9u.svelte-ro1q9u{width:10ch}.col-edu-form.svelte-ro1q9u.svelte-ro1q9u{width:10ch}");
   }
   function get_each_context(ctx, list, i) {
     const child_ctx = ctx.slice();
@@ -9980,88 +10138,100 @@
     let div0;
     let t0;
     let button;
-    let t2;
+    let t1;
     let td1;
     let div3;
-    let label0;
-    let span0;
-    let t4;
-    let input0;
-    let t5;
+    let text0;
+    let updating_value;
+    let t2;
     let div2;
-    let label1;
-    let span1;
-    let t7;
-    let input1;
-    let t8;
-    let label2;
-    let span2;
-    let t10;
-    let input2;
-    let t11;
+    let text1;
+    let updating_value_1;
+    let t3;
+    let text2;
+    let updating_value_2;
+    let t4;
     let td2;
-    let t13;
+    let t6;
     let td3;
-    let t15;
+    let t8;
     let td4;
     let numeric0;
-    let updating_value;
-    let t16;
+    let updating_value_3;
+    let t9;
     let td5;
     let numeric1;
-    let updating_value_1;
-    let t17;
+    let updating_value_4;
+    let t10;
     let td6;
     let numeric2;
-    let updating_value_2;
-    let t18;
+    let updating_value_5;
+    let t11;
     let tr1;
     let td7;
-    let t20;
+    let t13;
     let td8;
     let numeric3;
-    let updating_value_3;
-    let t21;
+    let updating_value_6;
+    let t14;
     let td9;
     let numeric4;
-    let updating_value_4;
-    let t22;
+    let updating_value_7;
+    let t15;
     let td10;
     let numeric5;
-    let updating_value_5;
-    let t23;
+    let updating_value_8;
+    let t16;
     let tr2;
     let td11;
-    let t25;
+    let t18;
     let td12;
-    let t27;
+    let t20;
     let td13;
     let numeric6;
-    let updating_value_6;
-    let t28;
+    let updating_value_9;
+    let t21;
     let td14;
     let numeric7;
-    let updating_value_7;
-    let t29;
+    let updating_value_10;
+    let t22;
     let td15;
     let numeric8;
-    let updating_value_8;
-    let t30;
+    let updating_value_11;
+    let t23;
     let current;
     let mounted;
     let dispose;
     function click_handler() {
       return ctx[7](ctx[30]);
     }
-    function input0_input_handler() {
-      ctx[8].call(input0, ctx[29], ctx[30]);
+    function text0_value_binding(value) {
+      ctx[8](value, ctx[28]);
     }
-    function input1_input_handler() {
-      ctx[9].call(input1, ctx[29], ctx[30]);
+    let text0_props = { title: "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435", size: 49 };
+    if (ctx[28].name !== void 0) {
+      text0_props.value = ctx[28].name;
     }
-    function input2_input_handler() {
-      ctx[10].call(input2, ctx[29], ctx[30]);
+    text0 = new text_default({ props: text0_props });
+    binding_callbacks.push(() => bind(text0, "value", text0_value_binding));
+    function text1_value_binding(value) {
+      ctx[9](value, ctx[28]);
     }
+    let text1_props = { title: "\u041A\u043E\u0434", size: 12 };
+    if (ctx[28].code !== void 0) {
+      text1_props.value = ctx[28].code;
+    }
+    text1 = new text_default({ props: text1_props });
+    binding_callbacks.push(() => bind(text1, "value", text1_value_binding));
+    function text2_value_binding(value) {
+      ctx[10](value, ctx[28]);
+    }
+    let text2_props = { title: "\u041A\u0432\u0430\u043B\u0438\u0444\u0438\u043A\u0430\u0446\u0438\u044F", size: 35 };
+    if (ctx[28].qualification !== void 0) {
+      text2_props.value = ctx[28].qualification;
+    }
+    text2 = new text_default({ props: text2_props });
+    binding_callbacks.push(() => bind(text2, "value", text2_value_binding));
     function numeric0_value_binding(value) {
       ctx[11](value, ctx[28]);
     }
@@ -10151,126 +10321,90 @@
         div0 = element("div");
         t0 = space();
         button = element("button");
-        button.textContent = "X";
-        t2 = space();
+        t1 = space();
         td1 = element("td");
         div3 = element("div");
-        label0 = element("label");
-        span0 = element("span");
-        span0.textContent = "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435";
-        t4 = space();
-        input0 = element("input");
-        t5 = space();
+        create_component(text0.$$.fragment);
+        t2 = space();
         div2 = element("div");
-        label1 = element("label");
-        span1 = element("span");
-        span1.textContent = "\u041A\u043E\u0434";
-        t7 = space();
-        input1 = element("input");
-        t8 = space();
-        label2 = element("label");
-        span2 = element("span");
-        span2.textContent = "\u041A\u0432\u0430\u043B\u0438\u0444\u0438\u043A\u0430\u0446\u0438\u044F";
-        t10 = space();
-        input2 = element("input");
-        t11 = space();
+        create_component(text1.$$.fragment);
+        t3 = space();
+        create_component(text2.$$.fragment);
+        t4 = space();
         td2 = element("td");
         td2.textContent = "\u043E\u0447\u043D\u0430\u044F";
-        t13 = space();
+        t6 = space();
         td3 = element("td");
         td3.textContent = "9 \u043A\u043B\u0430\u0441\u0441\u043E\u0432";
-        t15 = space();
+        t8 = space();
         td4 = element("td");
         create_component(numeric0.$$.fragment);
-        t16 = space();
+        t9 = space();
         td5 = element("td");
         create_component(numeric1.$$.fragment);
-        t17 = space();
+        t10 = space();
         td6 = element("td");
         create_component(numeric2.$$.fragment);
-        t18 = space();
+        t11 = space();
         tr1 = element("tr");
         td7 = element("td");
         td7.textContent = "11 \u043A\u043B\u0430\u0441\u0441\u043E\u0432";
-        t20 = space();
+        t13 = space();
         td8 = element("td");
         create_component(numeric3.$$.fragment);
-        t21 = space();
+        t14 = space();
         td9 = element("td");
         create_component(numeric4.$$.fragment);
-        t22 = space();
+        t15 = space();
         td10 = element("td");
         create_component(numeric5.$$.fragment);
-        t23 = space();
+        t16 = space();
         tr2 = element("tr");
         td11 = element("td");
         td11.textContent = "\u0437\u0430\u043E\u0447\u043D\u0430\u044F";
-        t25 = space();
+        t18 = space();
         td12 = element("td");
         td12.textContent = "11 \u043A\u043B\u0430\u0441\u0441\u043E\u0432";
-        t27 = space();
+        t20 = space();
         td13 = element("td");
         create_component(numeric6.$$.fragment);
-        t28 = space();
+        t21 = space();
         td14 = element("td");
         create_component(numeric7.$$.fragment);
-        t29 = space();
+        t22 = space();
         td15 = element("td");
         create_component(numeric8.$$.fragment);
-        t30 = space();
-        attr(div0, "class", "counter svelte-9w99uk");
+        t23 = space();
+        attr(div0, "class", "counter svelte-ro1q9u");
+        attr(button, "class", "button button--remove");
         attr(button, "type", "button");
-        set_style(button, "width", "3ch");
         set_style(div1, "display", "flex");
         set_style(div1, "flex-direction", "column");
         set_style(div1, "align-items", "center");
-        attr(td0, "class", "last svelte-9w99uk");
+        attr(td0, "class", "last svelte-ro1q9u");
         set_style(td0, "position", "relative");
         attr(td0, "rowspan", "3");
-        attr(span0, "class", "svelte-9w99uk");
-        attr(input0, "type", "text");
-        set_style(input0, "width", "100%");
-        attr(input0, "class", "svelte-9w99uk");
-        set_style(label0, "display", "flex");
-        set_style(label0, "flex-wrap", "wrap");
-        set_style(label0, "width", "100%");
-        attr(label0, "class", "svelte-9w99uk");
-        attr(span1, "class", "svelte-9w99uk");
-        attr(input1, "type", "text");
-        set_style(input1, "width", "10ch");
-        attr(input1, "class", "svelte-9w99uk");
-        attr(label1, "class", "svelte-9w99uk");
-        attr(span2, "class", "svelte-9w99uk");
-        attr(input2, "type", "text");
-        set_style(input2, "width", "100%");
-        attr(input2, "class", "svelte-9w99uk");
-        set_style(label2, "flex-grow", "1");
-        set_style(label2, "display", "flex");
-        set_style(label2, "flex-direction", "column");
-        attr(label2, "class", "svelte-9w99uk");
-        set_style(div2, "display", "flex");
-        set_style(div2, "gap", "1ch");
-        set_style(div2, "text-align", "start");
+        attr(div2, "class", "field-container");
         set_style(div3, "display", "flex");
         set_style(div3, "flex-direction", "column");
         set_style(div3, "width", "100%");
-        attr(td1, "class", "last svelte-9w99uk");
+        attr(td1, "class", "last svelte-ro1q9u");
         attr(td1, "rowspan", "3");
         attr(td2, "rowspan", "2");
-        attr(td2, "class", "svelte-9w99uk");
-        attr(td3, "class", "svelte-9w99uk");
-        attr(td4, "class", "svelte-9w99uk");
-        attr(td5, "class", "svelte-9w99uk");
-        attr(td6, "class", "svelte-9w99uk");
-        attr(td7, "class", "svelte-9w99uk");
-        attr(td8, "class", "svelte-9w99uk");
-        attr(td9, "class", "svelte-9w99uk");
-        attr(td10, "class", "svelte-9w99uk");
-        attr(td11, "class", "last svelte-9w99uk");
-        attr(td12, "class", "last svelte-9w99uk");
-        attr(td13, "class", "last svelte-9w99uk");
-        attr(td14, "class", "last svelte-9w99uk");
-        attr(td15, "class", "last svelte-9w99uk");
+        attr(td2, "class", "svelte-ro1q9u");
+        attr(td3, "class", "svelte-ro1q9u");
+        attr(td4, "class", "svelte-ro1q9u");
+        attr(td5, "class", "svelte-ro1q9u");
+        attr(td6, "class", "svelte-ro1q9u");
+        attr(td7, "class", "svelte-ro1q9u");
+        attr(td8, "class", "svelte-ro1q9u");
+        attr(td9, "class", "svelte-ro1q9u");
+        attr(td10, "class", "svelte-ro1q9u");
+        attr(td11, "class", "last svelte-ro1q9u");
+        attr(td12, "class", "last svelte-ro1q9u");
+        attr(td13, "class", "last svelte-ro1q9u");
+        attr(td14, "class", "last svelte-ro1q9u");
+        attr(td15, "class", "last svelte-ro1q9u");
       },
       m(target, anchor) {
         insert(target, tr0, anchor);
@@ -10279,156 +10413,154 @@
         append(div1, div0);
         append(div1, t0);
         append(div1, button);
-        append(tr0, t2);
+        append(tr0, t1);
         append(tr0, td1);
         append(td1, div3);
-        append(div3, label0);
-        append(label0, span0);
-        append(label0, t4);
-        append(label0, input0);
-        set_input_value(input0, ctx[28].name);
-        append(div3, t5);
+        mount_component(text0, div3, null);
+        append(div3, t2);
         append(div3, div2);
-        append(div2, label1);
-        append(label1, span1);
-        append(label1, t7);
-        append(label1, input1);
-        set_input_value(input1, ctx[28].code);
-        append(div2, t8);
-        append(div2, label2);
-        append(label2, span2);
-        append(label2, t10);
-        append(label2, input2);
-        set_input_value(input2, ctx[28].qualification);
-        append(tr0, t11);
+        mount_component(text1, div2, null);
+        append(div2, t3);
+        mount_component(text2, div2, null);
+        append(tr0, t4);
         append(tr0, td2);
-        append(tr0, t13);
+        append(tr0, t6);
         append(tr0, td3);
-        append(tr0, t15);
+        append(tr0, t8);
         append(tr0, td4);
         mount_component(numeric0, td4, null);
-        append(tr0, t16);
+        append(tr0, t9);
         append(tr0, td5);
         mount_component(numeric1, td5, null);
-        append(tr0, t17);
+        append(tr0, t10);
         append(tr0, td6);
         mount_component(numeric2, td6, null);
-        insert(target, t18, anchor);
+        insert(target, t11, anchor);
         insert(target, tr1, anchor);
         append(tr1, td7);
-        append(tr1, t20);
+        append(tr1, t13);
         append(tr1, td8);
         mount_component(numeric3, td8, null);
-        append(tr1, t21);
+        append(tr1, t14);
         append(tr1, td9);
         mount_component(numeric4, td9, null);
-        append(tr1, t22);
+        append(tr1, t15);
         append(tr1, td10);
         mount_component(numeric5, td10, null);
-        insert(target, t23, anchor);
+        insert(target, t16, anchor);
         insert(target, tr2, anchor);
         append(tr2, td11);
-        append(tr2, t25);
+        append(tr2, t18);
         append(tr2, td12);
-        append(tr2, t27);
+        append(tr2, t20);
         append(tr2, td13);
         mount_component(numeric6, td13, null);
-        append(tr2, t28);
+        append(tr2, t21);
         append(tr2, td14);
         mount_component(numeric7, td14, null);
-        append(tr2, t29);
+        append(tr2, t22);
         append(tr2, td15);
         mount_component(numeric8, td15, null);
-        append(tr2, t30);
+        append(tr2, t23);
         current = true;
         if (!mounted) {
-          dispose = [
-            listen(button, "click", click_handler),
-            listen(input0, "input", input0_input_handler),
-            listen(input1, "input", input1_input_handler),
-            listen(input2, "input", input2_input_handler)
-          ];
+          dispose = listen(button, "click", click_handler);
           mounted = true;
         }
       },
       p(new_ctx, dirty) {
         ctx = new_ctx;
-        if (dirty & 1 && input0.value !== ctx[28].name) {
-          set_input_value(input0, ctx[28].name);
-        }
-        if (dirty & 1 && input1.value !== ctx[28].code) {
-          set_input_value(input1, ctx[28].code);
-        }
-        if (dirty & 1 && input2.value !== ctx[28].qualification) {
-          set_input_value(input2, ctx[28].qualification);
-        }
-        const numeric0_changes = {};
+        const text0_changes = {};
         if (!updating_value && dirty & 1) {
           updating_value = true;
-          numeric0_changes.value = ctx[28].fullTime.level9.duration;
+          text0_changes.value = ctx[28].name;
           add_flush_callback(() => updating_value = false);
+        }
+        text0.$set(text0_changes);
+        const text1_changes = {};
+        if (!updating_value_1 && dirty & 1) {
+          updating_value_1 = true;
+          text1_changes.value = ctx[28].code;
+          add_flush_callback(() => updating_value_1 = false);
+        }
+        text1.$set(text1_changes);
+        const text2_changes = {};
+        if (!updating_value_2 && dirty & 1) {
+          updating_value_2 = true;
+          text2_changes.value = ctx[28].qualification;
+          add_flush_callback(() => updating_value_2 = false);
+        }
+        text2.$set(text2_changes);
+        const numeric0_changes = {};
+        if (!updating_value_3 && dirty & 1) {
+          updating_value_3 = true;
+          numeric0_changes.value = ctx[28].fullTime.level9.duration;
+          add_flush_callback(() => updating_value_3 = false);
         }
         numeric0.$set(numeric0_changes);
         const numeric1_changes = {};
-        if (!updating_value_1 && dirty & 1) {
-          updating_value_1 = true;
+        if (!updating_value_4 && dirty & 1) {
+          updating_value_4 = true;
           numeric1_changes.value = ctx[28].fullTime.level9.freePlaces;
-          add_flush_callback(() => updating_value_1 = false);
+          add_flush_callback(() => updating_value_4 = false);
         }
         numeric1.$set(numeric1_changes);
         const numeric2_changes = {};
-        if (!updating_value_2 && dirty & 1) {
-          updating_value_2 = true;
+        if (!updating_value_5 && dirty & 1) {
+          updating_value_5 = true;
           numeric2_changes.value = ctx[28].fullTime.level9.paidPlaces;
-          add_flush_callback(() => updating_value_2 = false);
+          add_flush_callback(() => updating_value_5 = false);
         }
         numeric2.$set(numeric2_changes);
         const numeric3_changes = {};
-        if (!updating_value_3 && dirty & 1) {
-          updating_value_3 = true;
+        if (!updating_value_6 && dirty & 1) {
+          updating_value_6 = true;
           numeric3_changes.value = ctx[28].fullTime.level11.duration;
-          add_flush_callback(() => updating_value_3 = false);
+          add_flush_callback(() => updating_value_6 = false);
         }
         numeric3.$set(numeric3_changes);
         const numeric4_changes = {};
-        if (!updating_value_4 && dirty & 1) {
-          updating_value_4 = true;
+        if (!updating_value_7 && dirty & 1) {
+          updating_value_7 = true;
           numeric4_changes.value = ctx[28].fullTime.level11.freePlaces;
-          add_flush_callback(() => updating_value_4 = false);
+          add_flush_callback(() => updating_value_7 = false);
         }
         numeric4.$set(numeric4_changes);
         const numeric5_changes = {};
-        if (!updating_value_5 && dirty & 1) {
-          updating_value_5 = true;
+        if (!updating_value_8 && dirty & 1) {
+          updating_value_8 = true;
           numeric5_changes.value = ctx[28].fullTime.level11.paidPlaces;
-          add_flush_callback(() => updating_value_5 = false);
+          add_flush_callback(() => updating_value_8 = false);
         }
         numeric5.$set(numeric5_changes);
         const numeric6_changes = {};
-        if (!updating_value_6 && dirty & 1) {
-          updating_value_6 = true;
+        if (!updating_value_9 && dirty & 1) {
+          updating_value_9 = true;
           numeric6_changes.value = ctx[28].absentia.level11.duration;
-          add_flush_callback(() => updating_value_6 = false);
+          add_flush_callback(() => updating_value_9 = false);
         }
         numeric6.$set(numeric6_changes);
         const numeric7_changes = {};
-        if (!updating_value_7 && dirty & 1) {
-          updating_value_7 = true;
+        if (!updating_value_10 && dirty & 1) {
+          updating_value_10 = true;
           numeric7_changes.value = ctx[28].absentia.level11.freePlaces;
-          add_flush_callback(() => updating_value_7 = false);
+          add_flush_callback(() => updating_value_10 = false);
         }
         numeric7.$set(numeric7_changes);
         const numeric8_changes = {};
-        if (!updating_value_8 && dirty & 1) {
-          updating_value_8 = true;
+        if (!updating_value_11 && dirty & 1) {
+          updating_value_11 = true;
           numeric8_changes.value = ctx[28].absentia.level11.paidPlaces;
-          add_flush_callback(() => updating_value_8 = false);
+          add_flush_callback(() => updating_value_11 = false);
         }
         numeric8.$set(numeric8_changes);
       },
       i(local) {
         if (current)
           return;
+        transition_in(text0.$$.fragment, local);
+        transition_in(text1.$$.fragment, local);
+        transition_in(text2.$$.fragment, local);
         transition_in(numeric0.$$.fragment, local);
         transition_in(numeric1.$$.fragment, local);
         transition_in(numeric2.$$.fragment, local);
@@ -10441,6 +10573,9 @@
         current = true;
       },
       o(local) {
+        transition_out(text0.$$.fragment, local);
+        transition_out(text1.$$.fragment, local);
+        transition_out(text2.$$.fragment, local);
         transition_out(numeric0.$$.fragment, local);
         transition_out(numeric1.$$.fragment, local);
         transition_out(numeric2.$$.fragment, local);
@@ -10455,29 +10590,32 @@
       d(detaching) {
         if (detaching)
           detach(tr0);
+        destroy_component(text0);
+        destroy_component(text1);
+        destroy_component(text2);
         destroy_component(numeric0);
         destroy_component(numeric1);
         destroy_component(numeric2);
         if (detaching)
-          detach(t18);
+          detach(t11);
         if (detaching)
           detach(tr1);
         destroy_component(numeric3);
         destroy_component(numeric4);
         destroy_component(numeric5);
         if (detaching)
-          detach(t23);
+          detach(t16);
         if (detaching)
           detach(tr2);
         destroy_component(numeric6);
         destroy_component(numeric7);
         destroy_component(numeric8);
         mounted = false;
-        run_all(dispose);
+        dispose();
       }
     };
   }
-  function create_fragment2(ctx) {
+  function create_fragment3(ctx) {
     let article;
     let table;
     let thead0;
@@ -10526,13 +10664,13 @@
         article = element("article");
         table = element("table");
         thead0 = element("thead");
-        thead0.innerHTML = `<tr><th class="svelte-9w99uk">#</th> 
-        <th class="col-spec svelte-9w99uk">\u0421\u043F\u0435\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C</th> 
-        <th class="col-edu-form svelte-9w99uk">\u0424\u043E\u0440\u043C\u0430 \u043E\u0431\u0443\u0447\u0435\u043D\u0438\u044F</th> 
-        <th class="col-base-edu-level svelte-9w99uk">\u0411\u0430\u0437\u043E\u0432\u043E\u0435 \u043E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u043D\u0438\u0435</th> 
-        <th class="col-duration svelte-9w99uk">\u0421\u0440\u043E\u043A \u043E\u0431\u0443\u0447\u0435\u043D\u0438\u044F, \u043B\u0435\u0442</th> 
-        <th class="col-free-places svelte-9w99uk">\u0411\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u043E, \u043A\u043E\u043B-\u0432\u043E \u043C\u0435\u0441\u0442</th> 
-        <th class="col-paid-places svelte-9w99uk">\u041F\u043B\u0430\u0442\u043D\u043E, \u043A\u043E\u043B-\u0432\u043E \u043C\u0435\u0441\u0442</th></tr>`;
+        thead0.innerHTML = `<tr><th class="svelte-ro1q9u">#</th> 
+        <th class="col-spec svelte-ro1q9u">\u0421\u043F\u0435\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C</th> 
+        <th class="col-edu-form svelte-ro1q9u">\u0424\u043E\u0440\u043C\u0430 \u043E\u0431\u0443\u0447\u0435\u043D\u0438\u044F</th> 
+        <th class="col-base-edu-level svelte-ro1q9u">\u0411\u0430\u0437\u043E\u0432\u043E\u0435 \u043E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u043D\u0438\u0435</th> 
+        <th class="col-duration svelte-ro1q9u">\u0421\u0440\u043E\u043A \u043E\u0431\u0443\u0447\u0435\u043D\u0438\u044F, \u043B\u0435\u0442</th> 
+        <th class="col-free-places svelte-ro1q9u">\u0411\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u043E, \u043A\u043E\u043B-\u0432\u043E \u043C\u0435\u0441\u0442</th> 
+        <th class="col-paid-places svelte-ro1q9u">\u041F\u043B\u0430\u0442\u043D\u043E, \u043A\u043E\u043B-\u0432\u043E \u043C\u0435\u0441\u0442</th></tr>`;
         t13 = space();
         tbody = element("tbody");
         for (let i = 0; i < each_blocks.length; i += 1) {
@@ -10566,25 +10704,25 @@
         span.textContent = "\u0418\u043C\u043F\u043E\u0440\u0442";
         t28 = space();
         input = element("input");
-        attr(tbody, "class", "svelte-9w99uk");
+        attr(tbody, "class", "svelte-ro1q9u");
         attr(th7, "colspan", "5");
         set_style(th7, "text-align", "end");
-        attr(th7, "class", "svelte-9w99uk");
-        attr(th8, "class", "svelte-9w99uk");
-        attr(th9, "class", "svelte-9w99uk");
-        attr(table, "class", "svelte-9w99uk");
+        attr(th7, "class", "svelte-ro1q9u");
+        attr(th8, "class", "svelte-ro1q9u");
+        attr(th9, "class", "svelte-ro1q9u");
+        attr(table, "class", "svelte-ro1q9u");
         attr(button0, "type", "button");
         set_style(div0, "margin-top", "1em");
         attr(button1, "type", "button");
         attr(button2, "type", "button");
         attr(input, "type", "file");
         attr(input, "accept", "application/json");
-        attr(input, "class", "svelte-9w99uk");
+        attr(input, "class", "svelte-ro1q9u");
         set_style(div1, "margin-top", "1em");
         set_style(div2, "margin-top", "1em");
         attr(article, "data-id", article_data_id_value = ctx[0]._id);
         attr(article, "data-rev", article_data_rev_value = ctx[0]._rev);
-        attr(article, "class", "svelte-9w99uk");
+        attr(article, "class", "svelte-ro1q9u");
       },
       m(target, anchor) {
         insert(target, article, anchor);
@@ -10686,7 +10824,7 @@
       }
     };
   }
-  function instance2($$self, $$props, $$invalidate) {
+  function instance3($$self, $$props, $$invalidate) {
     let { save: save2 = () => {
     } } = $$props;
     let { doc = { type: "spec", specialities: [] } } = $$props;
@@ -10772,17 +10910,23 @@
     const click_handler = (idx) => {
       removeSpec(idx);
     };
-    function input0_input_handler(each_value, idx) {
-      each_value[idx].name = this.value;
-      $$invalidate(0, doc);
+    function text0_value_binding(value, spec) {
+      if ($$self.$$.not_equal(spec.name, value)) {
+        spec.name = value;
+        $$invalidate(0, doc);
+      }
     }
-    function input1_input_handler(each_value, idx) {
-      each_value[idx].code = this.value;
-      $$invalidate(0, doc);
+    function text1_value_binding(value, spec) {
+      if ($$self.$$.not_equal(spec.code, value)) {
+        spec.code = value;
+        $$invalidate(0, doc);
+      }
     }
-    function input2_input_handler(each_value, idx) {
-      each_value[idx].qualification = this.value;
-      $$invalidate(0, doc);
+    function text2_value_binding(value, spec) {
+      if ($$self.$$.not_equal(spec.qualification, value)) {
+        spec.qualification = value;
+        $$invalidate(0, doc);
+      }
     }
     function numeric0_value_binding(value, spec) {
       if ($$self.$$.not_equal(spec.fullTime.level9.duration, value)) {
@@ -10859,9 +11003,9 @@
       specExport,
       specImport,
       click_handler,
-      input0_input_handler,
-      input1_input_handler,
-      input2_input_handler,
+      text0_value_binding,
+      text1_value_binding,
+      text2_value_binding,
       numeric0_value_binding,
       numeric1_value_binding,
       numeric2_value_binding,
@@ -10882,7 +11026,7 @@
   var Speciality_table = class extends SvelteComponent {
     constructor(options) {
       super();
-      init2(this, options, instance2, create_fragment2, safe_not_equal, { save: 1, doc: 0 }, add_css);
+      init2(this, options, instance3, create_fragment3, safe_not_equal, { save: 1, doc: 0 }, add_css);
     }
     get save() {
       return this.$$.ctx[1];
@@ -10925,8 +11069,8 @@
     });
   })();
   (async () => {
-    const res = await db.query("eduProgs2", { include_docs: false });
-    console.log("eduProgs2", res);
+    const res = await db.query("eduProgs", { include_docs: false });
+    console.log("eduProgs", res);
   })();
 })();
 //# sourceMappingURL=speciality.js.map

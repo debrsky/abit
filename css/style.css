@@ -145,6 +145,13 @@ footer {
 .button--remove:active {
   transform: scale(0.95);
 }
+.table {
+  border-collapse: collapse;
+}
+.table td {
+  border: 1px solid lightgrey;
+  padding: 0.25em;
+}
 .header {
   position: -webkit-sticky;
   position: sticky;

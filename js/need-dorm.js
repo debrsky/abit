@@ -5,7 +5,14 @@
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __commonJS = (cb, mod) => function __require() {
+  var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+    get: (a2, b) => (typeof require !== "undefined" ? require : a2)[b]
+  }) : x)(function(x) {
+    if (typeof require !== "undefined")
+      return require.apply(this, arguments);
+    throw new Error('Dynamic require of "' + x + '" is not supported');
+  });
+  var __commonJS = (cb, mod) => function __require2() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
   var __copyProps = (to, from, except, desc) => {
@@ -949,7 +956,7 @@
       EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
         return _getMaxListeners(this);
       };
-      EventEmitter.prototype.emit = function emit(type) {
+      EventEmitter.prototype.emit = function emit2(type) {
         var args = [];
         for (var i = 1; i < arguments.length; i++)
           args.push(arguments[i]);
@@ -1240,267 +1247,6 @@
       }
     }
   });
-
-  // src/js/utils/index.js
-  function createElementFromTemplate(tmplElem) {
-    const elem = document.createElement("div");
-    elem.append(tmplElem.content.cloneNode(true));
-    return elem.firstElementChild;
-  }
-  function getFormData(formElem) {
-    const formData = new FormData(formElem);
-    const data = {};
-    for (const [fkey, value] of formData.entries()) {
-      const key = kebabToCamel(fkey);
-      data[key] = value;
-    }
-    return data;
-  }
-  function setFormData(formElem, data) {
-    for (const [key, value] of Object.entries(data)) {
-      if (typeof value === "string") {
-        const name = camelToKebab(key);
-        const elem = formElem.elements[name];
-        if (!elem)
-          continue;
-        elem.value = value;
-        continue;
-      }
-      if (typeof value === "number") {
-        continue;
-      }
-    }
-  }
-  function camelToKebab(str) {
-    return str.split("").map((letter, idx) => {
-      return letter.toUpperCase() === letter ? `${idx !== 0 ? "-" : ""}${letter.toLowerCase()}` : letter;
-    }).join("");
-  }
-  function kebabToCamel(str) {
-    return str.replace(/-./g, (x) => x[1].toUpperCase());
-  }
-
-  // src/js/edu-prog-view.js
-  function createEduProgViewElemFromTemplate(tmplElem, data) {
-    const eduProgViewElem = createElementFromTemplate(tmplElem);
-    for (const elem of eduProgViewElem.querySelectorAll(`[name]`)) {
-      const key = kebabToCamel(elem.getAttribute("name"));
-      if (data[key])
-        elem.textContent = data[key];
-    }
-    const idElem = eduProgViewElem;
-    const id = data.id ?? data._id;
-    if (idElem && id)
-      idElem.dataset.id = id;
-    return eduProgViewElem;
-  }
-
-  // node_modules/a11y-dialog/dist/a11y-dialog.esm.js
-  var focusableSelectors = [
-    'a[href]:not([tabindex^="-"])',
-    'area[href]:not([tabindex^="-"])',
-    'input:not([type="hidden"]):not([type="radio"]):not([disabled]):not([tabindex^="-"])',
-    'input[type="radio"]:not([disabled]):not([tabindex^="-"])',
-    'select:not([disabled]):not([tabindex^="-"])',
-    'textarea:not([disabled]):not([tabindex^="-"])',
-    'button:not([disabled]):not([tabindex^="-"])',
-    'iframe:not([tabindex^="-"])',
-    'audio[controls]:not([tabindex^="-"])',
-    'video[controls]:not([tabindex^="-"])',
-    '[contenteditable]:not([tabindex^="-"])',
-    '[tabindex]:not([tabindex^="-"])'
-  ];
-  var TAB_KEY = 9;
-  var ESCAPE_KEY = 27;
-  function A11yDialog(element) {
-    this._show = this.show.bind(this);
-    this._hide = this.hide.bind(this);
-    this._maintainFocus = this._maintainFocus.bind(this);
-    this._bindKeypress = this._bindKeypress.bind(this);
-    this.$el = element;
-    this.shown = false;
-    this._id = this.$el.getAttribute("data-a11y-dialog") || this.$el.id;
-    this._previouslyFocused = null;
-    this._listeners = {};
-    this.create();
-  }
-  A11yDialog.prototype.create = function() {
-    this.$el.setAttribute("aria-hidden", true);
-    this.$el.setAttribute("aria-modal", true);
-    this.$el.setAttribute("tabindex", -1);
-    if (!this.$el.hasAttribute("role")) {
-      this.$el.setAttribute("role", "dialog");
-    }
-    this._openers = $$('[data-a11y-dialog-show="' + this._id + '"]');
-    this._openers.forEach(function(opener) {
-      opener.addEventListener("click", this._show);
-    }.bind(this));
-    this._closers = $$("[data-a11y-dialog-hide]", this.$el).concat($$('[data-a11y-dialog-hide="' + this._id + '"]'));
-    this._closers.forEach(function(closer) {
-      closer.addEventListener("click", this._hide);
-    }.bind(this));
-    this._fire("create");
-    return this;
-  };
-  A11yDialog.prototype.show = function(event) {
-    if (this.shown) {
-      return this;
-    }
-    this._previouslyFocused = document.activeElement;
-    this.$el.removeAttribute("aria-hidden");
-    this.shown = true;
-    moveFocusToDialog(this.$el);
-    document.body.addEventListener("focus", this._maintainFocus, true);
-    document.addEventListener("keydown", this._bindKeypress);
-    this._fire("show", event);
-    return this;
-  };
-  A11yDialog.prototype.hide = function(event) {
-    if (!this.shown) {
-      return this;
-    }
-    this.shown = false;
-    this.$el.setAttribute("aria-hidden", "true");
-    if (this._previouslyFocused && this._previouslyFocused.focus) {
-      this._previouslyFocused.focus();
-    }
-    document.body.removeEventListener("focus", this._maintainFocus, true);
-    document.removeEventListener("keydown", this._bindKeypress);
-    this._fire("hide", event);
-    return this;
-  };
-  A11yDialog.prototype.destroy = function() {
-    this.hide();
-    this._openers.forEach(function(opener) {
-      opener.removeEventListener("click", this._show);
-    }.bind(this));
-    this._closers.forEach(function(closer) {
-      closer.removeEventListener("click", this._hide);
-    }.bind(this));
-    this._fire("destroy");
-    this._listeners = {};
-    return this;
-  };
-  A11yDialog.prototype.on = function(type, handler) {
-    if (typeof this._listeners[type] === "undefined") {
-      this._listeners[type] = [];
-    }
-    this._listeners[type].push(handler);
-    return this;
-  };
-  A11yDialog.prototype.off = function(type, handler) {
-    var index = (this._listeners[type] || []).indexOf(handler);
-    if (index > -1) {
-      this._listeners[type].splice(index, 1);
-    }
-    return this;
-  };
-  A11yDialog.prototype._fire = function(type, event) {
-    var listeners = this._listeners[type] || [];
-    var domEvent = new CustomEvent(type, { detail: event });
-    this.$el.dispatchEvent(domEvent);
-    listeners.forEach(function(listener) {
-      listener(this.$el, event);
-    }.bind(this));
-  };
-  A11yDialog.prototype._bindKeypress = function(event) {
-    if (!this.$el.contains(document.activeElement))
-      return;
-    if (this.shown && event.which === ESCAPE_KEY && this.$el.getAttribute("role") !== "alertdialog") {
-      event.preventDefault();
-      this.hide(event);
-    }
-    if (this.shown && event.which === TAB_KEY) {
-      trapTabKey(this.$el, event);
-    }
-  };
-  A11yDialog.prototype._maintainFocus = function(event) {
-    if (this.shown && !event.target.closest('[aria-modal="true"]') && !event.target.closest("[data-a11y-dialog-ignore-focus-trap]")) {
-      moveFocusToDialog(this.$el);
-    }
-  };
-  function toArray(collection) {
-    return Array.prototype.slice.call(collection);
-  }
-  function $$(selector, context) {
-    return toArray((context || document).querySelectorAll(selector));
-  }
-  function moveFocusToDialog(node) {
-    var focused = node.querySelector("[autofocus]") || node;
-    focused.focus();
-  }
-  function getFocusableChildren(node) {
-    return $$(focusableSelectors.join(","), node).filter(function(child) {
-      return !!(child.offsetWidth || child.offsetHeight || child.getClientRects().length);
-    });
-  }
-  function trapTabKey(node, event) {
-    var focusableChildren = getFocusableChildren(node);
-    var focusedItemIndex = focusableChildren.indexOf(document.activeElement);
-    if (event.shiftKey && focusedItemIndex === 0) {
-      focusableChildren[focusableChildren.length - 1].focus();
-      event.preventDefault();
-    } else if (!event.shiftKey && focusedItemIndex === focusableChildren.length - 1) {
-      focusableChildren[0].focus();
-      event.preventDefault();
-    }
-  }
-  function instantiateDialogs() {
-    $$("[data-a11y-dialog]").forEach(function(node) {
-      new A11yDialog(node);
-    });
-  }
-  if (typeof document !== "undefined") {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", instantiateDialogs);
-    } else {
-      if (window.requestAnimationFrame) {
-        window.requestAnimationFrame(instantiateDialogs);
-      } else {
-        window.setTimeout(instantiateDialogs, 16);
-      }
-    }
-  }
-
-  // node_modules/deep-object-diff/mjs/utils.js
-  var isDate = (d) => d instanceof Date;
-  var isEmpty = (o) => Object.keys(o).length === 0;
-  var isObject = (o) => o != null && typeof o === "object";
-  var hasOwnProperty = (o, ...args) => Object.prototype.hasOwnProperty.call(o, ...args);
-  var isEmptyObject = (o) => isObject(o) && isEmpty(o);
-
-  // node_modules/deep-object-diff/mjs/diff.js
-  var diff = (lhs, rhs) => {
-    if (lhs === rhs)
-      return {};
-    if (!isObject(lhs) || !isObject(rhs))
-      return rhs;
-    const l = lhs;
-    const r = rhs;
-    const deletedValues = Object.keys(l).reduce((acc, key) => {
-      if (!hasOwnProperty(r, key)) {
-        acc[key] = void 0;
-      }
-      return acc;
-    }, {});
-    if (isDate(l) || isDate(r)) {
-      if (l.valueOf() == r.valueOf())
-        return {};
-      return r;
-    }
-    return Object.keys(r).reduce((acc, key) => {
-      if (!hasOwnProperty(l, key)) {
-        acc[key] = r[key];
-        return acc;
-      }
-      const difference = diff(l[key], r[key]);
-      if (isEmptyObject(difference) && !isDate(difference) && (isEmptyObject(l[key]) || !isEmptyObject(r[key])))
-        return acc;
-      acc[key] = difference;
-      return acc;
-    }, deletedValues);
-  };
-  var diff_default = diff;
 
   // node_modules/pouchdb/lib/index-browser.es.js
   var import_immediate = __toESM(require_lib());
@@ -2626,10 +2372,10 @@
       } else if (dontExpand !== true) {
         var t1 = branch.pos < path.pos ? branch : path;
         var t2 = branch.pos < path.pos ? path : branch;
-        var diff2 = t2.pos - t1.pos;
+        var diff = t2.pos - t1.pos;
         var candidateParents = [];
         var trees = [];
-        trees.push({ ids: t1.ids, diff: diff2, parent: null, parentIdx: null });
+        trees.push({ ids: t1.ids, diff, parent: null, parentIdx: null });
         while (trees.length > 0) {
           var item = trees.pop();
           if (item.diff === 0) {
@@ -7644,9 +7390,9 @@
   var log = guardedConsole.bind(null, "log");
   var isArray = Array.isArray;
   var toJSON = JSON.parse;
-  function evalFunctionWithEval(func, emit) {
+  function evalFunctionWithEval(func, emit2) {
     return scopeEval("return (" + func.replace(/;\s*$/, "") + ");", {
-      emit,
+      emit: emit2,
       sum,
       log,
       isArray,
@@ -8073,14 +7819,14 @@
     function updateViewInQueue(view, opts) {
       var mapResults;
       var doc;
-      function emit(key, value) {
+      function emit2(key, value) {
         var output = { id: doc._id, key: normalizeKey(key) };
         if (typeof value !== "undefined" && value !== null) {
           output.value = normalizeKey(value);
         }
         mapResults.push(output);
       }
-      var mapFun = mapper2(view.mapFun, emit);
+      var mapFun = mapper2(view.mapFun, emit2);
       var currentSeq = view.seq || 0;
       function processChange2(docIdsToChangesAndEmits, seq) {
         return function() {
@@ -8524,14 +8270,14 @@
       throw new Error(reduceFunString + " is not a supported reduce function.");
     }
   }
-  function mapper(mapFun, emit) {
+  function mapper(mapFun, emit2) {
     if (typeof mapFun === "function" && mapFun.length === 2) {
       var origMap = mapFun;
       return function(doc) {
-        return origMap(doc, emit);
+        return origMap(doc, emit2);
       };
     } else {
-      return evalFunctionWithEval(mapFun.toString(), emit);
+      return evalFunctionWithEval(mapFun.toString(), emit2);
     }
   }
   function reducer(reduceFun) {
@@ -9063,17 +8809,17 @@
       });
     }
     function getDiffs() {
-      var diff2 = {};
+      var diff = {};
       currentBatch.changes.forEach(function(change) {
         returnValue.emit("checkpoint", { "revs_diff": change });
         if (change.id === "_user/") {
           return;
         }
-        diff2[change.id] = change.changes.map(function(x) {
+        diff[change.id] = change.changes.map(function(x) {
           return x.rev;
         });
       });
-      return target.revsDiff(diff2).then(function(diffs) {
+      return target.revsDiff(diff).then(function(diffs) {
         if (returnValue.cancelled) {
           completeReplication();
           throw new Error("cancelled");
@@ -9639,219 +9385,567 @@
     console.log(err);
   });
 
-  // src/js/edu-progs.js
-  var eduProgs = [];
-  var outputElem = document.getElementById("edu-prog-list");
-  var eduProgViewTemplateElem = document.getElementById("edu-prog-view");
-  outputElem.addEventListener("dblclick", async (event) => {
-    await openEditForm(event.target);
-  });
-  outputElem.addEventListener("keydown", async (event) => {
-    if (event.code === "ArrowDown") {
-      document.activeElement.nextElementSibling?.focus();
-      return;
+  // src/pug/templates/need-dorm.pug
+  function pug_escape(e) {
+    var a2 = "" + e, t = pug_match_html.exec(a2);
+    if (!t)
+      return e;
+    var r, c, n, s = "";
+    for (r = t.index, c = 0; r < a2.length; r++) {
+      switch (a2.charCodeAt(r)) {
+        case 34:
+          n = "&quot;";
+          break;
+        case 38:
+          n = "&amp;";
+          break;
+        case 60:
+          n = "&lt;";
+          break;
+        case 62:
+          n = "&gt;";
+          break;
+        default:
+          continue;
+      }
+      c !== r && (s += a2.substring(c, r)), c = r + 1, s += n;
     }
-    if (event.code === "ArrowUp") {
-      document.activeElement.previousElementSibling?.focus();
-      return;
-    }
-    if (event.code === "Enter") {
-      event.preventDefault();
-      await openEditForm(event.target);
-    }
-  });
-  document.documentElement.addEventListener("keydown", async (event) => {
-    if (event.code === "Insert") {
-      await openEditForm(null);
-    }
-  });
-  var dbChangeHandlers = {
-    handlers: [],
-    subscribe(handler) {
-      this.handlers.push(handler);
-    },
-    unsubscribe(handler) {
-      const idx = this.handlers.findIndex((el) => el === handler);
-      if (idx === -1)
-        return;
-      this.handlers.splice(idx, 1);
-    },
-    handle(change) {
-      this.handlers.forEach((handler) => handler(change));
-    }
-  };
-  function changeListHandler(change) {
-    console.log("****************");
-    console.log(change);
-    const id = change.id;
-    let eduProgIdx = eduProgs.findIndex((el) => el._id === id);
-    let eduProg;
-    if (eduProgIdx === -1) {
-      eduProg = change.doc;
-      eduProgs.unshift(eduProg);
-      eduProgIdx = 0;
-    } else {
-      eduProg = eduProgs[eduProgIdx];
-    }
-    console.assert(eduProg);
-    const target = outputElem.querySelector(`[data-id="${id}"]`);
-    if (change.deleted) {
-      target?.remove();
-      eduProgs.splice(eduProgIdx, 1);
-      return;
-    }
-    Object.assign(eduProg, change.doc);
-    const elem = createEduProgViewElemFromTemplate(eduProgViewTemplateElem, eduProg);
-    if (target) {
-      target.replaceWith(elem);
-    } else {
-      outputElem.prepend(elem);
-      elem.focus();
-    }
+    return c !== r ? s + a2.substring(c, r) : s;
   }
-  dbChangeHandlers.subscribe(changeListHandler);
-  db.changes({
-    filter: function(doc) {
-      return doc.type === "edu-prog";
-    },
-    since: "now",
-    live: true,
-    include_docs: true,
-    conflicts: true
-  }).on("change", (change) => dbChangeHandlers.handle(change)).on("error", function(err) {
-    console.log(err);
-  });
-  (async () => {
-    console.log("query");
-    console.time("0");
-    let dbDocs;
+  var pug_match_html = /["&<>]/;
+  function pug_rethrow(e, n, r, t) {
+    if (!(e instanceof Error))
+      throw e;
+    if (!(typeof window == "undefined" && n || t))
+      throw e.message += " on line " + r, e;
+    var o, a2, i, s;
     try {
-      dbDocs = await db.query("eduProgs", {
-        include_docs: true,
-        attachments: false,
-        conflicts: true
-      });
+      t = t || __require("fs").readFileSync(n, { encoding: "utf8" }), o = 3, a2 = t.split("\n"), i = Math.max(r - o, 0), s = Math.min(a2.length, r + o);
+    } catch (t2) {
+      return e.message += " - could not read from " + n + " (" + t2.message + ")", void pug_rethrow(e, null, r);
+    }
+    o = a2.slice(i, s).map(function(e2, n2) {
+      var t2 = n2 + i + 1;
+      return (t2 == r ? "  > " : "    ") + t2 + "| " + e2;
+    }).join("\n"), e.path = n;
+    try {
+      e.message = (n || "Pug") + ":" + r + "\n" + o + "\n\n" + e.message;
+    } catch (e2) {
+    }
+    throw e;
+  }
+  function template(locals) {
+    var pug_html = "", pug_mixins = {}, pug_interp;
+    var pug_debug_filename, pug_debug_line;
+    try {
+      ;
+      var locals_for_with = locals || {};
+      (function(need2, priority2) {
+        ;
+        pug_debug_line = 1;
+        pug_html = pug_html + '<div id="need-dorm-2" style="margin-top: 1em;">';
+        ;
+        pug_debug_line = 2;
+        pug_html = pug_html + '<table class="table">';
+        ;
+        pug_debug_line = 3;
+        pug_html = pug_html + '<caption style="font-size: large; font-weight: bold;">';
+        ;
+        pug_debug_line = 3;
+        pug_html = pug_html + "\u041F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442\u043D\u043E\u0435 \u043E\u0431\u0449\u0435\u0436\u0438\u0442\u0438\u0435</caption>";
+        ;
+        pug_debug_line = 4;
+        pug_html = pug_html + "<tbody>";
+        ;
+        pug_debug_line = 5;
+        ;
+        (function() {
+          var $$obj = priority2;
+          if (typeof $$obj.length == "number") {
+            for (var idx = 0, $$l = $$obj.length; idx < $$l; idx++) {
+              var abit = $$obj[idx];
+              ;
+              pug_debug_line = 6;
+              pug_html = pug_html + "<tr>";
+              ;
+              pug_debug_line = 7;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 7;
+              pug_html = pug_html + "\u{1F3E8}</td>";
+              ;
+              pug_debug_line = 8;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 8;
+              pug_html = pug_html + pug_escape((pug_interp = idx + 1) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 9;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 9;
+              pug_html = pug_html + pug_escape((pug_interp = abit.fio) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 10;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 10;
+              pug_html = pug_html + pug_escape((pug_interp = abit.memo) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 11;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 11;
+              pug_html = pug_html + "<div>";
+              ;
+              pug_debug_line = 12;
+              ;
+              (function() {
+                var $$obj2 = abit.applications;
+                if (typeof $$obj2.length == "number") {
+                  for (var idx2 = 0, $$l2 = $$obj2.length; idx2 < $$l2; idx2++) {
+                    var app = $$obj2[idx2];
+                    ;
+                    pug_debug_line = 13;
+                    pug_html = pug_html + "<span>";
+                    ;
+                    pug_debug_line = 13;
+                    pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp) + "</span>";
+                    ;
+                    pug_debug_line = 14;
+                    if (idx2 !== abit.applications.length - 1) {
+                      ;
+                      pug_debug_line = 15;
+                      pug_html = pug_html + ",";
+                      ;
+                      pug_debug_line = 16;
+                      pug_html = pug_html + "\n";
+                      ;
+                      pug_debug_line = 16;
+                      pug_html = pug_html + "";
+                    }
+                  }
+                } else {
+                  var $$l2 = 0;
+                  for (var idx2 in $$obj2) {
+                    $$l2++;
+                    var app = $$obj2[idx2];
+                    ;
+                    pug_debug_line = 13;
+                    pug_html = pug_html + "<span>";
+                    ;
+                    pug_debug_line = 13;
+                    pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp) + "</span>";
+                    ;
+                    pug_debug_line = 14;
+                    if (idx2 !== abit.applications.length - 1) {
+                      ;
+                      pug_debug_line = 15;
+                      pug_html = pug_html + ",";
+                      ;
+                      pug_debug_line = 16;
+                      pug_html = pug_html + "\n";
+                      ;
+                      pug_debug_line = 16;
+                      pug_html = pug_html + "";
+                    }
+                  }
+                }
+              }).call(this);
+              pug_html = pug_html + "</div></td>";
+              ;
+              pug_debug_line = 17;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 17;
+              pug_html = pug_html + pug_escape((pug_interp = abit.address) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 18;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 18;
+              pug_html = pug_html + pug_escape((pug_interp = abit.tel) == null ? "" : pug_interp) + "</td></tr>";
+            }
+          } else {
+            var $$l = 0;
+            for (var idx in $$obj) {
+              $$l++;
+              var abit = $$obj[idx];
+              ;
+              pug_debug_line = 6;
+              pug_html = pug_html + "<tr>";
+              ;
+              pug_debug_line = 7;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 7;
+              pug_html = pug_html + "\u{1F3E8}</td>";
+              ;
+              pug_debug_line = 8;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 8;
+              pug_html = pug_html + pug_escape((pug_interp = idx + 1) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 9;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 9;
+              pug_html = pug_html + pug_escape((pug_interp = abit.fio) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 10;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 10;
+              pug_html = pug_html + pug_escape((pug_interp = abit.memo) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 11;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 11;
+              pug_html = pug_html + "<div>";
+              ;
+              pug_debug_line = 12;
+              ;
+              (function() {
+                var $$obj2 = abit.applications;
+                if (typeof $$obj2.length == "number") {
+                  for (var idx2 = 0, $$l2 = $$obj2.length; idx2 < $$l2; idx2++) {
+                    var app = $$obj2[idx2];
+                    ;
+                    pug_debug_line = 13;
+                    pug_html = pug_html + "<span>";
+                    ;
+                    pug_debug_line = 13;
+                    pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp) + "</span>";
+                    ;
+                    pug_debug_line = 14;
+                    if (idx2 !== abit.applications.length - 1) {
+                      ;
+                      pug_debug_line = 15;
+                      pug_html = pug_html + ",";
+                      ;
+                      pug_debug_line = 16;
+                      pug_html = pug_html + "\n";
+                      ;
+                      pug_debug_line = 16;
+                      pug_html = pug_html + "";
+                    }
+                  }
+                } else {
+                  var $$l2 = 0;
+                  for (var idx2 in $$obj2) {
+                    $$l2++;
+                    var app = $$obj2[idx2];
+                    ;
+                    pug_debug_line = 13;
+                    pug_html = pug_html + "<span>";
+                    ;
+                    pug_debug_line = 13;
+                    pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp) + "</span>";
+                    ;
+                    pug_debug_line = 14;
+                    if (idx2 !== abit.applications.length - 1) {
+                      ;
+                      pug_debug_line = 15;
+                      pug_html = pug_html + ",";
+                      ;
+                      pug_debug_line = 16;
+                      pug_html = pug_html + "\n";
+                      ;
+                      pug_debug_line = 16;
+                      pug_html = pug_html + "";
+                    }
+                  }
+                }
+              }).call(this);
+              pug_html = pug_html + "</div></td>";
+              ;
+              pug_debug_line = 17;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 17;
+              pug_html = pug_html + pug_escape((pug_interp = abit.address) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 18;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 18;
+              pug_html = pug_html + pug_escape((pug_interp = abit.tel) == null ? "" : pug_interp) + "</td></tr>";
+            }
+          }
+        }).call(this);
+        pug_html = pug_html + "</tbody></table></div>";
+        ;
+        pug_debug_line = 20;
+        pug_html = pug_html + '<div id="need-dorm-1" style="margin-top: 1em;">';
+        ;
+        pug_debug_line = 21;
+        pug_html = pug_html + '<table class="table">';
+        ;
+        pug_debug_line = 22;
+        pug_html = pug_html + '<caption style="font-size: large; font-weight: bold;">';
+        ;
+        pug_debug_line = 22;
+        pug_html = pug_html + "\u041D\u0443\u0436\u0434\u0430\u044E\u0442\u0441\u044F \u0432 \u043E\u0431\u0449\u0435\u0436\u0438\u0442\u0438\u0438</caption>";
+        ;
+        pug_debug_line = 23;
+        pug_html = pug_html + "<tbody>";
+        ;
+        pug_debug_line = 24;
+        ;
+        (function() {
+          var $$obj = need2;
+          if (typeof $$obj.length == "number") {
+            for (var idx = 0, $$l = $$obj.length; idx < $$l; idx++) {
+              var abit = $$obj[idx];
+              ;
+              pug_debug_line = 25;
+              pug_html = pug_html + "<tr>";
+              ;
+              pug_debug_line = 26;
+              pug_html = pug_html + '<td style="font-size: x-small;">';
+              ;
+              pug_debug_line = 26;
+              pug_html = pug_html + "\u{1F3E8}</td>";
+              ;
+              pug_debug_line = 27;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 27;
+              pug_html = pug_html + pug_escape((pug_interp = idx + 1) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 28;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 28;
+              pug_html = pug_html + pug_escape((pug_interp = abit.fio) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 29;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 29;
+              pug_html = pug_html + pug_escape((pug_interp = abit.memo) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 30;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 30;
+              pug_html = pug_html + "<div>";
+              ;
+              pug_debug_line = 31;
+              ;
+              (function() {
+                var $$obj2 = abit.applications;
+                if (typeof $$obj2.length == "number") {
+                  for (var idx2 = 0, $$l2 = $$obj2.length; idx2 < $$l2; idx2++) {
+                    var app = $$obj2[idx2];
+                    ;
+                    pug_debug_line = 32;
+                    pug_html = pug_html + "<span>";
+                    ;
+                    pug_debug_line = 32;
+                    pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp) + "</span>";
+                    ;
+                    pug_debug_line = 33;
+                    if (idx2 !== abit.applications.length - 1) {
+                      ;
+                      pug_debug_line = 34;
+                      pug_html = pug_html + ",";
+                      ;
+                      pug_debug_line = 35;
+                      pug_html = pug_html + "\n";
+                      ;
+                      pug_debug_line = 35;
+                      pug_html = pug_html + "";
+                    }
+                  }
+                } else {
+                  var $$l2 = 0;
+                  for (var idx2 in $$obj2) {
+                    $$l2++;
+                    var app = $$obj2[idx2];
+                    ;
+                    pug_debug_line = 32;
+                    pug_html = pug_html + "<span>";
+                    ;
+                    pug_debug_line = 32;
+                    pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp) + "</span>";
+                    ;
+                    pug_debug_line = 33;
+                    if (idx2 !== abit.applications.length - 1) {
+                      ;
+                      pug_debug_line = 34;
+                      pug_html = pug_html + ",";
+                      ;
+                      pug_debug_line = 35;
+                      pug_html = pug_html + "\n";
+                      ;
+                      pug_debug_line = 35;
+                      pug_html = pug_html + "";
+                    }
+                  }
+                }
+              }).call(this);
+              pug_html = pug_html + "</div></td>";
+              ;
+              pug_debug_line = 36;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 36;
+              pug_html = pug_html + pug_escape((pug_interp = abit.address) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 37;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 37;
+              pug_html = pug_html + pug_escape((pug_interp = abit.tel) == null ? "" : pug_interp) + "</td></tr>";
+            }
+          } else {
+            var $$l = 0;
+            for (var idx in $$obj) {
+              $$l++;
+              var abit = $$obj[idx];
+              ;
+              pug_debug_line = 25;
+              pug_html = pug_html + "<tr>";
+              ;
+              pug_debug_line = 26;
+              pug_html = pug_html + '<td style="font-size: x-small;">';
+              ;
+              pug_debug_line = 26;
+              pug_html = pug_html + "\u{1F3E8}</td>";
+              ;
+              pug_debug_line = 27;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 27;
+              pug_html = pug_html + pug_escape((pug_interp = idx + 1) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 28;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 28;
+              pug_html = pug_html + pug_escape((pug_interp = abit.fio) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 29;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 29;
+              pug_html = pug_html + pug_escape((pug_interp = abit.memo) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 30;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 30;
+              pug_html = pug_html + "<div>";
+              ;
+              pug_debug_line = 31;
+              ;
+              (function() {
+                var $$obj2 = abit.applications;
+                if (typeof $$obj2.length == "number") {
+                  for (var idx2 = 0, $$l2 = $$obj2.length; idx2 < $$l2; idx2++) {
+                    var app = $$obj2[idx2];
+                    ;
+                    pug_debug_line = 32;
+                    pug_html = pug_html + "<span>";
+                    ;
+                    pug_debug_line = 32;
+                    pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp) + "</span>";
+                    ;
+                    pug_debug_line = 33;
+                    if (idx2 !== abit.applications.length - 1) {
+                      ;
+                      pug_debug_line = 34;
+                      pug_html = pug_html + ",";
+                      ;
+                      pug_debug_line = 35;
+                      pug_html = pug_html + "\n";
+                      ;
+                      pug_debug_line = 35;
+                      pug_html = pug_html + "";
+                    }
+                  }
+                } else {
+                  var $$l2 = 0;
+                  for (var idx2 in $$obj2) {
+                    $$l2++;
+                    var app = $$obj2[idx2];
+                    ;
+                    pug_debug_line = 32;
+                    pug_html = pug_html + "<span>";
+                    ;
+                    pug_debug_line = 32;
+                    pug_html = pug_html + pug_escape((pug_interp = app.eduProg) == null ? "" : pug_interp) + "</span>";
+                    ;
+                    pug_debug_line = 33;
+                    if (idx2 !== abit.applications.length - 1) {
+                      ;
+                      pug_debug_line = 34;
+                      pug_html = pug_html + ",";
+                      ;
+                      pug_debug_line = 35;
+                      pug_html = pug_html + "\n";
+                      ;
+                      pug_debug_line = 35;
+                      pug_html = pug_html + "";
+                    }
+                  }
+                }
+              }).call(this);
+              pug_html = pug_html + "</div></td>";
+              ;
+              pug_debug_line = 36;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 36;
+              pug_html = pug_html + pug_escape((pug_interp = abit.address) == null ? "" : pug_interp) + "</td>";
+              ;
+              pug_debug_line = 37;
+              pug_html = pug_html + "<td>";
+              ;
+              pug_debug_line = 37;
+              pug_html = pug_html + pug_escape((pug_interp = abit.tel) == null ? "" : pug_interp) + "</td></tr>";
+            }
+          }
+        }).call(this);
+        pug_html = pug_html + "</tbody></table></div>";
+      }).call(this, "need" in locals_for_with ? locals_for_with.need : typeof need !== "undefined" ? need : void 0, "priority" in locals_for_with ? locals_for_with.priority : typeof priority !== "undefined" ? priority : void 0);
+      ;
     } catch (err) {
-      console.log("\u041E\u0428\u0418\u0411\u041A\u0410", err);
-      throw err;
+      pug_rethrow(err, pug_debug_filename, pug_debug_line);
     }
-    console.log(dbDocs);
-    console.timeEnd("0");
-    eduProgs = dbDocs.rows.map((row) => row.doc);
-    console.time("1");
-    const eduProgElems = eduProgs.sort((a2, b) => {
-      const a0 = a2.code;
-      const b0 = b.code;
-      if (a0 < b0)
-        return -1;
-      if (a0 > b0)
-        return 1;
-      return 0;
-    }).map((eduProg) => {
-      return createEduProgViewElemFromTemplate(eduProgViewTemplateElem, eduProg);
-    });
-    const chunkSize = 150;
-    let idx = 0;
-    while (idx <= eduProgElems.length) {
-      const chunk = eduProgElems.slice(idx, idx + chunkSize);
-      outputElem.append(...chunk);
-      await new Promise((resolve) => setTimeout(resolve));
-      idx = idx + chunkSize;
-    }
-    console.timeEnd("1");
-  })();
-  function createDialog(eduProg) {
-    const template = document.getElementById("edu-prog-dialog");
-    const elem = document.createElement("div");
-    elem.append(template.content.cloneNode(true));
-    const dialogElem = elem.firstElementChild;
-    document.body.append(dialogElem);
-    const form = dialogElem.querySelector("form");
-    const btnDuplicate = form.querySelector(".edu-prog-form__btn--duplicate");
-    const eduProgDialog = new A11yDialog(dialogElem);
-    form.addEventListener("click", (event) => {
-      if (event.target === btnDuplicate && form.reportValidity()) {
-        dialogElem.dataset.duplicate = true;
-        form.requestSubmit();
-      }
-    });
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      eduProgDialog.hide();
-    });
-    if (!eduProg._id) {
-      btnDuplicate.disabled = true;
-      const deletedElem = form.querySelector('[name="_deleted"]');
-      if (deletedElem)
-        deletedElem.disabled = true;
-      form.dataset.status = "new";
-    }
-    return { eduProgDialog, dialogElem, form };
+    ;
+    return pug_html;
   }
-  async function dialog(eduProg) {
-    const { eduProgDialog, dialogElem, form } = createDialog(eduProg);
-    const changeDialogHandler = (change) => {
-      const id = eduProg._id;
-      if (change.id === id) {
-        setFormData(form, change.doc);
-      }
+  var need_dorm_default = template;
+
+  // src/js/need-dorm.js
+  var mapFn = function(doc) {
+    if (doc.type !== "abit")
+      return;
+    if (![1, 2].includes(Number(doc.needDorm)))
+      return;
+    const value = {
+      fio: doc.fio,
+      address: doc.address,
+      tel: doc.tel,
+      applications: doc.applications,
+      needDorm: Number(doc.needDorm),
+      memo: doc.memo
     };
-    dbChangeHandlers.subscribe(changeDialogHandler);
-    setFormData(form, eduProg);
-    return await new Promise((resolve, reject) => {
-      dialogElem.addEventListener("hide", (event) => {
-        const detailTarget = event.detail?.currentTarget;
-        if (dialogElem.dataset.duplicate) {
-          const data = getFormData(form);
-          delete data._id;
-          delete data._rev;
-          return resolve({ ok: true, reason: "Duplicate", data });
-        }
-        if (detailTarget === document) {
-          return resolve({ ok: false, reason: "Esc" });
-        }
-        if (detailTarget?.matches("button[data-a11y-dialog-hide]")) {
-          return resolve({ ok: false, reason: "a11y-dialog-hide" });
-        }
-        if (detailTarget === void 0) {
-          return resolve({
-            ok: true,
-            reason: "submit",
-            data: getFormData(form)
-          });
-        }
-      }, { once: true });
-      eduProgDialog.show();
-    }).finally(() => {
-      dialogElem.remove();
-      eduProgDialog.destroy();
-      dbChangeHandlers.unsubscribe(changeDialogHandler);
-    });
-  }
-  async function openEditForm(elem) {
-    const target = elem?.closest(".edu-prog-view");
-    let id;
-    let eduProg;
-    if (!target) {
-      id = "";
-      eduProg = { type: "edu-prog" };
-    } else {
-      id = target.dataset.id;
-      eduProg = eduProgs.find((el) => el._id === id);
-    }
-    console.assert(Boolean(eduProg));
-    const { ok, reason, data } = await dialog(eduProg);
-    console.log({ ok, reason, data });
-    if (ok) {
-      const diffObject = diff_default(eduProg, data);
-      if (Object.keys(diffObject).length === 0)
-        return;
-      if (data._id) {
-        await db.put(data);
-      } else {
-        await db.post(data);
-      }
-    }
-  }
+    emit([2 - Number(doc.needDorm), doc.fio], value);
+  };
+  (async () => {
+    const res = await db.query(mapFn);
+    const needDormList = res.rows.map((row) => row.value);
+    console.log(needDormList);
+    const priority2 = needDormList.filter((abit) => abit.needDorm === 2);
+    const need2 = needDormList.filter((abit) => abit.needDorm === 1);
+    const target = document.getElementById("need-dorm");
+    const needDormHtml = need_dorm_default({ priority: priority2, need: need2 });
+    target.innerHTML = needDormHtml;
+  })();
 })();
-//# sourceMappingURL=edu-progs.js.map
+//# sourceMappingURL=need-dorm.js.map

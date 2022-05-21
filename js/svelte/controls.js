@@ -92,6 +92,13 @@ function set_data(text2, data) {
 function set_input_value(input, value) {
   input.value = value == null ? "" : value;
 }
+function set_style(node, key, value, important) {
+  if (value === null) {
+    node.style.removeProperty(key);
+  } else {
+    node.style.setProperty(key, value, important ? "important" : "");
+  }
+}
 function select_option(select, value) {
   for (let i = 0; i < select.options.length; i += 1) {
     const option = select.options[i];
@@ -124,6 +131,9 @@ function schedule_update() {
 }
 function add_render_callback(fn) {
   render_callbacks.push(fn);
+}
+function add_flush_callback(fn) {
+  flush_callbacks.push(fn);
 }
 var seen_callbacks = /* @__PURE__ */ new Set();
 var flushidx = 0;
@@ -263,6 +273,13 @@ function update_keyed_each(old_blocks, dirty, get_key, dynamic, ctx, list, looku
     insert2(new_blocks[n - 1]);
   return new_blocks;
 }
+function bind(component, name, callback) {
+  const index = component.$$.props[name];
+  if (index !== void 0) {
+    component.$$.bound[index] = callback;
+    callback(component.$$.ctx[index]);
+  }
+}
 function create_component(block) {
   block && block.c();
 }
@@ -299,7 +316,7 @@ function make_dirty(component, i) {
   }
   component.$$.dirty[i / 31 | 0] |= 1 << i % 31;
 }
-function init(component, options, instance7, create_fragment8, not_equal, props, append_styles2, dirty = [-1]) {
+function init(component, options, instance8, create_fragment8, not_equal, props, append_styles2, dirty = [-1]) {
   const parent_component = current_component;
   set_current_component(component);
   const $$ = component.$$ = {
@@ -322,7 +339,7 @@ function init(component, options, instance7, create_fragment8, not_equal, props,
   };
   append_styles2 && append_styles2($$.root);
   let ready = false;
-  $$.ctx = instance7 ? instance7(component, options.props || {}, (i, ret, ...rest) => {
+  $$.ctx = instance8 ? instance8(component, options.props || {}, (i, ret, ...rest) => {
     const value = rest.length ? rest[0] : ret;
     if ($$.ctx && not_equal($$.ctx[i], $$.ctx[i] = value)) {
       if (!$$.skip_bound && $$.bound[i])
@@ -1169,7 +1186,7 @@ function create_fragment6(ctx) {
   let mounted;
   let dispose;
   let if_block = ctx[2] && create_if_block4(ctx);
-  let each_value = Object.entries(ctx[1]);
+  let each_value = ctx[1];
   const get_key = (ctx2) => ctx2[0];
   for (let i = 0; i < each_value.length; i += 1) {
     let child_ctx = get_each_context(ctx, each_value, i);
@@ -1231,7 +1248,7 @@ function create_fragment6(ctx) {
         if_block = null;
       }
       if (dirty & 2) {
-        each_value = Object.entries(ctx2[1]);
+        each_value = ctx2[1];
         each_blocks = update_keyed_each(each_blocks, dirty, get_key, 1, ctx2, each_value, each_1_lookup, select, destroy_block, create_each_block, null, get_each_context);
       }
       if (dirty & 8 && select_style_value !== (select_style_value = ctx2[3] ? `width: ${ctx2[3]}ch;` : "")) {
@@ -1320,45 +1337,94 @@ function create_fragment7(ctx) {
   let td4;
   let t7;
   let td5;
-  let div2;
+  let div3;
   let numeric;
+  let updating_value;
   let t8;
+  let div2;
+  let span0;
+  let t9_value = JSON.stringify(ctx[0]) + "";
+  let t9;
+  let t10;
+  let span1;
+  let t11_value = typeof ctx[0];
+  let t11;
+  let t12;
   let tr3;
   let td6;
-  let t10;
+  let t14;
   let td7;
-  let div3;
+  let div5;
   let dateinput;
-  let t11;
+  let updating_value_1;
+  let t15;
+  let div4;
+  let span2;
+  let t16_value = JSON.stringify(ctx[1]) + "";
+  let t16;
+  let t17;
+  let span3;
+  let t18_value = typeof ctx[1];
+  let t18;
+  let t19;
   let tr4;
   let td8;
-  let t13;
+  let t21;
   let td9;
-  let div4;
+  let div6;
   let checkbox;
-  let t14;
+  let t22;
   let tr5;
   let td10;
-  let t16;
+  let t24;
   let td11;
-  let div5;
+  let div8;
   let select;
+  let updating_value_2;
+  let t25;
+  let div7;
+  let span4;
+  let t26_value = JSON.stringify(ctx[2]) + "";
+  let t26;
+  let t27;
+  let span5;
+  let t28_value = typeof ctx[2];
+  let t28;
   let current;
   text_1 = new text_default({ props: { title: "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } });
   textarea = new textarea_default({ props: { title: "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } });
-  numeric = new number_default({ props: { title: "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } });
-  dateinput = new date_default({ props: { title: "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } });
+  function numeric_value_binding(value) {
+    ctx[3](value);
+  }
+  let numeric_props = { title: "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" };
+  if (ctx[0] !== void 0) {
+    numeric_props.value = ctx[0];
+  }
+  numeric = new number_default({ props: numeric_props });
+  binding_callbacks.push(() => bind(numeric, "value", numeric_value_binding));
+  function dateinput_value_binding(value) {
+    ctx[4](value);
+  }
+  let dateinput_props = { title: "\u041D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" };
+  if (ctx[1] !== void 0) {
+    dateinput_props.value = ctx[1];
+  }
+  dateinput = new date_default({ props: dateinput_props });
+  binding_callbacks.push(() => bind(dateinput, "value", dateinput_value_binding));
   checkbox = new checkbox_default({ props: { title: "\u043D\u0430\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u043D\u0438\u0435" } });
-  select = new select_default({
-    props: {
-      title: "\u041E\u0431\u0449\u0435\u0436\u0438\u0442\u0438\u0435",
-      options: {
-        "0": "\u043D\u0435 \u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F",
-        "1": "\u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F",
-        "2": "\u043F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442\u043D\u043E\u0435"
-      }
-    }
-  });
+  function select_value_binding(value) {
+    ctx[5](value);
+  }
+  let select_props = {
+    title: "\u041E\u0431\u0449\u0435\u0436\u0438\u0442\u0438\u0435",
+    hasEmptyOption: true,
+    options: [[0, "\u043D\u0435 \u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F"], [1, "\u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F"], [2, "\u043F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442\u043D\u043E\u0435"]]
+  };
+  if (ctx[2] !== void 0) {
+    select_props.value = ctx[2];
+  }
+  select = new select_default({ props: select_props });
+  binding_callbacks.push(() => bind(select, "value", select_value_binding));
   return {
     c() {
       table = element("table");
@@ -1384,32 +1450,53 @@ function create_fragment7(ctx) {
       td4.textContent = "Numeric";
       t7 = space();
       td5 = element("td");
-      div2 = element("div");
+      div3 = element("div");
       create_component(numeric.$$.fragment);
       t8 = space();
+      div2 = element("div");
+      span0 = element("span");
+      t9 = text(t9_value);
+      t10 = space();
+      span1 = element("span");
+      t11 = text(t11_value);
+      t12 = space();
       tr3 = element("tr");
       td6 = element("td");
       td6.textContent = "DateInput";
-      t10 = space();
+      t14 = space();
       td7 = element("td");
-      div3 = element("div");
+      div5 = element("div");
       create_component(dateinput.$$.fragment);
-      t11 = space();
+      t15 = space();
+      div4 = element("div");
+      span2 = element("span");
+      t16 = text(t16_value);
+      t17 = space();
+      span3 = element("span");
+      t18 = text(t18_value);
+      t19 = space();
       tr4 = element("tr");
       td8 = element("td");
       td8.textContent = "Checkbox";
-      t13 = space();
+      t21 = space();
       td9 = element("td");
-      div4 = element("div");
+      div6 = element("div");
       create_component(checkbox.$$.fragment);
-      t14 = space();
+      t22 = space();
       tr5 = element("tr");
       td10 = element("td");
       td10.textContent = "Select";
-      t16 = space();
+      t24 = space();
       td11 = element("td");
-      div5 = element("div");
+      div8 = element("div");
       create_component(select.$$.fragment);
+      t25 = space();
+      div7 = element("div");
+      span4 = element("span");
+      t26 = text(t26_value);
+      t27 = space();
+      span5 = element("span");
+      t28 = text(t28_value);
       attr(td0, "class", "svelte-ugc9b9");
       attr(div0, "class", "fcontainer svelte-ugc9b9");
       attr(td1, "class", "svelte-ugc9b9");
@@ -1417,16 +1504,22 @@ function create_fragment7(ctx) {
       attr(div1, "class", "fcontainer svelte-ugc9b9");
       attr(td3, "class", "svelte-ugc9b9");
       attr(td4, "class", "svelte-ugc9b9");
-      attr(div2, "class", "fcontainer svelte-ugc9b9");
+      set_style(div2, "display", "flex");
+      set_style(div2, "gap", "1ch");
+      attr(div3, "class", "fcontainer svelte-ugc9b9");
       attr(td5, "class", "svelte-ugc9b9");
       attr(td6, "class", "svelte-ugc9b9");
-      attr(div3, "class", "fcontainer svelte-ugc9b9");
+      set_style(div4, "display", "flex");
+      set_style(div4, "gap", "1ch");
+      attr(div5, "class", "fcontainer svelte-ugc9b9");
       attr(td7, "class", "svelte-ugc9b9");
       attr(td8, "class", "svelte-ugc9b9");
-      attr(div4, "class", "fcontainer svelte-ugc9b9");
+      attr(div6, "class", "fcontainer svelte-ugc9b9");
       attr(td9, "class", "svelte-ugc9b9");
       attr(td10, "class", "svelte-ugc9b9");
-      attr(div5, "class", "fcontainer svelte-ugc9b9");
+      set_style(div7, "display", "flex");
+      set_style(div7, "gap", "1ch");
+      attr(div8, "class", "fcontainer svelte-ugc9b9");
       attr(td11, "class", "svelte-ugc9b9");
       attr(table, "class", "svelte-ugc9b9");
     },
@@ -1451,32 +1544,87 @@ function create_fragment7(ctx) {
       append(tr2, td4);
       append(tr2, t7);
       append(tr2, td5);
-      append(td5, div2);
-      mount_component(numeric, div2, null);
-      append(tbody, t8);
+      append(td5, div3);
+      mount_component(numeric, div3, null);
+      append(div3, t8);
+      append(div3, div2);
+      append(div2, span0);
+      append(span0, t9);
+      append(div2, t10);
+      append(div2, span1);
+      append(span1, t11);
+      append(tbody, t12);
       append(tbody, tr3);
       append(tr3, td6);
-      append(tr3, t10);
+      append(tr3, t14);
       append(tr3, td7);
-      append(td7, div3);
-      mount_component(dateinput, div3, null);
-      append(tbody, t11);
+      append(td7, div5);
+      mount_component(dateinput, div5, null);
+      append(div5, t15);
+      append(div5, div4);
+      append(div4, span2);
+      append(span2, t16);
+      append(div4, t17);
+      append(div4, span3);
+      append(span3, t18);
+      append(tbody, t19);
       append(tbody, tr4);
       append(tr4, td8);
-      append(tr4, t13);
+      append(tr4, t21);
       append(tr4, td9);
-      append(td9, div4);
-      mount_component(checkbox, div4, null);
-      append(tbody, t14);
+      append(td9, div6);
+      mount_component(checkbox, div6, null);
+      append(tbody, t22);
       append(tbody, tr5);
       append(tr5, td10);
-      append(tr5, t16);
+      append(tr5, t24);
       append(tr5, td11);
-      append(td11, div5);
-      mount_component(select, div5, null);
+      append(td11, div8);
+      mount_component(select, div8, null);
+      append(div8, t25);
+      append(div8, div7);
+      append(div7, span4);
+      append(span4, t26);
+      append(div7, t27);
+      append(div7, span5);
+      append(span5, t28);
       current = true;
     },
-    p: noop,
+    p(ctx2, [dirty]) {
+      const numeric_changes = {};
+      if (!updating_value && dirty & 1) {
+        updating_value = true;
+        numeric_changes.value = ctx2[0];
+        add_flush_callback(() => updating_value = false);
+      }
+      numeric.$set(numeric_changes);
+      if ((!current || dirty & 1) && t9_value !== (t9_value = JSON.stringify(ctx2[0]) + ""))
+        set_data(t9, t9_value);
+      if ((!current || dirty & 1) && t11_value !== (t11_value = typeof ctx2[0]))
+        set_data(t11, t11_value);
+      const dateinput_changes = {};
+      if (!updating_value_1 && dirty & 2) {
+        updating_value_1 = true;
+        dateinput_changes.value = ctx2[1];
+        add_flush_callback(() => updating_value_1 = false);
+      }
+      dateinput.$set(dateinput_changes);
+      if ((!current || dirty & 2) && t16_value !== (t16_value = JSON.stringify(ctx2[1]) + ""))
+        set_data(t16, t16_value);
+      if ((!current || dirty & 2) && t18_value !== (t18_value = typeof ctx2[1]))
+        set_data(t18, t18_value);
+      const select_changes = {};
+      if (!updating_value_2 && dirty & 4) {
+        updating_value_2 = true;
+        select_changes.value = ctx2[2];
+        add_flush_callback(() => updating_value_2 = false);
+      }
+      select.$set(select_changes);
+      if ((!current || dirty & 4) && t26_value !== (t26_value = JSON.stringify(ctx2[2]) + ""))
+        set_data(t26, t26_value);
+      if ((!current || dirty & 4) && t28_value !== (t28_value = typeof ctx2[2]))
+        set_data(t28, t28_value);
+    },
     i(local) {
       if (current)
         return;
@@ -1509,10 +1657,35 @@ function create_fragment7(ctx) {
     }
   };
 }
+function instance7($$self, $$props, $$invalidate) {
+  let numericValue;
+  let dateValue;
+  let selectValue;
+  function numeric_value_binding(value) {
+    numericValue = value;
+    $$invalidate(0, numericValue);
+  }
+  function dateinput_value_binding(value) {
+    dateValue = value;
+    $$invalidate(1, dateValue);
+  }
+  function select_value_binding(value) {
+    selectValue = value;
+    $$invalidate(2, selectValue);
+  }
+  return [
+    numericValue,
+    dateValue,
+    selectValue,
+    numeric_value_binding,
+    dateinput_value_binding,
+    select_value_binding
+  ];
+}
 var Controls = class extends SvelteComponent {
   constructor(options) {
     super();
-    init(this, options, null, create_fragment7, safe_not_equal, {}, add_css2);
+    init(this, options, instance7, create_fragment7, safe_not_equal, {}, add_css2);
   }
 };
 var controls_default = Controls;

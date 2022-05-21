@@ -8,6 +8,10 @@
   var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
       for (let key of __getOwnPropNames(from))
@@ -4501,11 +4505,11 @@
         if (err2) {
           return callback(generateErrorFromResponse(err2));
         }
-        var mapFun = ddoc && ddoc.views && ddoc.views[viewName[1]] && ddoc.views[viewName[1]].map;
-        if (!mapFun) {
+        var mapFun2 = ddoc && ddoc.views && ddoc.views[viewName[1]] && ddoc.views[viewName[1]].map;
+        if (!mapFun2) {
           return callback(createError(MISSING_DOC, ddoc.views ? "missing json key: " + viewName[1] : "missing json key: views"));
         }
-        opts.filter = evalView(mapFun);
+        opts.filter = evalView(mapFun2);
         changesHandler2.doChanges(opts);
       });
     } else if (opts.selector) {
@@ -7420,11 +7424,11 @@
         return JSON.stringify(input2);
     }
   }
-  function createViewSignature(mapFun, reduceFun) {
-    return stringify2(mapFun) + stringify2(reduceFun) + "undefined";
+  function createViewSignature(mapFun2, reduceFun) {
+    return stringify2(mapFun2) + stringify2(reduceFun) + "undefined";
   }
-  function createView(sourceDB, viewName, mapFun, reduceFun, temporary, localDocName2) {
-    var viewSignature = createViewSignature(mapFun, reduceFun);
+  function createView(sourceDB, viewName, mapFun2, reduceFun, temporary, localDocName2) {
+    var viewSignature = createViewSignature(mapFun2, reduceFun);
     var cachedViews;
     if (!temporary) {
       cachedViews = sourceDB._cachedViews = sourceDB._cachedViews || {};
@@ -7456,7 +7460,7 @@
             db: db2,
             sourceDB,
             adapter: sourceDB.adapter,
-            mapFun,
+            mapFun: mapFun2,
             reduceFun
           };
           return view.db.get("_local/lastSeq").catch(function(err) {
@@ -7819,7 +7823,7 @@
         }
         mapResults.push(output2);
       }
-      var mapFun = mapper2(view.mapFun, emit2);
+      var mapFun2 = mapper2(view.mapFun, emit2);
       var currentSeq = view.seq || 0;
       function processChange2(docIdsToChangesAndEmits, seq) {
         return function() {
@@ -7871,7 +7875,7 @@
             mapResults = [];
             doc = change.doc;
             if (!doc._deleted) {
-              tryMap(view.sourceDB, mapFun, doc);
+              tryMap(view.sourceDB, mapFun2, doc);
             }
             mapResults.sort(sortByKeyThenValue);
             var indexableKeysToKeyValues = createIndexableKeysToKeyValues(mapResults);
@@ -8263,14 +8267,14 @@
       throw new Error(reduceFunString + " is not a supported reduce function.");
     }
   }
-  function mapper(mapFun, emit2) {
-    if (typeof mapFun === "function" && mapFun.length === 2) {
-      var origMap = mapFun;
+  function mapper(mapFun2, emit2) {
+    if (typeof mapFun2 === "function" && mapFun2.length === 2) {
+      var origMap = mapFun2;
       return function(doc) {
         return origMap(doc, emit2);
       };
     } else {
-      return evalFunctionWithEval(mapFun.toString(), emit2);
+      return evalFunctionWithEval(mapFun2.toString(), emit2);
     }
   }
   function reducer(reduceFun) {
@@ -9349,6 +9353,23 @@
   PouchDB.plugin(IDBPouch).plugin(HttpPouch$1).plugin(mapreduce).plugin(replication);
   var index_browser_es_default = PouchDB;
 
+  // src/js/db/consts.js
+  var consts_exports = {};
+  __export(consts_exports, {
+    ABSENTIA: () => ABSENTIA2,
+    FREE: () => FREE2,
+    FULL_TIME: () => FULL_TIME2,
+    L_11: () => L_112,
+    L_9: () => L_92,
+    PAID: () => PAID2
+  });
+  var L_92 = "9 \u043A\u043B\u0430\u0441\u0441\u043E\u0432";
+  var L_112 = "11 \u043A\u043B\u0430\u0441\u0441\u043E\u0432";
+  var FULL_TIME2 = "\u043E\u0447\u043D\u0430\u044F";
+  var ABSENTIA2 = "\u0437\u0430\u043E\u0447\u043D\u0430\u044F";
+  var FREE2 = "\u0431\u044E\u0434\u0436\u0435\u0442";
+  var PAID2 = "\u0432\u043D\u0435\u0431\u044E\u0434\u0436\u0435\u0442";
+
   // src/js/backup.js
   var DB_NAME = "my_database";
   var db = new index_browser_es_default(DB_NAME);
@@ -9382,6 +9403,7 @@
         } else {
           await db.post(doc).catch((err) => console.log("POST ERROR", err, doc));
         }
+        return specialities;
       }
     }
   };
@@ -9395,10 +9417,9 @@
       output.append("\n\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0430\u0431\u0438\u0442\u0443\u0440\u0438\u0435\u043D\u0442\u043E\u0432...");
       await db.bulkDocs(data.abits);
       output.append(data.abits.length);
-      output.append("\n\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u043D\u044B\u0445 \u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C...");
-      await loadSpecialities();
-      await db.bulkDocs(data.eduProgs);
-      output.append(data.eduProgs.length);
+      output.append("\n\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0441\u043F\u0435\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u0435\u0439...");
+      const specialities = await loadSpecialities();
+      output.append(specialities.length);
       output.append("\n\u220E");
     }
   };
@@ -9409,7 +9430,6 @@
     db = new index_browser_es_default(DB_NAME);
     await createSpecView(db);
     await createEduProgsView(db);
-    await createEduProgs2View(db);
     await createAbitsView(db);
   }
   async function createSpecView(db2) {
@@ -9417,7 +9437,7 @@
       _id: "_design/spec",
       views: {
         spec: {
-          map: function mapFun(doc) {
+          map: function mapFun2(doc) {
             if (doc.type === "spec")
               emit(doc);
           }.toString()
@@ -9426,87 +9446,36 @@
     };
     return await db2.put(spec);
   }
-  async function createEduProgs2View(db2) {
-    const eduProgs = {
-      _id: "_design/eduProgs2",
-      views: {
-        eduProgs2: {
-          map: function mapFun(doc) {
-            if (doc.type === `spec`) {
-              for (const spec of doc.specialities) {
-                const l9 = "9 \u043A\u043B\u0430\u0441\u0441\u043E\u0432";
-                const l11 = "11 \u043A\u043B\u0430\u0441\u0441\u043E\u0432";
-                const fullTime = "\u043E\u0447\u043D\u0430\u044F";
-                const absentia = "\u0437\u0430\u043E\u0447\u043D\u0430\u044F";
-                const free = "\u0431\u044E\u0434\u0436\u0435\u0442";
-                const paid = "\u0432\u043D\u0435\u0431\u044E\u0434\u0436\u0435\u0442";
-                if (spec?.fullTime?.level9?.freePlaces)
-                  emit(`${spec.code}9`, [
-                    spec.code,
-                    spec.name,
-                    fullTime,
-                    l9,
-                    free
-                  ]);
-                if (spec?.fullTime?.level9?.paidPlaces)
-                  emit(`${spec.code}9\u043A`, [
-                    spec.code,
-                    spec.name,
-                    fullTime,
-                    l9,
-                    paid
-                  ]);
-                if (spec?.fullTime?.level11?.freePlaces)
-                  emit(`${spec.code}`, [
-                    spec.code,
-                    spec.name,
-                    fullTime,
-                    l11,
-                    free
-                  ]);
-                if (spec?.fullTime?.level11?.paidPlaces)
-                  emit(`${spec.code}\u043A`, [
-                    spec.code,
-                    spec.name,
-                    fullTime,
-                    l11,
-                    paid
-                  ]);
-                if (spec?.absentia?.level11?.freePlaces)
-                  emit(`${spec.code}\u0437`, [
-                    spec.code,
-                    spec.name,
-                    absentia,
-                    l11,
-                    free
-                  ]);
-                if (spec?.absentia?.level11?.paidPlaces)
-                  emit(`${spec.code}\u0437\u043A`, [
-                    spec.code,
-                    spec.name,
-                    absentia,
-                    l11,
-                    paid
-                  ]);
-              }
-            }
-          }.toString()
-        }
-      }
-    };
-    return await db2.put(eduProgs);
+  function replaceConsts(fStr) {
+    let res = fStr;
+    for (const [key, value] of Object.entries(consts_exports)) {
+      res = res.replaceAll(key, JSON.stringify(value));
+    }
+    return res;
   }
+  var mapFn = replaceConsts(function mapFun(doc) {
+    if (doc.type === `spec`) {
+      for (const spec of doc.specialities) {
+        if (spec?.fullTime?.level9?.freePlaces)
+          emit(`${spec.code}9`, [spec.code, spec.name, FULL_TIME, L_9, FREE]);
+        if (spec?.fullTime?.level9?.paidPlaces)
+          emit(`${spec.code}9\u043A`, [spec.code, spec.name, FULL_TIME, L_9, PAID]);
+        if (spec?.fullTime?.level11?.freePlaces)
+          emit(`${spec.code}`, [spec.code, spec.name, FULL_TIME, L_11, FREE]);
+        if (spec?.fullTime?.level11?.paidPlaces)
+          emit(`${spec.code}\u043A`, [spec.code, spec.name, FULL_TIME, L_11, PAID]);
+        if (spec?.absentia?.level11?.freePlaces)
+          emit(`${spec.code}\u0437`, [spec.code, spec.name, ABSENTIA, L_11, FREE]);
+        if (spec?.absentia?.level11?.paidPlaces)
+          emit(`${spec.code}\u0437\u043A`, [spec.code, spec.name, ABSENTIA, L_11, PAID]);
+      }
+    }
+  }.toString());
   async function createEduProgsView(db2) {
     const eduProgs = {
       _id: "_design/eduProgs",
       views: {
-        eduProgs: {
-          map: function mapFun(doc) {
-            if (doc.type === `edu-prog`) {
-              emit(doc.code, null);
-            }
-          }.toString()
-        }
+        eduProgs: { map: mapFn }
       }
     };
     return await db2.put(eduProgs);
@@ -9516,7 +9485,7 @@
       _id: "_design/abits",
       views: {
         abits: {
-          map: function mapFun(doc) {
+          map: function mapFun2(doc) {
             if (doc.type === `abit`) {
               emit(doc.fio, null);
             }
