@@ -70,11 +70,11 @@
           <Select
             title="Общежитие"
             hasEmptyOption={true}
-            options={{
-              '0': 'не требуется',
-              '1': 'требуется',
-              '2': 'приоритетное'
-            }}
+            options={[
+              [0, 'не требуется'],
+              [1, 'требуется'],
+              [2, 'приоритетное']
+            ]}
             bind:value={selectValue}
           />
           <div style="display: flex; gap: 1ch;">

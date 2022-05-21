@@ -17,7 +17,7 @@
       {#if hasEmptyOption}
         <option value={null} />
       {/if}
-      {#each Object.entries(options) as [value, title] (value)}
+      {#each options as [value, title] (value)}
         <option {value}>{title}</option>
       {/each}
     </select>

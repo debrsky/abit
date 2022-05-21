@@ -182,7 +182,10 @@
     <Select
       title="Пол"
       bind:value={data.gender}
-      options={{м: 'мужской', ж: 'женский'}}
+      options={[
+        ['м', 'мужской'],
+        ['ж', 'женский']
+      ]}
     />
   </div>
   <div class="field-container">
@@ -190,7 +193,10 @@
       title="Базовое образование"
       bind:value={data.baseEduLevel}
       hasEmptyOption={true}
-      options={{'9 классов': '9 классов', '11 классов': '11 классов'}}
+      options={[
+        ['9 классов', '9 классов'],
+        ['11 классов', '11 классов']
+      ]}
     />
     <Numeric
       title={'Средний балл аттестата'}
@@ -227,7 +233,11 @@
     <Select
       title="Общежитие"
       bind:value={data.needDorm}
-      options={{'0': 'не требуется', '1': 'требуется', '2': 'приоритетное'}}
+      options={[
+        [0, 'не требуется'],
+        [1, 'требуется'],
+        [2, 'приоритетное']
+      ]}
     />
     <Text title={'Адрес'} bind:value={data.address} size={50} />
     <Text title={'Телефон'} bind:value={data.tel} size={15} />
