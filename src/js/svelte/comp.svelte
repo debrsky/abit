@@ -1,6 +1,9 @@
 <svelte:options accessors={true} />
 
 <script>
+  // TODO https://svelte.dev/repl/23ce5697b1ef41d6bed1ad7b68f49070?version=3.48.0
+  // https://habr.com/ru/post/486626/
+
   import deepmerge from 'deepmerge';
   import {
     Text,

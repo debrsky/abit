@@ -10,7 +10,7 @@ export default function pug2html() {
   };
 
   return gulp
-    .src('src/pages/*.pug')
+    .src('src/pages/**/*.pug')
     .pipe(plumber())
     .pipe(pugLinter({reporter: 'default'}))
     .pipe(pug(pugOptions))

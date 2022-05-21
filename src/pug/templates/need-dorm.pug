@@ -1,0 +1,39 @@
+div#need-dorm-2(style="margin-top: 1em;")
+  table.table
+    caption(style="font-size: large; font-weight: bold;") Приоритетное общежитие
+    tbody
+      each abit, idx in priority
+        tr
+          td 🏨
+          td=idx+1
+          td=abit.fio
+          td=abit.memo
+          td: div
+            each app, idx in abit.applications
+              span(style="")=app.eduProg
+              if idx !== abit.applications.length - 1
+                |,
+                |
+          td=abit.address
+          td=abit.tel
+
+div#need-dorm-1(style="margin-top: 1em;")
+  table.table
+    caption(style="font-size: large; font-weight: bold;") Нуждаются в общежитии
+    tbody
+      each abit, idx in need
+        tr
+          td(style="font-size: x-small;") 🏨
+          td=idx+1
+          td=abit.fio
+          td=abit.memo
+          td: div
+            each app, idx in abit.applications
+              span(style="")=app.eduProg
+              if idx !== abit.applications.length - 1
+                |,
+                |
+          td=abit.address
+          td=abit.tel
+
+//- pre=JSON.stringify(priority, null, 4)
