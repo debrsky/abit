@@ -1,4 +1,5 @@
 import PouchDB from 'pouchdb';
+import * as dbConsts from './db/consts.js';
 
 const DB_NAME = 'my_database';
 let db = new PouchDB(DB_NAME);
@@ -43,6 +44,8 @@ const loadSpecialities = async () => {
       } else {
         await db.post(doc).catch((err) => console.log('POST ERROR', err, doc));
       }
+
+      return specialities;
     }
   }
 };
@@ -60,11 +63,9 @@ const btnLoadFakeDataHandler = async (event) => {
     await db.bulkDocs(data.abits);
     output.append(data.abits.length);
 
-    output.append('\nДобавление образовательных программ...');
-    await loadSpecialities();
-
-    await db.bulkDocs(data.eduProgs);
-    output.append(data.eduProgs.length);
+    output.append('\nДобавление специальностей...');
+    const specialities = await loadSpecialities();
+    output.append(specialities.length);
 
     output.append('\n∎');
   }
@@ -79,7 +80,6 @@ async function createDb() {
 
   await createSpecView(db);
   await createEduProgsView(db);
-  await createEduProgs2View(db);
   await createAbitsView(db);
 }
 
@@ -99,100 +99,44 @@ async function createSpecView(db) {
   return await db.put(spec);
 }
 
-async function createEduProgs2View(db) {
-  // eslint-disable-next-line no-shadow
-  const eduProgs = {
-    _id: '_design/eduProgs2',
-    views: {
-      eduProgs2: {
-        // eslint-disable-next-line sonarjs/cognitive-complexity
-        map: function mapFun(doc) {
-          if (doc.type === `spec`) {
-            for (const spec of doc.specialities) {
-              const l9 = '9 классов';
-              const l11 = '11 классов';
-              const fullTime = 'очная';
-              const absentia = 'заочная';
-              const free = 'бюджет';
-              const paid = 'внебюджет';
-              if (spec?.fullTime?.level9?.freePlaces)
-                // eslint-disable-next-line no-undef
-                emit(`${spec.code}9`, [
-                  spec.code,
-                  spec.name,
-                  fullTime,
-                  l9,
-                  free
-                ]);
+function replaceConsts(fStr) {
+  let res = fStr;
+  for (const [key, value] of Object.entries(dbConsts)) {
+    res = res.replaceAll(key, JSON.stringify(value));
+  }
+  return res;
+}
 
-              if (spec?.fullTime?.level9?.paidPlaces)
-                // eslint-disable-next-line no-undef
-                emit(`${spec.code}9к`, [
-                  spec.code,
-                  spec.name,
-                  fullTime,
-                  l9,
-                  paid
-                ]);
-              if (spec?.fullTime?.level11?.freePlaces)
-                // eslint-disable-next-line no-undef
-                emit(`${spec.code}`, [
-                  spec.code,
-                  spec.name,
-                  fullTime,
-                  l11,
-                  free
-                ]);
-              if (spec?.fullTime?.level11?.paidPlaces)
-                // eslint-disable-next-line no-undef
-                emit(`${spec.code}к`, [
-                  spec.code,
-                  spec.name,
-                  fullTime,
-                  l11,
-                  paid
-                ]);
-              if (spec?.absentia?.level11?.freePlaces)
-                // eslint-disable-next-line no-undef
-                emit(`${spec.code}з`, [
-                  spec.code,
-                  spec.name,
-                  absentia,
-                  l11,
-                  free
-                ]);
-              if (spec?.absentia?.level11?.paidPlaces)
-                // eslint-disable-next-line no-undef
-                emit(`${spec.code}зк`, [
-                  spec.code,
-                  spec.name,
-                  absentia,
-                  l11,
-                  paid
-                ]);
-            }
-          }
-        }.toString()
+const mapFn = replaceConsts(
+  /* eslint-disable */
+  function mapFun(doc) {
+    if (doc.type === `spec`) {
+      for (const spec of doc.specialities) {
+        if (spec?.fullTime?.level9?.freePlaces)
+          emit(`${spec.code}9`, [spec.code, spec.name, FULL_TIME, L_9, FREE]);
+
+        if (spec?.fullTime?.level9?.paidPlaces)
+          emit(`${spec.code}9к`, [spec.code, spec.name, FULL_TIME, L_9, PAID]);
+        if (spec?.fullTime?.level11?.freePlaces)
+          emit(`${spec.code}`, [spec.code, spec.name, FULL_TIME, L_11, FREE]);
+        if (spec?.fullTime?.level11?.paidPlaces)
+          emit(`${spec.code}к`, [spec.code, spec.name, FULL_TIME, L_11, PAID]);
+        if (spec?.absentia?.level11?.freePlaces)
+          emit(`${spec.code}з`, [spec.code, spec.name, ABSENTIA, L_11, FREE]);
+        if (spec?.absentia?.level11?.paidPlaces)
+          emit(`${spec.code}зк`, [spec.code, spec.name, ABSENTIA, L_11, PAID]);
       }
     }
-  };
-
-  return await db.put(eduProgs);
-}
+  }.toString()
+  /* eslint-enable */
+);
 
 async function createEduProgsView(db) {
   // eslint-disable-next-line no-shadow
   const eduProgs = {
     _id: '_design/eduProgs',
     views: {
-      eduProgs: {
-        map: function mapFun(doc) {
-          if (doc.type === `edu-prog`) {
-            // eslint-disable-next-line no-undef
-            emit(doc.code, null);
-          }
-        }.toString()
-      }
+      eduProgs: {map: mapFn}
     }
   };
 

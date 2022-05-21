@@ -79,7 +79,7 @@ subscribe(dbChangeHandler);
 
   console.time('0');
 
-  const ep = await db.query('eduProgs2');
+  const ep = await db.query('eduProgs');
   eduProgs = ep.rows.map(({key, value}) => ({
     code: key,
     specCode: value[0],

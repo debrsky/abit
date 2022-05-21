@@ -36,6 +36,6 @@ const save = async (doc) => {
 })();
 
 (async () => {
-  const res = await db.query('eduProgs2', {include_docs: false});
-  console.log('eduProgs2', res);
+  const res = await db.query('eduProgs', {include_docs: false});
+  console.log('eduProgs', res);
 })();

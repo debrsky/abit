@@ -7,7 +7,7 @@ const applications = new Applications({
 });
 
 (async () => {
-  const eduProgs = await db.query('eduProgs2');
+  const eduProgs = await db.query('eduProgs');
 
   applications.eduProgs = eduProgs.rows.map(({key, value}) => ({
     code: key,

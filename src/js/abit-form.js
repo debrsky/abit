@@ -9,7 +9,8 @@ const app = new FormSvelte({
 });
 
 (async () => {
-  const eduProgs = await db.query('eduProgs2');
+  const eduProgs = await db.query('eduProgs');
+  console.log(eduProgs);
 
   app.eduProgs = eduProgs.rows.map(({key, value}) => ({
     code: key,
