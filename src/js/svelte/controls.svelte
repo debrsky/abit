@@ -7,6 +7,10 @@
     Checkbox,
     Select
   } from './fields/index.js';
+
+  let numericValue;
+  let dateValue;
+  let selectValue;
 </script>
 
 <table>
@@ -31,7 +35,11 @@
       <td>Numeric</td>
       <td>
         <div class="fcontainer">
-          <Numeric title="Наименование" />
+          <Numeric title="Наименование" bind:value={numericValue} />
+          <div style="display: flex; gap: 1ch;">
+            <span>{JSON.stringify(numericValue)}</span>
+            <span>{typeof numericValue}</span>
+          </div>
         </div>
       </td>
     </tr>
@@ -39,7 +47,11 @@
       <td>DateInput</td>
       <td>
         <div class="fcontainer">
-          <DateInput title="Наименование" />
+          <DateInput title="Наименование" bind:value={dateValue} />
+          <div style="display: flex; gap: 1ch;">
+            <span>{JSON.stringify(dateValue)}</span>
+            <span>{typeof dateValue}</span>
+          </div>
         </div>
       </td>
     </tr>
@@ -57,12 +69,18 @@
         <div class="fcontainer">
           <Select
             title="Общежитие"
+            hasEmptyOption={true}
             options={{
               '0': 'не требуется',
               '1': 'требуется',
               '2': 'приоритетное'
             }}
+            bind:value={selectValue}
           />
+          <div style="display: flex; gap: 1ch;">
+            <span>{JSON.stringify(selectValue)}</span>
+            <span>{typeof selectValue}</span>
+          </div>
         </div>
       </td>
     </tr>
