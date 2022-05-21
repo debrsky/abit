@@ -255,6 +255,10 @@
     padding: 0 0.5ch;
   }
 
+  table.applications th:first-child {
+    width: 6ch;
+  }
+
   .cell {
     display: flex;
     place-content: center;
