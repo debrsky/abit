@@ -18,6 +18,9 @@ const mapFn = function (doc) {
   emit([2 - Number(doc.needDorm), doc.fio], value);
 };
 
+const timestampElem = document.getElementById('timestamp');
+timestampElem.textContent = new Date().toLocaleString('ru', {});
+
 (async () => {
   const res = await db.query(mapFn);
   const needDormList = res.rows.map((row) => row.value);
