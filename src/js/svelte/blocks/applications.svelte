@@ -232,11 +232,11 @@
     font-size: x-small;
   }
 
-  .edu-prog-button {
+  .edu-prog-button:not(:disabled) {
     cursor: pointer;
   }
 
-  .edu-prog-button:active {
+  .edu-prog-button:active:not(:disabled) {
     transform: scale(0.9);
   }
 
