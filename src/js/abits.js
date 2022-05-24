@@ -10,9 +10,16 @@ let eduProgs = [];
 
 const outputElem = document.getElementById('abit-list');
 const progressElem = document.getElementById('progress');
+const btnAddAbit = document.getElementById('btn-add');
 
 const editDoc = async (id) => {
-  const doc = docs.find((doc) => doc._id === id);
+  let doc;
+
+  if (id === null) {
+    doc = {};
+  } else {
+    doc = docs.find((doc) => doc._id === id);
+  }
   console.assert(doc);
 
   const result = await openEditDialog(doc);
@@ -21,6 +28,10 @@ const editDoc = async (id) => {
   if (!result.ok) return;
 
   const docNew = {...result.doc};
+
+  if (result.cmd === 'delete') {
+    docNew._deleted = true;
+  }
 
   if (result.cmd === 'duplicate') {
     delete docNew._id;
@@ -48,14 +59,31 @@ outputElem.addEventListener('dblclick', async (event) => {
 
 document.documentElement.addEventListener('keydown', async (event) => {
   if (event.code === 'Insert') {
-    // await openEditForm(null);
+    await editDoc(null);
   }
+});
+btnAddAbit.addEventListener('click', async () => {
+  await editDoc(null);
 });
 
 const dbChangeHandler = (change) => {
-  const {id, doc} = change;
+  console.log('change', change);
+
+  const {id, doc, deleted} = change;
 
   const docIdx = docs.findIndex((doc) => doc._id === id);
+
+  if (deleted) {
+    if (docIdx === -1) return;
+
+    docs.splice(docIdx, 1);
+    const docElem = outputElem.querySelector(`[data-id="${id}"]`);
+    console.assert(docElem);
+    docElem.remove();
+    return;
+  }
+
+  if (docIdx === -1 && deleted) return;
 
   if (docIdx === -1) {
     docs.unshift(doc);
@@ -130,21 +158,27 @@ subscribe(dbChangeHandler);
 })();
 
 const dialogElem = document.getElementById('edit-dialog');
-const abitForm = new AbitForm({
-  target: dialogElem.querySelector('.dialog-content-form')
-});
 
 const dialog = new A11yDialog(dialogElem);
 
 function openEditDialog(doc) {
+  console.assert(doc);
+
   let dialogRes = {};
 
-  abitForm.eduProgs = eduProgs;
-  abitForm.data = {...doc};
-  abitForm.close = (res = {}) => {
+  const close = (res = {}) => {
     dialogRes = res;
     dialog.hide();
   };
+
+  const abitForm = new AbitForm({
+    target: dialogElem.querySelector('.dialog-content-form'),
+    props: {
+      eduProgs,
+      data: {...doc},
+      close
+    }
+  });
 
   const dbDocChangeHandler = (change) => {
     const {id} = change;
@@ -171,5 +205,8 @@ function openEditDialog(doc) {
     dialog.show();
   };
 
-  return new Promise(executor).finally(() => unsubscribe(dbDocChangeHandler));
+  return new Promise(executor).finally(() => {
+    abitForm.$destroy();
+    unsubscribe(dbDocChangeHandler);
+  });
 }

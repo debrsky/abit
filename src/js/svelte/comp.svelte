@@ -15,6 +15,8 @@
   } from './fields/index.js';
   import Applications from './blocks/applications.svelte';
 
+  let shouldDelete = false;
+
   let certScore;
   let extraScore;
   let totalScore;
@@ -100,9 +102,7 @@
     school: null,
     memo: null,
     applications: [],
-    apps: {
-      baseEduLevel: null
-    },
+
     birthDate: null,
     isFullAge: null,
     passport: {
@@ -136,7 +136,7 @@
   $: {
     tags = Array.from(
       // [\p{Alpha}\p{M}\p{Nd}\p{Pc}\p{Join_C}] // https://learn.javascript.ru/regexp-character-sets-and-ranges
-      data?.memo.matchAll(/#([a-zA-Z0-9_a-яА-ЯёЁ]+)/g) || [],
+      data?.memo?.matchAll(/#([a-zA-Z0-9_a-яА-ЯёЁ]+)/g) || [],
       (tag) => tag[1]
     );
   }
@@ -154,12 +154,15 @@
     certScore = parseNumber(data.certScore);
     extraScore = parseNumber(data.extraScore);
 
-    data.totalScore = parseFloat(
-      (
-        (Number.isFinite(certScore) ? certScore : 0) +
-        (Number.isFinite(extraScore) ? extraScore : 0)
-      ).toFixed(6)
-    );
+    data.totalScore =
+      !Number.isFinite(certScore) && !Number.isFinite(extraScore)
+        ? null
+        : parseFloat(
+            (
+              (Number.isFinite(certScore) ? certScore : 0) +
+              (Number.isFinite(extraScore) ? extraScore : 0)
+            ).toFixed(6)
+          );
   }
 
   function parseNumber(n) {
@@ -177,102 +180,111 @@
   }
 </script>
 
-<form on:submit|preventDefault={() => close({ok: true})}>
-  <div class="field-container">
-    <DateInput title={'Дата регистрации'} bind:value={data.regDate} required />
+<form
+  on:submit|preventDefault={() =>
+    close({ok: true, cmd: shouldDelete ? 'delete' : 'save'})}
+>
+  <div class="delete-shadow-container" class:should-delete={shouldDelete}>
+    <div class="field-container">
+      <DateInput
+        title={'Дата регистрации'}
+        bind:value={data.regDate}
+        required
+      />
 
-    <Text title={'Фамилия Имя Отчество'} bind:value={data.fio} size={50} />
-    <Select
-      title="Пол"
-      bind:value={data.gender}
-      options={[
-        ['м', 'мужской'],
-        ['ж', 'женский']
-      ]}
-    />
-  </div>
-  <div class="field-container">
-    <Select
-      title="Базовое образование"
-      bind:value={data.baseEduLevel}
-      hasEmptyOption={true}
-      options={[
-        ['9 классов', '9 классов'],
-        ['11 классов', '11 классов']
-      ]}
-    />
-    <Numeric
-      title={'Средний балл аттестата'}
-      bind:value={data.certScore}
-      min={0}
-      max={5}
-      step={0.01}
-      size={10}
-    />
-    <Numeric
-      title={'Дополнительные баллы'}
-      bind:value={data.extraScore}
-      min={0}
-      step={0.1}
-      size={10}
-    />
-    <Numeric
-      title={'Итоговый конкурсный балл'}
-      bind:value={data.totalScore}
-      size={10}
-      readonly={true}
-    />
-  </div>
-  <div class="field-container">
-    <Checkbox
-      title="Подлинник аттестата"
-      bind:value={data.hasEduCertOriginal}
-    />
-    <Checkbox title="Медицинская справка" bind:value={data.hasMedicalCert} />
-    <Checkbox title="Флюорография" bind:value={data.hasFluoro} />
-    <Checkbox title="Прививки" bind:value={data.hasVaccine} />
-  </div>
-  <div class="field-container">
-    <Select
-      title="Общежитие"
-      bind:value={data.needDorm}
-      options={[
-        [0, 'не требуется'],
-        [1, 'требуется'],
-        [2, 'приоритетное']
-      ]}
-    />
-    <Text title={'Адрес'} bind:value={data.address} size={50} />
-    <Text title={'Телефон'} bind:value={data.tel} size={15} />
-  </div>
-  <div class="field-container">
-    <Text title={'Школа'} bind:value={data.school} size={70} />
-    <Text
-      title={'Год окончания школы'}
-      bind:value={data.schoolYear}
-      size={10}
-    />
-  </div>
-  <div class="field-container">
-    <Textarea title={'Примечание'} bind:value={data.memo} size={90} />
-  </div>
+      <Text title={'Фамилия Имя Отчество'} bind:value={data.fio} size={50} />
+      <Select
+        title="Пол"
+        bind:value={data.gender}
+        options={[
+          ['м', 'мужской'],
+          ['ж', 'женский']
+        ]}
+      />
+    </div>
+    <div class="field-container">
+      <Select
+        title="Базовое образование"
+        bind:value={data.baseEduLevel}
+        hasEmptyOption={true}
+        options={[
+          ['9 классов', '9 классов'],
+          ['11 классов', '11 классов']
+        ]}
+      />
+      <Numeric
+        title={'Средний балл аттестата'}
+        bind:value={data.certScore}
+        min={0}
+        max={5}
+        step={0.01}
+        size={10}
+      />
+      <Numeric
+        title={'Дополнительные баллы'}
+        bind:value={data.extraScore}
+        min={0}
+        step={0.1}
+        size={10}
+      />
+      <Numeric
+        title={'Итоговый конкурсный балл'}
+        bind:value={data.totalScore}
+        size={10}
+        readonly={true}
+      />
+    </div>
+    <div class="field-container">
+      <Checkbox
+        title="Подлинник аттестата"
+        bind:value={data.hasEduCertOriginal}
+      />
+      <Checkbox title="Медицинская справка" bind:value={data.hasMedicalCert} />
+      <Checkbox title="Флюорография" bind:value={data.hasFluoro} />
+      <Checkbox title="Прививки" bind:value={data.hasVaccine} />
+    </div>
+    <div class="field-container">
+      <Select
+        title="Общежитие"
+        bind:value={data.needDorm}
+        options={[
+          [0, 'не требуется'],
+          [1, 'требуется'],
+          [2, 'приоритетное']
+        ]}
+      />
+      <Text title={'Адрес'} bind:value={data.address} size={50} />
+      <Text title={'Телефон'} bind:value={data.tel} size={15} />
+    </div>
+    <div class="field-container">
+      <Text title={'Школа'} bind:value={data.school} size={70} />
+      <Text
+        title={'Год окончания школы'}
+        bind:value={data.schoolYear}
+        size={10}
+      />
+    </div>
+    <div class="field-container">
+      <Textarea title={'Примечание'} bind:value={data.memo} size={90} />
+    </div>
 
-  <div class="field-container">
-    <Applications bind:applications={data.applications} {eduProgs} />
+    <div class="field-container">
+      <Applications bind:applications={data.applications} {eduProgs} />
+    </div>
+    <pre>{tags.join(', ')}</pre>
   </div>
-  <pre>{tags.join(', ')}</pre>
 
   <div class="btn-panel">
     <button class="button button--primary" type="submit"
       >✔️ Сохранить и закрыть</button
     >
-    <button
+    <!-- <button
       class="button button--secondary"
       type="button"
       on:click={() => {
         close({ok: true, cmd: 'duplicate'});
       }}>📑 Дублировать</button
-    >
+    > -->
     <button
       class="button button--secondary"
       type="button"
@@ -280,6 +292,9 @@
         close({ok: false});
       }}>❌ Закрыть без сохранения</button
     >
+    <div class="field-container" style="margin-left: auto;">
+      <Checkbox title={'Удалить'} bind:value={shouldDelete} />
+    </div>
   </div>
 </form>
 
@@ -292,5 +307,19 @@
   #debug:target {
     display: block;
     font-size: xx-small;
+  }
+
+  .delete-shadow-container {
+    position: relative;
+  }
+  .delete-shadow-container.should-delete::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
   }
 </style>
