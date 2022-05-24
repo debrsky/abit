@@ -254,7 +254,7 @@
     />
   </div>
   <div class="field-container">
-    <Textarea title={'Примечание'} bind:value={data.memo} size={97} />
+    <Textarea title={'Примечание'} bind:value={data.memo} size={90} />
   </div>
 
   <div class="field-container">
@@ -262,23 +262,25 @@
   </div>
   <pre>{tags.join(', ')}</pre>
 
-  <button class="button button--primary" type="submit"
-    >✔️ Сохранить и закрыть</button
-  >
-  <button
-    class="button button--secondary"
-    type="button"
-    on:click={() => {
-      close({ok: true, cmd: 'duplicate'});
-    }}>📑 Дублировать</button
-  >
-  <button
-    class="button button--secondary"
-    type="button"
-    on:click={() => {
-      close({ok: false});
-    }}>❌ Закрыть без сохранения</button
-  >
+  <div class="btn-panel">
+    <button class="button button--primary" type="submit"
+      >✔️ Сохранить и закрыть</button
+    >
+    <button
+      class="button button--secondary"
+      type="button"
+      on:click={() => {
+        close({ok: true, cmd: 'duplicate'});
+      }}>📑 Дублировать</button
+    >
+    <button
+      class="button button--secondary"
+      type="button"
+      on:click={() => {
+        close({ok: false});
+      }}>❌ Закрыть без сохранения</button
+    >
+  </div>
 </form>
 
 <pre id="debug">{JSON.stringify(data, null, 4)}</pre>
