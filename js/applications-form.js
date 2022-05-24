@@ -2134,7 +2134,7 @@
 
   // src/js/svelte/blocks/applications.svelte
   function add_css2(target) {
-    append_styles(target, "svelte-1jjui1x", "article.svelte-1jjui1x.svelte-1jjui1x{border:1px solid black;width:fit-content;padding:0.25em;display:flex;gap:1ch}table.edu-progs.svelte-1jjui1x th.svelte-1jjui1x{font-size:x-small}.edu-prog-button.svelte-1jjui1x.svelte-1jjui1x{cursor:pointer}.edu-prog-button.svelte-1jjui1x.svelte-1jjui1x:active{transform:scale(0.9)}table.applications.svelte-1jjui1x.svelte-1jjui1x{border-collapse:collapse}table.applications.svelte-1jjui1x th.svelte-1jjui1x{font-size:x-small;padding:0 0.5ch}table.applications.svelte-1jjui1x th.svelte-1jjui1x:first-child{width:6ch}.cell.svelte-1jjui1x.svelte-1jjui1x{display:flex;place-content:center;place-items:center}table.applications.svelte-1jjui1x td.svelte-1jjui1x,table.applications.svelte-1jjui1x th.svelte-1jjui1x{border-top:1px solid darkgrey;border-bottom:1px solid darkgrey}table.svelte-1jjui1x th.svelte-1jjui1x{background-color:lightgrey}");
+    append_styles(target, "svelte-1iddvth", "article.svelte-1iddvth.svelte-1iddvth{border:1px solid black;width:fit-content;padding:0.25em;display:flex;gap:1ch}table.edu-progs.svelte-1iddvth th.svelte-1iddvth{font-size:x-small}.edu-prog-button.svelte-1iddvth.svelte-1iddvth:not(:disabled){cursor:pointer}.edu-prog-button.svelte-1iddvth.svelte-1iddvth:active:not(:disabled){transform:scale(0.9)}table.applications.svelte-1iddvth.svelte-1iddvth{border-collapse:collapse}table.applications.svelte-1iddvth th.svelte-1iddvth{font-size:x-small;padding:0 0.5ch}table.applications.svelte-1iddvth th.svelte-1iddvth:first-child{width:6ch}.cell.svelte-1iddvth.svelte-1iddvth{display:flex;place-content:center;place-items:center}table.applications.svelte-1iddvth td.svelte-1iddvth,table.applications.svelte-1iddvth th.svelte-1iddvth{border-top:1px solid darkgrey;border-bottom:1px solid darkgrey}table.svelte-1iddvth th.svelte-1iddvth{background-color:lightgrey}");
   }
   function get_each_context(ctx, list, i) {
     const child_ctx = ctx.slice();
@@ -2171,7 +2171,7 @@
       c() {
         button = element("button");
         t = text(t_value);
-        attr(button, "class", "badge edu-prog-button svelte-1jjui1x");
+        attr(button, "class", "badge edu-prog-button svelte-1iddvth");
         attr(button, "type", "button");
         button.disabled = button_disabled_value = ctx[0].some(func);
       },
@@ -2209,7 +2209,7 @@
         div = element("div");
         if (if_block)
           if_block.c();
-        attr(div, "class", "cell svelte-1jjui1x");
+        attr(div, "class", "cell svelte-1iddvth");
       },
       m(target, anchor) {
         insert(target, td, anchor);
@@ -2378,16 +2378,16 @@
         t5 = space();
         attr(button, "class", "button button--remove");
         attr(button, "type", "button");
-        attr(div0, "class", "cell svelte-1jjui1x");
-        attr(td0, "class", "svelte-1jjui1x");
-        attr(div1, "class", "cell svelte-1jjui1x");
-        attr(td1, "class", "svelte-1jjui1x");
-        attr(div2, "class", "cell svelte-1jjui1x");
-        attr(td2, "class", "svelte-1jjui1x");
-        attr(div3, "class", "cell svelte-1jjui1x");
-        attr(td3, "class", "svelte-1jjui1x");
-        attr(div4, "class", "cell svelte-1jjui1x");
-        attr(td4, "class", "svelte-1jjui1x");
+        attr(div0, "class", "cell svelte-1iddvth");
+        attr(td0, "class", "svelte-1iddvth");
+        attr(div1, "class", "cell svelte-1iddvth");
+        attr(td1, "class", "svelte-1iddvth");
+        attr(div2, "class", "cell svelte-1iddvth");
+        attr(td2, "class", "svelte-1iddvth");
+        attr(div3, "class", "cell svelte-1iddvth");
+        attr(td3, "class", "svelte-1iddvth");
+        attr(div4, "class", "cell svelte-1iddvth");
+        attr(td4, "class", "svelte-1iddvth");
         this.first = tr;
       },
       m(target, anchor) {
@@ -2505,8 +2505,8 @@
         section0 = element("section");
         table0 = element("table");
         thead0 = element("thead");
-        thead0.innerHTML = `<tr><th colspan="3" class="svelte-1jjui1x">\u0431\u044E\u0434\u0436\u0435\u0442</th> 
-          <th colspan="3" class="svelte-1jjui1x">\u0432\u043D\u0435\u0431\u044E\u0434\u0436\u0435\u0442</th></tr>`;
+        thead0.innerHTML = `<tr><th colspan="3" class="svelte-1iddvth">\u0431\u044E\u0434\u0436\u0435\u0442</th> 
+          <th colspan="3" class="svelte-1iddvth">\u0432\u043D\u0435\u0431\u044E\u0434\u0436\u0435\u0442</th></tr>`;
         t3 = space();
         tbody0 = element("tbody");
         for (let i = 0; i < each_blocks_1.length; i += 1) {
@@ -2516,20 +2516,20 @@
         section1 = element("section");
         table1 = element("table");
         thead1 = element("thead");
-        thead1.innerHTML = `<tr><th class="svelte-1jjui1x"></th> 
-          <th class="svelte-1jjui1x">\u041E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u043D\u0430\u044F<br/>\u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u0430</th> 
-          <th class="svelte-1jjui1x">\u041E\u0446\u0435\u043D\u043A\u0430 \u043F\u043E<br/>\u043F\u0440\u043E\u0444\u0438\u043B\u044C\u043D\u043E\u043C\u0443<br/>\u043F\u0440\u0435\u0434\u043C\u0435\u0442\u0443</th> 
-          <th class="svelte-1jjui1x">\u041F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442</th> 
-          <th class="svelte-1jjui1x">\u0421\u043F\u0440\u044F\u0442\u0430\u0442\u044C?</th></tr>`;
+        thead1.innerHTML = `<tr><th class="svelte-1iddvth"></th> 
+          <th class="svelte-1iddvth">\u041E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u043D\u0430\u044F<br/>\u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u0430</th> 
+          <th class="svelte-1iddvth">\u041E\u0446\u0435\u043D\u043A\u0430 \u043F\u043E<br/>\u043F\u0440\u043E\u0444\u0438\u043B\u044C\u043D\u043E\u043C\u0443<br/>\u043F\u0440\u0435\u0434\u043C\u0435\u0442\u0443</th> 
+          <th class="svelte-1iddvth">\u041F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442</th> 
+          <th class="svelte-1iddvth">\u0421\u043F\u0440\u044F\u0442\u0430\u0442\u044C?</th></tr>`;
         t16 = space();
         tbody1 = element("tbody");
         for (let i = 0; i < each_blocks.length; i += 1) {
           each_blocks[i].c();
         }
-        attr(table0, "class", "edu-progs svelte-1jjui1x");
-        attr(table1, "class", "applications svelte-1jjui1x");
+        attr(table0, "class", "edu-progs svelte-1iddvth");
+        attr(table1, "class", "applications svelte-1iddvth");
         set_style(section1, "order", "-1");
-        attr(article, "class", "svelte-1jjui1x");
+        attr(article, "class", "svelte-1iddvth");
       },
       m(target, anchor) {
         insert(target, article, anchor);

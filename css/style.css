@@ -1,3 +1,14 @@
+:root {
+  --color-unkhown: #eee;
+  --color-bg: white;
+  --color-bg-secondary: #ddd;
+  --color-text: #444;
+  --color-selected: white;
+  --color-bg-selected: hsl(9, 100%, 64%);
+  --color-primary: hsl(135, 50%, 50%);
+  --color-primary-light: hsl(135, 100%, 75%);
+  --color-secondary: gold;
+}
 @font-face {
   font-family: 'twemoji mozilla';
   src: url(../fonts/TwemojiMozilla.ttf) format('truetype');
@@ -10,9 +21,9 @@
 html {
   box-sizing: border-box;
   font: 16px/1.15 Arial, Helvetica, sans-serif;
-  color: #333;
+  color: var(--color-text);
   padding: 0;
-  background-color: grey;
+  background-color: var(--color-unkhown);
 }
 body {
   display: flex;
@@ -21,10 +32,10 @@ body {
   padding: 0;
   margin: 0 auto;
   max-width: 968px;
-  background-color: white;
+  background-color: var(--color-bg);
 }
 main {
-  background-color: white;
+  background-color: var(--color-bg);
 }
 footer {
   margin-top: auto;
@@ -119,17 +130,21 @@ footer {
     segoe ui symbol;
 }
 .button {
-  min-height: 2em;
-  min-width: 2em;
+  min-height: 3em;
+  min-width: 3em;
+  padding: 0.5em 1em;
   transition: transform 0.1s ease-out;
 }
 .button--primary {
-  background-color: lightseagreen;
-  border: 1px solid lightseagreen;
-  border-radius: 0.4em;
+  background-color: var(--color-primary);
+  border-width: thin;
+  border-radius: 5px;
+  border-color: var(--color-primary);
+  border-style: solid;
+  box-shadow: 0 0.2em 1em 0 currentColor;
 }
 .button--primary:hover {
-  background-color: aquamarine;
+  background-color: var(--color-primary-light);
 }
 .button--primary:active {
   transform: scale(0.95);
@@ -144,6 +159,11 @@ footer {
 }
 .button--remove:active {
   transform: scale(0.95);
+}
+.btn-panel {
+  padding: 1em;
+  display: flex;
+  gap: 1ch;
 }
 .table {
   border-collapse: collapse;
@@ -162,7 +182,7 @@ footer {
   margin-top: 1em;
 }
 .nav {
-  background-color: lightgrey;
+  background-color: var(--color-bg-secondary);
 }
 .nav__list {
   display: flex;
@@ -193,7 +213,7 @@ footer {
   font-size: inherit;
   cursor: pointer;
   text-decoration: none;
-  background-color: lightgrey;
+  background-color: var(--color-bg-secondary);
   color: inherit;
   margin: 0;
   padding: 1em 0.5em;
@@ -209,20 +229,21 @@ footer {
   top: 0.7em;
 }
 .nav__item:hover > .nav__link {
-  background-color: tomato;
-  color: white;
+  background-color: var(--color-bg-selected);
+  color: var(--color-selected);
 }
 .nav-dropdown__menu {
   display: none;
+  overflow: hidden;
   flex-direction: column;
   position: absolute;
-  background-color: lightgrey;
+  background-color: var(--color-bg-secondary);
   top: 100%;
   right: 0;
   margin: 0;
   padding: 0;
-  box-shadow: 0 1em 1em 0 darkgrey;
-  border: 0.5px solid darkgrey;
+  box-shadow: 0 1em 1em 0 var(--color-text);
+  border: 1px solid var(--color-text);
   border-radius: 0.25em;
 }
 .nav-dropdown:hover > .nav-dropdown__menu,
@@ -430,6 +451,10 @@ footer {
   gap: 1ch;
 }
 .field--checkbox .field__title {
+  font-size: inherit;
+}
+.field textarea {
+  font-family: inherit;
   font-size: inherit;
 }
 .field-container {

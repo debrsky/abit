@@ -247,6 +247,9 @@ function select_value(select) {
   const selected_option = select.querySelector(":checked") || select.options[0];
   return selected_option && selected_option.__value;
 }
+function toggle_class(element2, name, toggle) {
+  element2.classList[toggle ? "add" : "remove"](name);
+}
 var current_component;
 function set_current_component(component) {
   current_component = component;
@@ -1480,7 +1483,7 @@ var PAID = "\u0432\u043D\u0435\u0431\u044E\u0434\u0436\u0435\u0442";
 
 // src/js/svelte/blocks/applications.svelte
 function add_css2(target) {
-  append_styles(target, "svelte-1jjui1x", "article.svelte-1jjui1x.svelte-1jjui1x{border:1px solid black;width:fit-content;padding:0.25em;display:flex;gap:1ch}table.edu-progs.svelte-1jjui1x th.svelte-1jjui1x{font-size:x-small}.edu-prog-button.svelte-1jjui1x.svelte-1jjui1x{cursor:pointer}.edu-prog-button.svelte-1jjui1x.svelte-1jjui1x:active{transform:scale(0.9)}table.applications.svelte-1jjui1x.svelte-1jjui1x{border-collapse:collapse}table.applications.svelte-1jjui1x th.svelte-1jjui1x{font-size:x-small;padding:0 0.5ch}table.applications.svelte-1jjui1x th.svelte-1jjui1x:first-child{width:6ch}.cell.svelte-1jjui1x.svelte-1jjui1x{display:flex;place-content:center;place-items:center}table.applications.svelte-1jjui1x td.svelte-1jjui1x,table.applications.svelte-1jjui1x th.svelte-1jjui1x{border-top:1px solid darkgrey;border-bottom:1px solid darkgrey}table.svelte-1jjui1x th.svelte-1jjui1x{background-color:lightgrey}");
+  append_styles(target, "svelte-1iddvth", "article.svelte-1iddvth.svelte-1iddvth{border:1px solid black;width:fit-content;padding:0.25em;display:flex;gap:1ch}table.edu-progs.svelte-1iddvth th.svelte-1iddvth{font-size:x-small}.edu-prog-button.svelte-1iddvth.svelte-1iddvth:not(:disabled){cursor:pointer}.edu-prog-button.svelte-1iddvth.svelte-1iddvth:active:not(:disabled){transform:scale(0.9)}table.applications.svelte-1iddvth.svelte-1iddvth{border-collapse:collapse}table.applications.svelte-1iddvth th.svelte-1iddvth{font-size:x-small;padding:0 0.5ch}table.applications.svelte-1iddvth th.svelte-1iddvth:first-child{width:6ch}.cell.svelte-1iddvth.svelte-1iddvth{display:flex;place-content:center;place-items:center}table.applications.svelte-1iddvth td.svelte-1iddvth,table.applications.svelte-1iddvth th.svelte-1iddvth{border-top:1px solid darkgrey;border-bottom:1px solid darkgrey}table.svelte-1iddvth th.svelte-1iddvth{background-color:lightgrey}");
 }
 function get_each_context2(ctx, list, i) {
   const child_ctx = ctx.slice();
@@ -1517,7 +1520,7 @@ function create_if_block5(ctx) {
     c() {
       button = element("button");
       t = text(t_value);
-      attr(button, "class", "badge edu-prog-button svelte-1jjui1x");
+      attr(button, "class", "badge edu-prog-button svelte-1iddvth");
       attr(button, "type", "button");
       button.disabled = button_disabled_value = ctx[0].some(func);
     },
@@ -1555,7 +1558,7 @@ function create_each_block_2(ctx) {
       div = element("div");
       if (if_block)
         if_block.c();
-      attr(div, "class", "cell svelte-1jjui1x");
+      attr(div, "class", "cell svelte-1iddvth");
     },
     m(target, anchor) {
       insert(target, td, anchor);
@@ -1724,16 +1727,16 @@ function create_each_block2(key_1, ctx) {
       t5 = space();
       attr(button, "class", "button button--remove");
       attr(button, "type", "button");
-      attr(div0, "class", "cell svelte-1jjui1x");
-      attr(td0, "class", "svelte-1jjui1x");
-      attr(div1, "class", "cell svelte-1jjui1x");
-      attr(td1, "class", "svelte-1jjui1x");
-      attr(div2, "class", "cell svelte-1jjui1x");
-      attr(td2, "class", "svelte-1jjui1x");
-      attr(div3, "class", "cell svelte-1jjui1x");
-      attr(td3, "class", "svelte-1jjui1x");
-      attr(div4, "class", "cell svelte-1jjui1x");
-      attr(td4, "class", "svelte-1jjui1x");
+      attr(div0, "class", "cell svelte-1iddvth");
+      attr(td0, "class", "svelte-1iddvth");
+      attr(div1, "class", "cell svelte-1iddvth");
+      attr(td1, "class", "svelte-1iddvth");
+      attr(div2, "class", "cell svelte-1iddvth");
+      attr(td2, "class", "svelte-1iddvth");
+      attr(div3, "class", "cell svelte-1iddvth");
+      attr(td3, "class", "svelte-1iddvth");
+      attr(div4, "class", "cell svelte-1iddvth");
+      attr(td4, "class", "svelte-1iddvth");
       this.first = tr;
     },
     m(target, anchor) {
@@ -1851,8 +1854,8 @@ function create_fragment7(ctx) {
       section0 = element("section");
       table0 = element("table");
       thead0 = element("thead");
-      thead0.innerHTML = `<tr><th colspan="3" class="svelte-1jjui1x">\u0431\u044E\u0434\u0436\u0435\u0442</th> 
-          <th colspan="3" class="svelte-1jjui1x">\u0432\u043D\u0435\u0431\u044E\u0434\u0436\u0435\u0442</th></tr>`;
+      thead0.innerHTML = `<tr><th colspan="3" class="svelte-1iddvth">\u0431\u044E\u0434\u0436\u0435\u0442</th> 
+          <th colspan="3" class="svelte-1iddvth">\u0432\u043D\u0435\u0431\u044E\u0434\u0436\u0435\u0442</th></tr>`;
       t3 = space();
       tbody0 = element("tbody");
       for (let i = 0; i < each_blocks_1.length; i += 1) {
@@ -1862,20 +1865,20 @@ function create_fragment7(ctx) {
       section1 = element("section");
       table1 = element("table");
       thead1 = element("thead");
-      thead1.innerHTML = `<tr><th class="svelte-1jjui1x"></th> 
-          <th class="svelte-1jjui1x">\u041E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u043D\u0430\u044F<br/>\u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u0430</th> 
-          <th class="svelte-1jjui1x">\u041E\u0446\u0435\u043D\u043A\u0430 \u043F\u043E<br/>\u043F\u0440\u043E\u0444\u0438\u043B\u044C\u043D\u043E\u043C\u0443<br/>\u043F\u0440\u0435\u0434\u043C\u0435\u0442\u0443</th> 
-          <th class="svelte-1jjui1x">\u041F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442</th> 
-          <th class="svelte-1jjui1x">\u0421\u043F\u0440\u044F\u0442\u0430\u0442\u044C?</th></tr>`;
+      thead1.innerHTML = `<tr><th class="svelte-1iddvth"></th> 
+          <th class="svelte-1iddvth">\u041E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u043D\u0430\u044F<br/>\u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u0430</th> 
+          <th class="svelte-1iddvth">\u041E\u0446\u0435\u043D\u043A\u0430 \u043F\u043E<br/>\u043F\u0440\u043E\u0444\u0438\u043B\u044C\u043D\u043E\u043C\u0443<br/>\u043F\u0440\u0435\u0434\u043C\u0435\u0442\u0443</th> 
+          <th class="svelte-1iddvth">\u041F\u0440\u0438\u043E\u0440\u0438\u0442\u0435\u0442</th> 
+          <th class="svelte-1iddvth">\u0421\u043F\u0440\u044F\u0442\u0430\u0442\u044C?</th></tr>`;
       t16 = space();
       tbody1 = element("tbody");
       for (let i = 0; i < each_blocks.length; i += 1) {
         each_blocks[i].c();
       }
-      attr(table0, "class", "edu-progs svelte-1jjui1x");
-      attr(table1, "class", "applications svelte-1jjui1x");
+      attr(table0, "class", "edu-progs svelte-1iddvth");
+      attr(table1, "class", "applications svelte-1iddvth");
       set_style(section1, "order", "-1");
-      attr(article, "class", "svelte-1jjui1x");
+      attr(article, "class", "svelte-1iddvth");
     },
     m(target, anchor) {
       insert(target, article, anchor);
@@ -2103,10 +2106,11 @@ var applications_default = Applications;
 
 // src/js/svelte/comp.svelte
 function add_css3(target) {
-  append_styles(target, "svelte-121c971", "#debug.svelte-121c971{display:none}#debug.svelte-121c971:target{display:block;font-size:xx-small}");
+  append_styles(target, "svelte-2lwjyl", "#debug.svelte-2lwjyl{display:none}#debug.svelte-2lwjyl:target{display:block;font-size:xx-small}.delete-shadow-container.svelte-2lwjyl{position:relative}.delete-shadow-container.should-delete.svelte-2lwjyl::after{content:'';display:block;position:absolute;top:0;left:0;right:0;bottom:0;background-color:rgba(0, 0, 0, 0.5)}");
 }
 function create_fragment8(ctx) {
   let form;
+  let div7;
   let div0;
   let dateinput;
   let updating_value;
@@ -2169,23 +2173,26 @@ function create_fragment8(ctx) {
   let updating_applications;
   let t17;
   let pre0;
-  let t18_value = ctx[3].join(", ") + "";
+  let t18_value = ctx[4].join(", ") + "";
   let t18;
   let t19;
+  let div9;
   let button0;
   let t21;
   let button1;
   let t23;
-  let button2;
-  let t25;
+  let div8;
+  let checkbox4;
+  let updating_value_17;
+  let t24;
   let pre1;
-  let t26_value = JSON.stringify(ctx[0], null, 4) + "";
-  let t26;
+  let t25_value = JSON.stringify(ctx[0], null, 4) + "";
+  let t25;
   let current;
   let mounted;
   let dispose;
   function dateinput_value_binding(value) {
-    ctx[6](value);
+    ctx[7](value);
   }
   let dateinput_props = {
     title: "\u0414\u0430\u0442\u0430 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u0438",
@@ -2197,7 +2204,7 @@ function create_fragment8(ctx) {
   dateinput = new date_default({ props: dateinput_props });
   binding_callbacks.push(() => bind(dateinput, "value", dateinput_value_binding));
   function text0_value_binding(value) {
-    ctx[7](value);
+    ctx[8](value);
   }
   let text0_props = { title: "\u0424\u0430\u043C\u0438\u043B\u0438\u044F \u0418\u043C\u044F \u041E\u0442\u0447\u0435\u0441\u0442\u0432\u043E", size: 50 };
   if (ctx[0].fio !== void 0) {
@@ -2206,7 +2213,7 @@ function create_fragment8(ctx) {
   text0 = new text_default({ props: text0_props });
   binding_callbacks.push(() => bind(text0, "value", text0_value_binding));
   function select0_value_binding(value) {
-    ctx[8](value);
+    ctx[9](value);
   }
   let select0_props = {
     title: "\u041F\u043E\u043B",
@@ -2218,7 +2225,7 @@ function create_fragment8(ctx) {
   select0 = new select_default({ props: select0_props });
   binding_callbacks.push(() => bind(select0, "value", select0_value_binding));
   function select1_value_binding(value) {
-    ctx[9](value);
+    ctx[10](value);
   }
   let select1_props = {
     title: "\u0411\u0430\u0437\u043E\u0432\u043E\u0435 \u043E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u043D\u0438\u0435",
@@ -2231,7 +2238,7 @@ function create_fragment8(ctx) {
   select1 = new select_default({ props: select1_props });
   binding_callbacks.push(() => bind(select1, "value", select1_value_binding));
   function numeric0_value_binding(value) {
-    ctx[10](value);
+    ctx[11](value);
   }
   let numeric0_props = {
     title: "\u0421\u0440\u0435\u0434\u043D\u0438\u0439 \u0431\u0430\u043B\u043B \u0430\u0442\u0442\u0435\u0441\u0442\u0430\u0442\u0430",
@@ -2246,7 +2253,7 @@ function create_fragment8(ctx) {
   numeric0 = new number_default({ props: numeric0_props });
   binding_callbacks.push(() => bind(numeric0, "value", numeric0_value_binding));
   function numeric1_value_binding(value) {
-    ctx[11](value);
+    ctx[12](value);
   }
   let numeric1_props = {
     title: "\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0431\u0430\u043B\u043B\u044B",
@@ -2260,7 +2267,7 @@ function create_fragment8(ctx) {
   numeric1 = new number_default({ props: numeric1_props });
   binding_callbacks.push(() => bind(numeric1, "value", numeric1_value_binding));
   function numeric2_value_binding(value) {
-    ctx[12](value);
+    ctx[13](value);
   }
   let numeric2_props = {
     title: "\u0418\u0442\u043E\u0433\u043E\u0432\u044B\u0439 \u043A\u043E\u043D\u043A\u0443\u0440\u0441\u043D\u044B\u0439 \u0431\u0430\u043B\u043B",
@@ -2273,7 +2280,7 @@ function create_fragment8(ctx) {
   numeric2 = new number_default({ props: numeric2_props });
   binding_callbacks.push(() => bind(numeric2, "value", numeric2_value_binding));
   function checkbox0_value_binding(value) {
-    ctx[13](value);
+    ctx[14](value);
   }
   let checkbox0_props = { title: "\u041F\u043E\u0434\u043B\u0438\u043D\u043D\u0438\u043A \u0430\u0442\u0442\u0435\u0441\u0442\u0430\u0442\u0430" };
   if (ctx[0].hasEduCertOriginal !== void 0) {
@@ -2282,7 +2289,7 @@ function create_fragment8(ctx) {
   checkbox0 = new checkbox_default({ props: checkbox0_props });
   binding_callbacks.push(() => bind(checkbox0, "value", checkbox0_value_binding));
   function checkbox1_value_binding(value) {
-    ctx[14](value);
+    ctx[15](value);
   }
   let checkbox1_props = { title: "\u041C\u0435\u0434\u0438\u0446\u0438\u043D\u0441\u043A\u0430\u044F \u0441\u043F\u0440\u0430\u0432\u043A\u0430" };
   if (ctx[0].hasMedicalCert !== void 0) {
@@ -2291,7 +2298,7 @@ function create_fragment8(ctx) {
   checkbox1 = new checkbox_default({ props: checkbox1_props });
   binding_callbacks.push(() => bind(checkbox1, "value", checkbox1_value_binding));
   function checkbox2_value_binding(value) {
-    ctx[15](value);
+    ctx[16](value);
   }
   let checkbox2_props = { title: "\u0424\u043B\u044E\u043E\u0440\u043E\u0433\u0440\u0430\u0444\u0438\u044F" };
   if (ctx[0].hasFluoro !== void 0) {
@@ -2300,7 +2307,7 @@ function create_fragment8(ctx) {
   checkbox2 = new checkbox_default({ props: checkbox2_props });
   binding_callbacks.push(() => bind(checkbox2, "value", checkbox2_value_binding));
   function checkbox3_value_binding(value) {
-    ctx[16](value);
+    ctx[17](value);
   }
   let checkbox3_props = { title: "\u041F\u0440\u0438\u0432\u0438\u0432\u043A\u0438" };
   if (ctx[0].hasVaccine !== void 0) {
@@ -2309,7 +2316,7 @@ function create_fragment8(ctx) {
   checkbox3 = new checkbox_default({ props: checkbox3_props });
   binding_callbacks.push(() => bind(checkbox3, "value", checkbox3_value_binding));
   function select2_value_binding(value) {
-    ctx[17](value);
+    ctx[18](value);
   }
   let select2_props = {
     title: "\u041E\u0431\u0449\u0435\u0436\u0438\u0442\u0438\u0435",
@@ -2321,7 +2328,7 @@ function create_fragment8(ctx) {
   select2 = new select_default({ props: select2_props });
   binding_callbacks.push(() => bind(select2, "value", select2_value_binding));
   function text1_value_binding(value) {
-    ctx[18](value);
+    ctx[19](value);
   }
   let text1_props = { title: "\u0410\u0434\u0440\u0435\u0441", size: 50 };
   if (ctx[0].address !== void 0) {
@@ -2330,7 +2337,7 @@ function create_fragment8(ctx) {
   text1 = new text_default({ props: text1_props });
   binding_callbacks.push(() => bind(text1, "value", text1_value_binding));
   function text2_value_binding(value) {
-    ctx[19](value);
+    ctx[20](value);
   }
   let text2_props = { title: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D", size: 15 };
   if (ctx[0].tel !== void 0) {
@@ -2339,7 +2346,7 @@ function create_fragment8(ctx) {
   text2 = new text_default({ props: text2_props });
   binding_callbacks.push(() => bind(text2, "value", text2_value_binding));
   function text3_value_binding(value) {
-    ctx[20](value);
+    ctx[21](value);
   }
   let text3_props = { title: "\u0428\u043A\u043E\u043B\u0430", size: 70 };
   if (ctx[0].school !== void 0) {
@@ -2348,7 +2355,7 @@ function create_fragment8(ctx) {
   text3 = new text_default({ props: text3_props });
   binding_callbacks.push(() => bind(text3, "value", text3_value_binding));
   function text4_value_binding(value) {
-    ctx[21](value);
+    ctx[22](value);
   }
   let text4_props = { title: "\u0413\u043E\u0434 \u043E\u043A\u043E\u043D\u0447\u0430\u043D\u0438\u044F \u0448\u043A\u043E\u043B\u044B", size: 10 };
   if (ctx[0].schoolYear !== void 0) {
@@ -2357,16 +2364,16 @@ function create_fragment8(ctx) {
   text4 = new text_default({ props: text4_props });
   binding_callbacks.push(() => bind(text4, "value", text4_value_binding));
   function textarea_value_binding(value) {
-    ctx[22](value);
+    ctx[23](value);
   }
-  let textarea_props = { title: "\u041F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435", size: 97 };
+  let textarea_props = { title: "\u041F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435", size: 90 };
   if (ctx[0].memo !== void 0) {
     textarea_props.value = ctx[0].memo;
   }
   textarea = new textarea_default({ props: textarea_props });
   binding_callbacks.push(() => bind(textarea, "value", textarea_value_binding));
   function applications_applications_binding(value) {
-    ctx[23](value);
+    ctx[24](value);
   }
   let applications_props = { eduProgs: ctx[1] };
   if (ctx[0].applications !== void 0) {
@@ -2374,9 +2381,19 @@ function create_fragment8(ctx) {
   }
   applications = new applications_default({ props: applications_props });
   binding_callbacks.push(() => bind(applications, "applications", applications_applications_binding));
+  function checkbox4_value_binding(value) {
+    ctx[26](value);
+  }
+  let checkbox4_props = { title: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C" };
+  if (ctx[3] !== void 0) {
+    checkbox4_props.value = ctx[3];
+  }
+  checkbox4 = new checkbox_default({ props: checkbox4_props });
+  binding_callbacks.push(() => bind(checkbox4, "value", checkbox4_value_binding));
   return {
     c() {
       form = element("form");
+      div7 = element("div");
       div0 = element("div");
       create_component(dateinput.$$.fragment);
       t0 = space();
@@ -2423,17 +2440,18 @@ function create_fragment8(ctx) {
       pre0 = element("pre");
       t18 = text(t18_value);
       t19 = space();
+      div9 = element("div");
       button0 = element("button");
       button0.textContent = "\u2714\uFE0F \u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u0438 \u0437\u0430\u043A\u0440\u044B\u0442\u044C";
       t21 = space();
       button1 = element("button");
-      button1.textContent = "\u{1F4D1} \u0414\u0443\u0431\u043B\u0438\u0440\u043E\u0432\u0430\u0442\u044C";
+      button1.textContent = "\u274C \u0417\u0430\u043A\u0440\u044B\u0442\u044C \u0431\u0435\u0437 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F";
       t23 = space();
-      button2 = element("button");
-      button2.textContent = "\u274C \u0417\u0430\u043A\u0440\u044B\u0442\u044C \u0431\u0435\u0437 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F";
-      t25 = space();
+      div8 = element("div");
+      create_component(checkbox4.$$.fragment);
+      t24 = space();
       pre1 = element("pre");
-      t26 = text(t26_value);
+      t25 = text(t25_value);
       attr(div0, "class", "field-container");
       attr(div1, "class", "field-container");
       attr(div2, "class", "field-container");
@@ -2441,25 +2459,29 @@ function create_fragment8(ctx) {
       attr(div4, "class", "field-container");
       attr(div5, "class", "field-container");
       attr(div6, "class", "field-container");
+      attr(div7, "class", "delete-shadow-container svelte-2lwjyl");
+      toggle_class(div7, "should-delete", ctx[3]);
       attr(button0, "class", "button button--primary");
       attr(button0, "type", "submit");
       attr(button1, "class", "button button--secondary");
       attr(button1, "type", "button");
-      attr(button2, "class", "button button--secondary");
-      attr(button2, "type", "button");
+      attr(div8, "class", "field-container");
+      set_style(div8, "margin-left", "auto");
+      attr(div9, "class", "btn-panel");
       attr(pre1, "id", "debug");
-      attr(pre1, "class", "svelte-121c971");
+      attr(pre1, "class", "svelte-2lwjyl");
     },
     m(target, anchor) {
       insert(target, form, anchor);
-      append(form, div0);
+      append(form, div7);
+      append(div7, div0);
       mount_component(dateinput, div0, null);
       append(div0, t0);
       mount_component(text0, div0, null);
       append(div0, t1);
       mount_component(select0, div0, null);
-      append(form, t2);
-      append(form, div1);
+      append(div7, t2);
+      append(div7, div1);
       mount_component(select1, div1, null);
       append(div1, t3);
       mount_component(numeric0, div1, null);
@@ -2467,8 +2489,8 @@ function create_fragment8(ctx) {
       mount_component(numeric1, div1, null);
       append(div1, t5);
       mount_component(numeric2, div1, null);
-      append(form, t6);
-      append(form, div2);
+      append(div7, t6);
+      append(div7, div2);
       mount_component(checkbox0, div2, null);
       append(div2, t7);
       mount_component(checkbox1, div2, null);
@@ -2476,179 +2498,190 @@ function create_fragment8(ctx) {
       mount_component(checkbox2, div2, null);
       append(div2, t9);
       mount_component(checkbox3, div2, null);
-      append(form, t10);
-      append(form, div3);
+      append(div7, t10);
+      append(div7, div3);
       mount_component(select2, div3, null);
       append(div3, t11);
       mount_component(text1, div3, null);
       append(div3, t12);
       mount_component(text2, div3, null);
-      append(form, t13);
-      append(form, div4);
+      append(div7, t13);
+      append(div7, div4);
       mount_component(text3, div4, null);
       append(div4, t14);
       mount_component(text4, div4, null);
-      append(form, t15);
-      append(form, div5);
+      append(div7, t15);
+      append(div7, div5);
       mount_component(textarea, div5, null);
-      append(form, t16);
-      append(form, div6);
+      append(div7, t16);
+      append(div7, div6);
       mount_component(applications, div6, null);
-      append(form, t17);
-      append(form, pre0);
+      append(div7, t17);
+      append(div7, pre0);
       append(pre0, t18);
       append(form, t19);
-      append(form, button0);
-      append(form, t21);
-      append(form, button1);
-      append(form, t23);
-      append(form, button2);
-      insert(target, t25, anchor);
+      append(form, div9);
+      append(div9, button0);
+      append(div9, t21);
+      append(div9, button1);
+      append(div9, t23);
+      append(div9, div8);
+      mount_component(checkbox4, div8, null);
+      insert(target, t24, anchor);
       insert(target, pre1, anchor);
-      append(pre1, t26);
+      append(pre1, t25);
       current = true;
       if (!mounted) {
         dispose = [
-          listen(button1, "click", ctx[24]),
-          listen(button2, "click", ctx[25]),
-          listen(form, "submit", prevent_default(ctx[26]))
+          listen(button1, "click", ctx[25]),
+          listen(form, "submit", prevent_default(ctx[27]))
         ];
         mounted = true;
       }
     },
-    p(ctx2, [dirty]) {
+    p(ctx2, dirty) {
       const dateinput_changes = {};
-      if (!updating_value && dirty & 1) {
+      if (!updating_value && dirty[0] & 1) {
         updating_value = true;
         dateinput_changes.value = ctx2[0].regDate;
         add_flush_callback(() => updating_value = false);
       }
       dateinput.$set(dateinput_changes);
       const text0_changes = {};
-      if (!updating_value_1 && dirty & 1) {
+      if (!updating_value_1 && dirty[0] & 1) {
         updating_value_1 = true;
         text0_changes.value = ctx2[0].fio;
         add_flush_callback(() => updating_value_1 = false);
       }
       text0.$set(text0_changes);
       const select0_changes = {};
-      if (!updating_value_2 && dirty & 1) {
+      if (!updating_value_2 && dirty[0] & 1) {
         updating_value_2 = true;
         select0_changes.value = ctx2[0].gender;
         add_flush_callback(() => updating_value_2 = false);
       }
       select0.$set(select0_changes);
       const select1_changes = {};
-      if (!updating_value_3 && dirty & 1) {
+      if (!updating_value_3 && dirty[0] & 1) {
         updating_value_3 = true;
         select1_changes.value = ctx2[0].baseEduLevel;
         add_flush_callback(() => updating_value_3 = false);
       }
       select1.$set(select1_changes);
       const numeric0_changes = {};
-      if (!updating_value_4 && dirty & 1) {
+      if (!updating_value_4 && dirty[0] & 1) {
         updating_value_4 = true;
         numeric0_changes.value = ctx2[0].certScore;
         add_flush_callback(() => updating_value_4 = false);
       }
       numeric0.$set(numeric0_changes);
       const numeric1_changes = {};
-      if (!updating_value_5 && dirty & 1) {
+      if (!updating_value_5 && dirty[0] & 1) {
         updating_value_5 = true;
         numeric1_changes.value = ctx2[0].extraScore;
         add_flush_callback(() => updating_value_5 = false);
       }
       numeric1.$set(numeric1_changes);
       const numeric2_changes = {};
-      if (!updating_value_6 && dirty & 1) {
+      if (!updating_value_6 && dirty[0] & 1) {
         updating_value_6 = true;
         numeric2_changes.value = ctx2[0].totalScore;
         add_flush_callback(() => updating_value_6 = false);
       }
       numeric2.$set(numeric2_changes);
       const checkbox0_changes = {};
-      if (!updating_value_7 && dirty & 1) {
+      if (!updating_value_7 && dirty[0] & 1) {
         updating_value_7 = true;
         checkbox0_changes.value = ctx2[0].hasEduCertOriginal;
         add_flush_callback(() => updating_value_7 = false);
       }
       checkbox0.$set(checkbox0_changes);
       const checkbox1_changes = {};
-      if (!updating_value_8 && dirty & 1) {
+      if (!updating_value_8 && dirty[0] & 1) {
         updating_value_8 = true;
         checkbox1_changes.value = ctx2[0].hasMedicalCert;
         add_flush_callback(() => updating_value_8 = false);
       }
       checkbox1.$set(checkbox1_changes);
       const checkbox2_changes = {};
-      if (!updating_value_9 && dirty & 1) {
+      if (!updating_value_9 && dirty[0] & 1) {
         updating_value_9 = true;
         checkbox2_changes.value = ctx2[0].hasFluoro;
         add_flush_callback(() => updating_value_9 = false);
       }
       checkbox2.$set(checkbox2_changes);
       const checkbox3_changes = {};
-      if (!updating_value_10 && dirty & 1) {
+      if (!updating_value_10 && dirty[0] & 1) {
         updating_value_10 = true;
         checkbox3_changes.value = ctx2[0].hasVaccine;
         add_flush_callback(() => updating_value_10 = false);
       }
       checkbox3.$set(checkbox3_changes);
       const select2_changes = {};
-      if (!updating_value_11 && dirty & 1) {
+      if (!updating_value_11 && dirty[0] & 1) {
         updating_value_11 = true;
         select2_changes.value = ctx2[0].needDorm;
         add_flush_callback(() => updating_value_11 = false);
       }
       select2.$set(select2_changes);
       const text1_changes = {};
-      if (!updating_value_12 && dirty & 1) {
+      if (!updating_value_12 && dirty[0] & 1) {
         updating_value_12 = true;
         text1_changes.value = ctx2[0].address;
         add_flush_callback(() => updating_value_12 = false);
       }
       text1.$set(text1_changes);
       const text2_changes = {};
-      if (!updating_value_13 && dirty & 1) {
+      if (!updating_value_13 && dirty[0] & 1) {
         updating_value_13 = true;
         text2_changes.value = ctx2[0].tel;
         add_flush_callback(() => updating_value_13 = false);
       }
       text2.$set(text2_changes);
       const text3_changes = {};
-      if (!updating_value_14 && dirty & 1) {
+      if (!updating_value_14 && dirty[0] & 1) {
         updating_value_14 = true;
         text3_changes.value = ctx2[0].school;
         add_flush_callback(() => updating_value_14 = false);
       }
       text3.$set(text3_changes);
       const text4_changes = {};
-      if (!updating_value_15 && dirty & 1) {
+      if (!updating_value_15 && dirty[0] & 1) {
         updating_value_15 = true;
         text4_changes.value = ctx2[0].schoolYear;
         add_flush_callback(() => updating_value_15 = false);
       }
       text4.$set(text4_changes);
       const textarea_changes = {};
-      if (!updating_value_16 && dirty & 1) {
+      if (!updating_value_16 && dirty[0] & 1) {
         updating_value_16 = true;
         textarea_changes.value = ctx2[0].memo;
         add_flush_callback(() => updating_value_16 = false);
       }
       textarea.$set(textarea_changes);
       const applications_changes = {};
-      if (dirty & 2)
+      if (dirty[0] & 2)
         applications_changes.eduProgs = ctx2[1];
-      if (!updating_applications && dirty & 1) {
+      if (!updating_applications && dirty[0] & 1) {
         updating_applications = true;
         applications_changes.applications = ctx2[0].applications;
         add_flush_callback(() => updating_applications = false);
       }
       applications.$set(applications_changes);
-      if ((!current || dirty & 8) && t18_value !== (t18_value = ctx2[3].join(", ") + ""))
+      if ((!current || dirty[0] & 16) && t18_value !== (t18_value = ctx2[4].join(", ") + ""))
         set_data(t18, t18_value);
-      if ((!current || dirty & 1) && t26_value !== (t26_value = JSON.stringify(ctx2[0], null, 4) + ""))
-        set_data(t26, t26_value);
+      if (dirty[0] & 8) {
+        toggle_class(div7, "should-delete", ctx2[3]);
+      }
+      const checkbox4_changes = {};
+      if (!updating_value_17 && dirty[0] & 8) {
+        updating_value_17 = true;
+        checkbox4_changes.value = ctx2[3];
+        add_flush_callback(() => updating_value_17 = false);
+      }
+      checkbox4.$set(checkbox4_changes);
+      if ((!current || dirty[0] & 1) && t25_value !== (t25_value = JSON.stringify(ctx2[0], null, 4) + ""))
+        set_data(t25, t25_value);
     },
     i(local) {
       if (current)
@@ -2671,6 +2704,7 @@ function create_fragment8(ctx) {
       transition_in(text4.$$.fragment, local);
       transition_in(textarea.$$.fragment, local);
       transition_in(applications.$$.fragment, local);
+      transition_in(checkbox4.$$.fragment, local);
       current = true;
     },
     o(local) {
@@ -2692,6 +2726,7 @@ function create_fragment8(ctx) {
       transition_out(text4.$$.fragment, local);
       transition_out(textarea.$$.fragment, local);
       transition_out(applications.$$.fragment, local);
+      transition_out(checkbox4.$$.fragment, local);
       current = false;
     },
     d(detaching) {
@@ -2715,8 +2750,9 @@ function create_fragment8(ctx) {
       destroy_component(text4);
       destroy_component(textarea);
       destroy_component(applications);
+      destroy_component(checkbox4);
       if (detaching)
-        detach(t25);
+        detach(t24);
       if (detaching)
         detach(pre1);
       mounted = false;
@@ -2738,6 +2774,7 @@ function parseNumber(n) {
   return n;
 }
 function instance8($$self, $$props, $$invalidate) {
+  let shouldDelete = false;
   let certScore;
   let extraScore;
   let totalScore;
@@ -2818,7 +2855,6 @@ function instance8($$self, $$props, $$invalidate) {
     school: null,
     memo: null,
     applications: [],
-    apps: { baseEduLevel: null },
     birthDate: null,
     isFullAge: null,
     passport: {
@@ -2850,118 +2886,122 @@ function instance8($$self, $$props, $$invalidate) {
   function dateinput_value_binding(value) {
     if ($$self.$$.not_equal(data.regDate, value)) {
       data.regDate = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function text0_value_binding(value) {
     if ($$self.$$.not_equal(data.fio, value)) {
       data.fio = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function select0_value_binding(value) {
     if ($$self.$$.not_equal(data.gender, value)) {
       data.gender = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function select1_value_binding(value) {
     if ($$self.$$.not_equal(data.baseEduLevel, value)) {
       data.baseEduLevel = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function numeric0_value_binding(value) {
     if ($$self.$$.not_equal(data.certScore, value)) {
       data.certScore = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function numeric1_value_binding(value) {
     if ($$self.$$.not_equal(data.extraScore, value)) {
       data.extraScore = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function numeric2_value_binding(value) {
     if ($$self.$$.not_equal(data.totalScore, value)) {
       data.totalScore = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function checkbox0_value_binding(value) {
     if ($$self.$$.not_equal(data.hasEduCertOriginal, value)) {
       data.hasEduCertOriginal = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function checkbox1_value_binding(value) {
     if ($$self.$$.not_equal(data.hasMedicalCert, value)) {
       data.hasMedicalCert = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function checkbox2_value_binding(value) {
     if ($$self.$$.not_equal(data.hasFluoro, value)) {
       data.hasFluoro = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function checkbox3_value_binding(value) {
     if ($$self.$$.not_equal(data.hasVaccine, value)) {
       data.hasVaccine = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function select2_value_binding(value) {
     if ($$self.$$.not_equal(data.needDorm, value)) {
       data.needDorm = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function text1_value_binding(value) {
     if ($$self.$$.not_equal(data.address, value)) {
       data.address = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function text2_value_binding(value) {
     if ($$self.$$.not_equal(data.tel, value)) {
       data.tel = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function text3_value_binding(value) {
     if ($$self.$$.not_equal(data.school, value)) {
       data.school = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function text4_value_binding(value) {
     if ($$self.$$.not_equal(data.schoolYear, value)) {
       data.schoolYear = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function textarea_value_binding(value) {
     if ($$self.$$.not_equal(data.memo, value)) {
       data.memo = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   function applications_applications_binding(value) {
     if ($$self.$$.not_equal(data.applications, value)) {
       data.applications = value;
-      $$invalidate(0, data), $$invalidate(4, certScore), $$invalidate(5, extraScore);
+      $$invalidate(0, data), $$invalidate(5, certScore), $$invalidate(6, extraScore);
     }
   }
   const click_handler = () => {
-    close({ ok: true, cmd: "duplicate" });
-  };
-  const click_handler_1 = () => {
     close({ ok: false });
   };
-  const submit_handler = () => close({ ok: true });
+  function checkbox4_value_binding(value) {
+    shouldDelete = value;
+    $$invalidate(3, shouldDelete);
+  }
+  const submit_handler = () => close({
+    ok: true,
+    cmd: shouldDelete ? "delete" : "save"
+  });
   $$self.$$set = ($$props2) => {
     if ("eduProgs" in $$props2)
       $$invalidate(1, eduProgs = $$props2.eduProgs);
@@ -2971,24 +3011,24 @@ function instance8($$self, $$props, $$invalidate) {
       $$invalidate(0, data = $$props2.data);
   };
   $$self.$$.update = () => {
-    if ($$self.$$.dirty & 1) {
+    if ($$self.$$.dirty[0] & 1) {
       $: {
         $$invalidate(0, data = setDataValue(data));
       }
     }
-    if ($$self.$$.dirty & 49) {
+    if ($$self.$$.dirty[0] & 97) {
       $: {
-        $$invalidate(4, certScore = parseNumber(data.certScore));
-        $$invalidate(5, extraScore = parseNumber(data.extraScore));
-        $$invalidate(0, data.totalScore = parseFloat(((Number.isFinite(certScore) ? certScore : 0) + (Number.isFinite(extraScore) ? extraScore : 0)).toFixed(6)), data);
+        $$invalidate(5, certScore = parseNumber(data.certScore));
+        $$invalidate(6, extraScore = parseNumber(data.extraScore));
+        $$invalidate(0, data.totalScore = !Number.isFinite(certScore) && !Number.isFinite(extraScore) ? null : parseFloat(((Number.isFinite(certScore) ? certScore : 0) + (Number.isFinite(extraScore) ? extraScore : 0)).toFixed(6)), data);
       }
     }
-    if ($$self.$$.dirty & 1) {
+    if ($$self.$$.dirty[0] & 1) {
       $: {
-        $$invalidate(3, tags = Array.from(data?.memo.matchAll(/#([a-zA-Z0-9_a-яА-ЯёЁ]+)/g) || [], (tag) => tag[1]));
+        $$invalidate(4, tags = Array.from(data?.memo?.matchAll(/#([a-zA-Z0-9_a-яА-ЯёЁ]+)/g) || [], (tag) => tag[1]));
       }
     }
-    if ($$self.$$.dirty & 1) {
+    if ($$self.$$.dirty[0] & 1) {
       $: {
         setScoreValues(data.certScore, data.extraScore);
       }
@@ -2998,6 +3038,7 @@ function instance8($$self, $$props, $$invalidate) {
     data,
     eduProgs,
     close,
+    shouldDelete,
     tags,
     certScore,
     extraScore,
@@ -3020,14 +3061,14 @@ function instance8($$self, $$props, $$invalidate) {
     textarea_value_binding,
     applications_applications_binding,
     click_handler,
-    click_handler_1,
+    checkbox4_value_binding,
     submit_handler
   ];
 }
 var Comp = class extends SvelteComponent {
   constructor(options) {
     super();
-    init(this, options, instance8, create_fragment8, safe_not_equal, { eduProgs: 1, close: 2, data: 0 }, add_css3);
+    init(this, options, instance8, create_fragment8, safe_not_equal, { eduProgs: 1, close: 2, data: 0 }, add_css3, [-1, -1]);
   }
   get eduProgs() {
     return this.$$.ctx[1];
