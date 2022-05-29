@@ -1,7 +1,7 @@
 import PouchDB from 'pouchdb';
 
 const DB_NAME = 'abit2022';
-const REMOTE_DB_URL = `${window.location.origin}/db2022`;
+const REMOTE_DB_URL = `${window.location.origin}/db2022/${DB_NAME}`;
 
 export let db = new PouchDB(DB_NAME);
 export async function rebuild() {
