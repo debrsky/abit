@@ -181,8 +181,11 @@
 </script>
 
 <form
-  on:submit|preventDefault={() =>
-    close({ok: true, cmd: shouldDelete ? 'delete' : 'save'})}
+  on:submit|preventDefault={(event) => {
+    if (!shouldDelete && !event.currentTarget.reportValidity()) return;
+    close({ok: true, cmd: shouldDelete ? 'delete' : 'save'});
+  }}
+  novalidate
 >
   <div class="delete-shadow-container" class:should-delete={shouldDelete}>
     <div class="field-container">
