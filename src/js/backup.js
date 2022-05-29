@@ -1,8 +1,5 @@
-import PouchDB from 'pouchdb';
 import * as dbConsts from './db/consts.js';
-
-const DB_NAME = 'my_database';
-let db = new PouchDB(DB_NAME);
+import {db, rebuild} from './db/index.js';
 
 const input = document.forms.form.file;
 const btnLoadFakeData = document.getElementById('load-fake-data');
@@ -75,8 +72,7 @@ input.addEventListener('change', selectFileHandler);
 btnLoadFakeData.addEventListener('click', btnLoadFakeDataHandler);
 
 async function createDb() {
-  await db.destroy();
-  db = new PouchDB(DB_NAME);
+  await rebuild();
 
   await createSpecView(db);
   await createEduProgsView(db);

@@ -28,6 +28,7 @@ export default function serve() {
     open: true,
     cors: true,
     ghostMode: false,
+    port: 3030,
     // ui: false
     ui: {
       port: 3080
