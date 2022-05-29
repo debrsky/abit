@@ -30,6 +30,8 @@ const editDoc = async (id) => {
   const docNew = {...result.doc};
 
   if (result.cmd === 'delete') {
+    if (!docNew._id) return; // new doc deleting
+
     docNew._deleted = true;
   }
 
